@@ -1,3 +1,5 @@
-print("hello world")
+num = 20
+i = 0
 
-print("This is an example of new text being added to the main")
+for i in range(num):
+    print(i)
