@@ -1,5 +1,0 @@
-this is mathis new file
-
-thia will bw new info 
-
-print("uguug")
