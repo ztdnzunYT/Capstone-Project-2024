@@ -1,1 +1,0 @@
-print("Am i doing this right? ive never used github before")
