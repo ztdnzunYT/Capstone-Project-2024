@@ -10,7 +10,7 @@ class globals:
         VIEWPORT_HEIGHT = 850
 
 dpg.create_context()
-dpg.create_viewport(title='Custom Title', width=1000, height=600)
+dpg.create_viewport(title='Custom Title', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
 
 with dpg.window(label="Example Window"):
     dpg.add_text("Hello, world")
