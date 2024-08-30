@@ -10,17 +10,12 @@ class globals:
         VIEWPORT_HEIGHT = 850
 
 dpg.create_context()
-dpg.create_viewport(title='Custom Title', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
+dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
 
-with dpg.window(label="Example Window"):
-    dpg.add_text("Hello, world")
-    dpg.add_button(label="Save")
-    dpg.add_input_text(label="string", default_value="Quick brown fox")
-    dpg.add_slider_float(label="float", default_value=0.273, max_value=1)
-
-
-
-
+with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_HEIGHT,no_move=True,no_title_bar=True,no_resize=True,no_bring_to_front_on_focus=True) as background_window:
+    dpg.create_context()
+    with dpg.window(pos=(0,0),width=220,height=globals.VIEWPORT_HEIGHT,no_move=True,no_title_bar=True,no_resize=True)as side_menu:
+        dpg.add_text("GHLauncher")
 
 dpg.setup_dearpygui()
 dpg.show_viewport()
