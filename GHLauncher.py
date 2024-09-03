@@ -5,6 +5,11 @@ import platform
 class globals:
     if platform.system() == "Darwin":
         VIEWPORT_WIDTH = 1000
+        VIEWPORT_HEIGHT = 800
+    if platform.system() == "Windows":
+        VIEWPORT_WIDTH = 1400
+        VIEWPORT_HEIGHT = 1000
+    
 
 dpg.create_context()
 dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
