@@ -1,5 +1,6 @@
 import dearpygui.dearpygui as dpg
 import platform 
+import os
 
 class globals:
     if platform.system() == "Darwin":
@@ -13,19 +14,21 @@ dpg.create_context()
 dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
 
 class Thumbnail_props:
-    def __init__(self,path,tag):
+    def __init__(self,path,tag,game_name):
         self.path = path 
         self.tag = tag
+        self.game_name = game_name
         self.load_image = dpg.load_image(self.path)
         self.width = self.load_image[0]
         self.height = self.load_image[1]
         self.channels = self.load_image[2]
         self.data = self.load_image[3]
+        
 
 thumbnails = []
-kart_shifters_thumbnail = Thumbnail_props("Kart Shifters Poster-1.png.png","pic1")
-basketball_thumbnail = Thumbnail_props("Screen Shot 2024-03-05 at 10.50.37 AM.png","pic2")
-bbal_thumbnail = Thumbnail_props("bball thumbnail-1.png (1).png","pic")
+kart_shifters_thumbnail = Thumbnail_props("Kart-Shifters-Poster-1.png.png","pic1","Kart Shifters")
+basketball_thumbnail = Thumbnail_props("Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
+bbal_thumbnail = Thumbnail_props("bball-thumbnail-1.png","pic","B-Ball")
 thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail])
 
 
@@ -38,8 +41,9 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         dpg.add_spacer(height=30)
         dpg.add_button(label="WHAT'S NEW")
         dpg.add_button(label="CATELOG")
-        dpg.add_button(label="VISIT OUR WEBSITE")
+        dpg.add_button(label="ACHIVEMENTS")
         dpg.add_button(label="SETTINGS")
+        dpg.add_button(label="VISIT OUR WEBSITE")
 
     with dpg.texture_registry(show=False):
         for thumbnail in thumbnails:
@@ -50,7 +54,11 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         with dpg.group(horizontal=True):
             for thumbnail in thumbnails:
                 dpg.add_spacer(width=60)
-                dpg.add_image(thumbnail.tag,width=150,height=200)
+                with dpg.group():
+                    dpg.add_image(thumbnail.tag,width=150,height=200)
+                    dpg.add_spacer(height=10)                    
+                    dpg.add_button(label=thumbnail.game_name,user_data=thumbnail.path,callback=lambda:os.system(f"open Kart-Shifters-Poster-1.png.png"))
+                   
         dpg.add_spacer(height=20)
         dpg.add_separator()
     
