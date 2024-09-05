@@ -25,8 +25,8 @@ class Thumbnail_props:
 thumbnails = []
 kart_shifters_thumbnail = Thumbnail_props("Kart Shifters Poster-1.png.png","pic1")
 basketball_thumbnail = Thumbnail_props("Screen Shot 2024-03-05 at 10.50.37 AM.png","pic2")
-new_thumbnail = Thumbnail_props("Screen Shot 2024-03-05 at 10.51.43 AM.png","pic")
-thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,new_thumbnail])
+bbal_thumbnail = Thumbnail_props("bball thumbnail-1.png (1).png","pic")
+thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail])
 
 
 dpg.set_global_font_scale(1.2)
@@ -45,7 +45,7 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         for thumbnail in thumbnails:
             dpg.add_static_texture(width=thumbnail.width,height=thumbnail.height,default_value=thumbnail.data,tag=thumbnail.tag)
 
-    with dpg.child_window(label="WHAT'S NEW",pos=(220,0),tag="whats_new_window",height=dpg.get_viewport_height()) as whats_new_window:
+    with dpg.child_window(label="WHAT'S NEW",pos=(220,0),tag="whats_new_window") as whats_new_window:
         dpg.add_spacer(height=20)
         with dpg.group(horizontal=True):
             for thumbnail in thumbnails:
