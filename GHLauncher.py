@@ -7,7 +7,7 @@ class globals:
         VIEWPORT_HEIGHT = 600
     if platform.system() == "Windows":
         VIEWPORT_WIDTH = 1400
-        VIEWPORT_HEIGHT = 1000
+        VIEWPORT_HEIGHT = 800
     
 dpg.create_context()
 dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
@@ -45,10 +45,16 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         for thumbnail in thumbnails:
             dpg.add_static_texture(width=thumbnail.width,height=thumbnail.height,default_value=thumbnail.data,tag=thumbnail.tag)
 
-    with dpg.child_window(label="Tutorial",tag="mm",pos=(220,0)) as whats_new_window :
-        for thumbnail in thumbnails:
-            dpg.add_image(thumbnail.tag,width=150,height=200)
-            dpg.add_separator()
+    with dpg.child_window(label="WHAT'S NEW",pos=(220,0),tag="whats_new_window",height=dpg.get_viewport_height()) as whats_new_window:
+        dpg.add_spacer(height=20)
+        with dpg.group(horizontal=True):
+            for thumbnail in thumbnails:
+                dpg.add_spacer(width=60)
+                dpg.add_image(thumbnail.tag,width=150,height=200)
+        dpg.add_spacer(height=20)
+        dpg.add_separator()
+    
+        
 
 dpg.setup_dearpygui()
 dpg.show_viewport()
