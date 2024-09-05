@@ -5,7 +5,7 @@ import platform
 class globals:
     if platform.system() == "Darwin":
         VIEWPORT_WIDTH = 1000
-        VIEWPORT_HEIGHT = 800
+        VIEWPORT_HEIGHT = 600
     if platform.system() == "Windows":
         VIEWPORT_WIDTH = 1400
         VIEWPORT_HEIGHT = 1000
