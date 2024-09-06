@@ -27,7 +27,7 @@ class Thumbnail_props:
 thumbnails = []
 kart_shifters_thumbnail = Thumbnail_props("Kart-Shifters-Poster-1.png","pic1","Kart Shifters")
 basketball_thumbnail = Thumbnail_props("Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
-bbal_thumbnail = Thumbnail_props("bball thumbnail.png","pic","B-Ball")
+bbal_thumbnail = Thumbnail_props("bball-thumbnail.png","pic","B-Ball")
 thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail])
 
 dpg.set_global_font_scale(1.2)
