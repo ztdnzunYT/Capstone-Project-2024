@@ -15,8 +15,6 @@ SH = 800
 screen = pygame.display.set_mode((SW,SH))
 
 
-icon = pygame.image.load("C:/Users/348580/Documents/test-pygame/sprite_1_cropped.png")
-pygame.display.set_icon(icon)
 
 class Kart(pygame.sprite.Sprite):
     def __init__(self,rotation_val):
