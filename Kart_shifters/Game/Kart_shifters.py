@@ -6,7 +6,7 @@ import pygame.ftfont
 #-----------------
 #NOTE THIS IS THE FILE FOR THE MAC VERSION OF THE APPLICATION 
 
- 
+
 clock = pygame.time.Clock()
 pygame.display.set_caption("Kart Shifters")
 WHITE = (255,255,255)
