@@ -1,16 +1,14 @@
 import pygame
 import math
 import os
-from os import listdir
 import pygame.ftfont
-import pathlib
 
 #-----------------
 #NOTE THIS IS THE FILE FOR THE MAC VERSION OF THE APPLICATION 
 
  
 clock = pygame.time.Clock()
-pygame.display.set_caption("Test drifting")
+pygame.display.set_caption("Kart Shifters")
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 GREY  = (150,150,150)
@@ -22,8 +20,7 @@ screen = pygame.display.set_mode((SW,SH))
 class Kart(pygame.sprite.Sprite):
     def __init__(self,rotation_val):
         super(Kart,self).__init__()
-        print(os.path.abspath("sprite_01.png"))
-        self.abs_path = os.path.abspath("sprite_01.png")
+        self.abs_path = os.path.abspath("Kart_shifters/Assets/Kart.png")
         self.image = pygame.transform.smoothscale(pygame.image.load(self.abs_path).convert_alpha(),(100,100))
         self.surf = self.image 
         self.layers =  None
@@ -98,10 +95,6 @@ class Kart(pygame.sprite.Sprite):
             self.rect.y -= vertical 
            
 kart1 = Kart(3)  #sprite 
-
-
-
-
 
 run = True
 while run:
