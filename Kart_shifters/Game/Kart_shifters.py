@@ -12,9 +12,9 @@ pygame.display.set_caption("Kart Shifters")
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 GREY  = (150,150,150)
-TARGET_FPS = 80
+TARGET_FPS = 80 
 SW = 800
-SH = 800
+SH = 600
 screen = pygame.display.set_mode((SW,SH))
 
 class Kart(pygame.sprite.Sprite):
