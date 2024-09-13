@@ -9,7 +9,7 @@ SCREEN_WIDTH = 950
 SCREEN_HEIGHT = 650
 FPS = 120
 BLACK  = (0,0,0)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=True)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
 Clock = pygame.time.Clock()
 
 class Spaceship(pygame.sprite.Sprite):
@@ -17,7 +17,7 @@ class Spaceship(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(55,55))
         self.surf = self.image
-        self.rect = self.surf.get_rect(midright=(x,y))
+        self.rect = self.surf.get_rect(center=(x,y))
         self.position = self.rect.center
         self.speed = 1
         self.angle = 0
@@ -63,33 +63,36 @@ class Rocket_smoke():
         self.colors = random.choice([self.white,self.white2])
         self.size = (random.randint(1,4))
         self.lifetime = 200
-        self.velocity = (random.uniform(-.1,.1),random.uniform(-.1,.1))
+        self.velocity = (random.uniform(-.2,.2),random.uniform(-.2,.2))
         #print(spaceship.dir)
         
- 
-
-    def update(self):
-
+    def direction(self,angle):
         mouse_pos = pygame.mouse.get_pos()
-        if (mouse_pos[0] - spaceship.position[0]) > 0:
-            dx = -.01
-        elif (mouse_pos[0] - spaceship.position[0]) < 0:
-            dx = .01
-        if (mouse_pos[1] - spaceship.position[1]) > 0:
-            dy = -.01
-        elif (mouse_pos[1] - spaceship.position[1]) < 0:
-            dy = .01
+        if (mouse_pos[0] - spaceship.position[0]) > angle:
+            dx = -.03
+        elif (mouse_pos[0] - spaceship.position[0]) < -angle:
+            dx = .03
+        else:
+            dx = 0
+        
+        
+        if (mouse_pos[1] - spaceship.position[1]) > angle:
+            dy = -.03
+        elif (mouse_pos[1] - spaceship.position[1]) < -angle:
+            dy = .03
+        else:
+            dy =0
 
         self.velocity = (self.velocity[0]+dx,self.velocity[1]+dy)
 
 
-
+    def update(self):
         self.x += self.velocity[0]
         self.y += self.velocity[1]
         self.size -=.01
         self.lifetime -=.5
         if pygame.mouse.get_pressed()[0]:
-            if self.lifetime > 190:
+            if self.lifetime >195:
                 self.size = random.randint(4,6)
     
     def draw(self):
@@ -105,11 +108,13 @@ while True:
     
     screen.fill(BLACK)
 
-    particles.append(Rocket_smoke(spaceship.rect.centerx+.5,spaceship.rect.centery+.5))
+    particles.append(Rocket_smoke(spaceship.rect.center[0],spaceship.rect.center[1]))
 
     for particle in particles[:]:
         particle.update()
-        particle.draw()
+        particle.direction(20)
+        if particle.lifetime < 195:
+            particle.draw()
         if particle.size <=0 or particle.lifetime <= 0:
             particles.remove(particle)
 
