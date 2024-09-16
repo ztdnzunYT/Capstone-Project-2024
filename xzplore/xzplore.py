@@ -274,6 +274,7 @@ class Projectile():
         self.radius = size/2 - 11
         self.transparency = transparency
         self.time_alive = 0
+        
     
     def draw(self):
         self.position = (self.x,self.y)
@@ -282,11 +283,9 @@ class Projectile():
         screen.blit(self.surface,self.position)
 
     def update(self,mouse_pos):
+        self.time_alive +=1
 
-        dir = pygame.Vector2(mouse_pos) - spaceship.position
-        self.x -= self.spread
-        self.y -= self.spread
-
+   
 
 
     
