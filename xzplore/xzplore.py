@@ -117,10 +117,12 @@ class Space_station(pygame.sprite.Sprite):
     def update(self,angle):
 
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
-        if mtos_dis >60:
+        if mtos_dis > 60:
             self.velocity = spaceship.acceleration  +0.4
+        elif pygame.mouse.get_pressed()[0]:
+            self.velocity = spaceship.acceleration  
         else:
-            self.velocity = spaceship.acceleration/2  
+            self.velocity = spaceship.acceleration  
 
         if (mouse_pos[0] - spaceship.position[0]) > angle:
             dx = -self.velocity
