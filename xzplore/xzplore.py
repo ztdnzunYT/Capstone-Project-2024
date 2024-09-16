@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 650
 FPS = 120
 BLACK  = (0,0,0)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
-
+pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 
 class World_pos():
@@ -44,7 +44,19 @@ class World_pos():
             x = .1
             y = .1
         return (x,y)
-            
+
+class Crosshair():
+    def __init__(self,size,color):
+        self.center = (0,0)
+        self.size = size
+        self.color = color
+
+    def update(self,mouse):
+        self.center = (mouse[0],mouse[1])
+       
+    def draw(self): 
+        pygame.draw.rect(screen,self.color,(self.center[0],self.center[1],3,3),self.size)
+
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
         super().__init__()
@@ -248,6 +260,7 @@ class Stars():
             self.y = (SCREEN_HEIGHT + respawn_dis)
 
 
+crosshair = Crosshair(2,(170,170,170))
 spaceship = Spaceship("xzplore/assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 space_station = Space_station("xzplore/assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
@@ -296,6 +309,10 @@ while True:
     for star in foreground_stars:
         star.draw()
         star.reposition(random.randint(100,200),random.randint(50,90))
+
+    crosshair.draw()
+    crosshair.update(pygame.mouse.get_pos())
+
 
     Clock.tick(FPS)
     pygame.display.flip()
