@@ -120,8 +120,7 @@ class Space_station(pygame.sprite.Sprite):
         if mtos_dis >60:
             self.velocity = spaceship.acceleration  +0.4
         else:
-            if spaceship.acceleration ==0:
-                self.velocity = spaceship.acceleration/2  
+            self.velocity = spaceship.acceleration/2  
 
         if (mouse_pos[0] - spaceship.position[0]) > angle:
             dx = -self.velocity
