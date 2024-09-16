@@ -17,6 +17,8 @@ class World_pos():
     world_startX = SCREEN_WIDTH/2
     world_startY = SCREEN_HEIGHT/2
 
+    dir_offset = 25
+
     def dis_cal(mouse_pos,spaceship):
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship[1])**2+(mouse_pos[0]-spaceship[0])**2))
         return mtos_dis
@@ -74,20 +76,65 @@ class Spaceship(pygame.sprite.Sprite):
             self.position += dir * self.acceleration
             self.rect.center = self.position
         
-
-        
         if pygame.mouse.get_pressed()[0]:
-            self.acceleration +=0.02
+            self.acceleration +=0.01
         else:  
             self.acceleration -= 0.002
         
         if self.acceleration > self.max_speed:
             self.acceleration = self.max_speed
         elif self.acceleration < 0:
-            self.acceleration = 0.05
-      
+            self.acceleration = 0.0
+
     def update(self):
         screen.blit(self.surf,self.rect) 
+
+class Space_station(pygame.sprite.Sprite):
+    def __init__(self,image,x,y):
+        super().__init__()
+        self.image = image
+        self.surf = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(500,500))
+        self.rect = self.surf.get_rect()
+        self.x = x
+        self.y = y
+        self.center = (self.x,self.y)
+        self.angle = 0
+        self.rot_surf = self.surf
+        self.velocity = 0
+        
+    def update(self,angle):
+
+        mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
+        if mtos_dis >60:
+            self.velocity = spaceship.acceleration  +0.4
+        else:
+            if spaceship.acceleration ==0:
+                self.velocity = spaceship.acceleration/2  
+
+        if (mouse_pos[0] - spaceship.position[0]) > angle:
+            dx = -self.velocity
+        elif (mouse_pos[0] - spaceship.position[0]) < -angle:
+            dx = self.velocity
+        else:
+            dx = 0
+        if (mouse_pos[1] - spaceship.position[1]) > angle:
+            dy = -self.velocity
+        elif (mouse_pos[1] - spaceship.position[1]) < -angle:
+            dy = self.velocity
+        else:
+            dy = 0
+        
+        self.x += dx
+        self.y +=dy
+    
+    def spin(self):
+        self.angle +=1
+        angle = math.radians(self.angle)
+        self.rot_surf = pygame.transform.rotate(self.surf,angle)
+        self.rect = self.rot_surf.get_rect(center=(self.x,self.y))
+
+    def draw(self):
+        screen.blit(self.rot_surf,self.rect)
 
 class Rocket_smoke():
     
@@ -152,9 +199,13 @@ class Stars():
         self.layer = layer 
         self.move = move
         
-       
     def update(self,angle):
-        offset = (self.layer +spaceship.acceleration) 
+        dis = math.sqrt((pygame.mouse.get_pos()[1]-spaceship.position[1])**2 + (pygame.mouse.get_pos()[0] - spaceship.position[0])**2)
+        offset = (self.layer + spaceship.acceleration) 
+        #print(dis)
+
+        if dis< 100:
+            offset -=dis/100
 
         if (mouse_pos[0] - spaceship.position[0]) > angle:
             dx = -offset 
@@ -173,6 +224,8 @@ class Stars():
         self.y += dy 
         self.dx = dx 
         self.dy = dy 
+        
+            
 
         offset = pygame.math.Vector2((self.x + self.dx),(self.y+ self.dy)) 
         offset.normalize()
@@ -180,7 +233,7 @@ class Stars():
         return self.center
  
     def draw(self):
-        pygame.draw.circle(screen,self.color,(Stars.update(self,20)),self.radius)
+        pygame.draw.circle(screen,self.color,(Stars.update(self,World_pos.dir_offset)),self.radius)
     
     def reposition(self,xylimit,respawn_dis):
         if self.center[0] > SCREEN_WIDTH + xylimit:
@@ -196,38 +249,54 @@ class Stars():
 
 
 spaceship = Spaceship("xzplore/assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
-particles = []
-stars = []
+space_station = Space_station("xzplore/assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+smoke_particles = []
+foreground_stars = []
+background_stars = []
 
 while True:
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
     
-
     #pygame.draw.rect(screen,(255,0,0),(250/2,250/2,SCREEN_WIDTH-250,SCREEN_HEIGHT-250),5)
-
+    
     World_pos.dis_cal(mouse_pos,spaceship.rect.center)
     World_pos.x_offset,World_pos.y_offset = World_pos.direction(15,mouse_pos)
     
-    if len(stars) < 150:
-        stars.append(Stars(random.randint(50,SCREEN_WIDTH),random.randint(50,SCREEN_HEIGHT),random.uniform(0,5),random.uniform(0.1,15)/10,random.uniform(-.002,.002)),)
+    if len(background_stars) < 150:
+        background_stars.append(Stars(random.randint(50,SCREEN_WIDTH),random.randint(50,SCREEN_HEIGHT),random.uniform(0,4),random.uniform(1,5)/10,random.uniform(-.002,.002)),)
     
-    for star in stars:
+    for star in background_stars:
         star.draw()
-        star.reposition(random.randint(100,200),random.randint(50,90))
+        star.reposition(random.randint(100,200),random.randint(50,95))
 
-    particles.append(Rocket_smoke(spaceship.rect.center[0],spaceship.rect.center[1]))
-    for particle in particles[:]:
+
+    space_station.draw()
+    
+    smoke_particles.append(Rocket_smoke(spaceship.rect.center[0],spaceship.rect.center[1]))
+    for particle in smoke_particles[:]:
         particle.draw()
         particle.update()
-        particle.direction(25,mouse_pos)
+        particle.direction(World_pos.dir_offset,mouse_pos)
         if particle.size <=0 or particle.lifetime <= 0:
-            particles.remove(particle)
+            smoke_particles.remove(particle)
 
+
+    space_station.update(World_pos.dir_offset)
+    space_station.spin()
+    
+    
     spaceship.update()
     spaceship.point_towards(mouse_pos)
     spaceship.move(mouse_pos)
-    
+
+    if len(foreground_stars) < 150:
+        foreground_stars.append(Stars(random.randint(50,SCREEN_WIDTH),random.randint(50,SCREEN_HEIGHT),random.uniform(0,4),random.uniform(5,15)/10,random.uniform(-.002,.002)),)
+        
+    for star in foreground_stars:
+        star.draw()
+        star.reposition(random.randint(100,200),random.randint(50,90))
+
     Clock.tick(FPS)
     pygame.display.flip()
     def quit_game():
