@@ -4,7 +4,7 @@ pygame.init()
 import math
 import random
 import sys
-
+import time
 SCREEN_WIDTH = 950
 SCREEN_HEIGHT = 650
 FPS = 120
@@ -252,7 +252,6 @@ class Star():
         elif self.center[0] < -xylimit :
             self.x = (SCREEN_WIDTH + respawn_dis)
 
-
         if self.center[1] > SCREEN_HEIGHT + xylimit:
             self.y = -respawn_dis
         elif self.center[1] < -xylimit :
@@ -261,34 +260,41 @@ class Star():
 
 class Projectile():
     def __init__(self,position,size,speed,spread,color,transparency):
-        self.x = position[0]
-        self.y = position[1]
+        self.x = position[0] - size/2
+        self.y = position[1] - size/2
+        self.dir = Projectile.fire_projectile()
         self.surface = pygame.Surface((size,size ),pygame.SRCALPHA)
-        self.position = position
+        self.position = position 
         self.center =  (size/2,size/2)
-        self.target = 0
         self.speed = speed
         self.size = size
         self.spread = spread
         self.color = color 
         self.radius = size/2 - 11
         self.transparency = transparency
-        self.time_alive = 0
         
-    
     def draw(self):
         self.position = (self.x,self.y)
-        pygame.draw.circle(self.surface,(*self.color,self.transparency),self.center, (self.radius + 1.5))
+        pygame.draw.circle(self.surface,(*self.color,self.transparency),self.center, (self.radius + 2.5))
         pygame.draw.circle(self.surface,(self.color),self.center,self.radius)
         screen.blit(self.surface,self.position)
 
-    def update(self,mouse_pos):
-        self.time_alive +=1
+    def fire_projectile():
+        dx = pygame.mouse.get_pos()[0] - spaceship.position[0] 
+        dy = pygame.mouse.get_pos()[1] - spaceship.position[1]
+        dir = math.hypot(dx,dy)
+        dx /= dir 
+        dy /= dir
+        return (dx,dy) 
 
-   
+    def update(self):
+        self.x += (self.dir[0] + self.spread) * self.speed
+        self.y += (self.dir[1] + self.spread) * self.speed
 
 
-    
+        
+
+  
 
 '''
 class Planet():
@@ -318,7 +324,12 @@ smoke_particles = []
 foreground_stars = []
 background_stars = []
 
+
+
 while True:
+
+    
+
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
     
@@ -327,7 +338,7 @@ while True:
     World_pos.dis_cal(mouse_pos,spaceship.rect.center)
     World_pos.x_offset,World_pos.y_offset = World_pos.direction(15,mouse_pos)
     
-    if len(background_stars) < 150:
+    if len(background_stars) < 5:
         background_stars.append(Star(random.randint(50,SCREEN_WIDTH),random.randint(50,SCREEN_HEIGHT),random.uniform(0,4),random.uniform(1,5)/10,random.uniform(-.002,.002)),)
     
     for star in background_stars:
@@ -344,6 +355,7 @@ while True:
     space_station.spin()
 
     smoke_particles.append(Rocket_smoke(spaceship.rect.center[0],spaceship.rect.center[1]))
+
     for particle in smoke_particles[:]:
         particle.draw()
         particle.update()
@@ -351,12 +363,20 @@ while True:
         if particle.size <=0 or particle.lifetime <= 0:
             smoke_particles.remove(particle)
 
-    if len(projectiles) < 1:
-        projectiles.append(Projectile(spaceship.position,25,2,random.uniform(-1,1),(255,231,0),100))
-    for projectile in projectiles:
-        projectile.draw()
-        projectile.update(mouse_pos)
+    if pygame.mouse.get_pressed()[2]: 
+        if len(projectiles) < 6:
+            projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.05,.05),(255,231,0),100))
+        
     
+
+    for projectile in projectiles[:]:
+        projectile.draw()
+        projectile.update()
+        if projectile.x > SCREEN_WIDTH +30 or projectile.x < -30:
+            projectiles.remove(projectile)
+        elif projectile.y > SCREEN_HEIGHT +30 or projectile.y < -30:
+            projectiles.remove(projectile)
+
     spaceship.update()
     spaceship.point_towards(mouse_pos)
     spaceship.move(mouse_pos)
@@ -371,7 +391,6 @@ while True:
     crosshair.draw()
     crosshair.update(pygame.mouse.get_pos())
 
-    
 
     Clock.tick(FPS)
     pygame.display.flip()
