@@ -338,7 +338,7 @@ while True:
     World_pos.dis_cal(mouse_pos,spaceship.rect.center)
     World_pos.x_offset,World_pos.y_offset = World_pos.direction(15,mouse_pos)
     
-    if len(background_stars) < 5:
+    if len(background_stars) < 150:
         background_stars.append(Star(random.randint(50,SCREEN_WIDTH),random.randint(50,SCREEN_HEIGHT),random.uniform(0,4),random.uniform(1,5)/10,random.uniform(-.002,.002)),)
     
     for star in background_stars:

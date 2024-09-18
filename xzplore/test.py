@@ -1,87 +1,100 @@
 import pygame
-import sys
 import math
 import random
+import sys
+
 # Initialize Pygame
 pygame.init()
-
-# Set up display
+clock = pygame.time.Clock()
+# Set up the display
 width, height = 800, 600
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Glowing Circle Example')
+window = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Basic Pygame Window")
+
+# Set a color
+background_color = (255, 255, 255)  # White
+
+val1 = 0 
+val2 = 0 
+val3 = 0
+x = 0 
+y = 0
+radius = 50 + math.pi **2
+size  = 15
 
 
-class Circle():
-    def __init__(self,position,size,color,circle_radius,transparency) :
-        self.position = position
-        self.surface = pygame.Surface((size,size),pygame.SRCALPHA)
+
+class Particle():
+    def __init__(self,x,y,speed,size):
+        self.x = x 
+        self.y = y 
+        self.positon = (x,y)
+        self.x_max = self.x *-1
+        self.speed = speed
+        self.color1 = (255, 253, 208)
+        self.color2 = (211, 211, 211)
+        self.colors = [self.color1,self.color2]
+        self.color = random.choice(self.colors)
         self.size = size
-        self.center = (size/2,size/2)
-        self.color = color 
-        self.circle_radius = circle_radius
-        self.glow_radius = circle_radius + 4
-        self.transparency = transparency
-        self.time = 0
-        self.light_change = 0
-    
-    def blink(self):
-        self.time +=.001
-        self.light_change = 10* math.sin(2*math.pi + 1 *self.time) + 300
-        return self.light_change
+        print()
 
     def draw(self):
-        pygame.draw.circle(self.surface,(*self.color,self.transparency),self.center,self.glow_radius)
-        pygame.draw.circle(self.surface,self.color,self.center,self.circle_radius)
-        screen.blit(self.surface,(self.position[0],Circle.blink(self)))
+        pygame.draw.circle(window,self.color,(self.x+300,self.y+300),self.size)
 
+    def update(self):
+        self.x += self.speed
+        if self.x > self.x_max:
+            self.x = self.positon[0]    
 
-        
-# Function to create a glowing circle surface
-def create_glowing_circle():
-    # Create a surface with per-pixel alpha
-    size = 50
-    surface = pygame.Surface((size,size), pygame.SRCALPHA)
-    center = (size/2,size/2)
-    alpha = int(20)
-    pygame.draw.circle(surface, (*(255,255,255), alpha), (center), 20 )
-    pygame.draw.circle(surface, (255,255,255), center, 5)
-    return surface
-    
-
-# Define colors and parameters
-
+        self.y += z  
 
 particles = []
-# Create glowing circle surface
-glowing_circle = create_glowing_circle()
-x= 0
+
 # Main loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            running = False 
+    
+    window.fill((0,0,0))
 
 
+    val1 +=10
+    val2 +=10
+    val3 +=0.02
+
+    x = radius * math.sin(val1)
+    y = radius * math.cos(val2)
+    up = math.sin(val1)
+
+    z = 10 * math.sin(val3)/1.1
+    print(round(x),round(y))
+    #pygame.draw.circle(window,(255,255,255),(300,300),110,1)
+    #pygame.draw.circle(window,(255,0,0),(x+300,y+300),size)
+    #pygame.draw.circle(window,(0,0,255),(x+300,300),size)
+    pygame.draw.circle(window,(0,255,0),(300,z+300),size)
     
 
     
-    # Fill the screen with black
-    screen.fill((0, 0, 0))
+    if len(particles) < 12000:
+        if x < 0:
+            particles.append(Particle(x ,y,1,random.uniform(1,1)))
 
-    if len(particles) < 15:
-        particles.append(Circle((random.randint(0,width),random.randint(0,height)),random.randint(20,30),(255,255,255),5,50))
-
-    for particle in particles:
-        particle.draw()
-        
-    screen.blit(glowing_circle,(x,300))
+    for part in particles:
+        part.draw()
+        part.update()
+       
+ 
 
 
-    
-
+    # Fill the background
     
 
     # Update the display
     pygame.display.flip()
+    clock.tick(60)
+
+# Quit Pygame
+pygame.quit()
+sys.exit()
