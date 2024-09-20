@@ -5,6 +5,7 @@ import math
 import random
 import sys
 import time
+
 SCREEN_WIDTH = 950
 SCREEN_HEIGHT = 650
 FPS = 120
@@ -18,6 +19,8 @@ class World_pos():
     world_startY = SCREEN_HEIGHT/2
 
     dir_offset = 25
+
+    offset_distance = 45
 
     def dis_cal(mouse_pos,spaceship):
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship[1])**2+(mouse_pos[0]-spaceship[0])**2))
@@ -117,7 +120,7 @@ class Space_station(pygame.sprite.Sprite):
     def update(self,angle):
 
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
-        if mtos_dis > 60:
+        if mtos_dis > World_pos.offset_distance:
             self.velocity = spaceship.acceleration  +0.4
         elif pygame.mouse.get_pressed()[0]:
             self.velocity = spaceship.acceleration  
@@ -218,7 +221,7 @@ class Star():
         offset = (self.layer + spaceship.acceleration) 
         #print(dis)
 
-        if dis < 100:
+        if dis < World_pos.offset_distance:
             offset -=dis/100
 
         if (mouse_pos[0] - spaceship.position[0]) > angle:
@@ -257,7 +260,6 @@ class Star():
         elif self.center[1] < -xylimit :
             self.y = (SCREEN_HEIGHT + respawn_dis)
 #needs to be changed to have glow 
-
 class Projectile():
     def __init__(self,position,size,speed,spread,color,transparency):
         self.x = position[0] - size/2
@@ -291,40 +293,13 @@ class Projectile():
         self.x += (self.dir[0] + self.spread) * self.speed
         self.y += (self.dir[1] + self.spread) * self.speed
 
-
-        
-
-  
-
-'''
-class Planet():
-    def __init__(self,position,size,color,radius,transparency):
-        self.position = position
-        self.surf = pygame.Surface((size,size),pygame.SRCALPHA)
-        self.color = color
-        self.radius = radius
-        self.transparency = transparency    
-    
-    def draw(self):
-        pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet_rec.center),self.radius)
-        screen.blit(self.surf,self.position)
-
-
-circle = Planet((0,0),1500,(0,223,135),720/2,20)
-planet = pygame.transform.smoothscale(pygame.image.load("assets\green_planet.png"),(800,800))
-planet_rec = planet.get_rect(center=(400,400))
-'''
-
-
 crosshair = Crosshair(2,(170,0,0))
-spaceship = Spaceship("assets\spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+spaceship = Spaceship("assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 projectiles = []
-space_station = Space_station("assets\spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+space_station = Space_station("assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
 foreground_stars = []
 background_stars = []
-
-
 
 while True:
 
@@ -366,8 +341,6 @@ while True:
     if pygame.mouse.get_pressed()[2]: 
         if len(projectiles) < 6:
             projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.05,.05),(255,231,0),100))
-        
-    
 
     for projectile in projectiles[:]:
         projectile.draw()
