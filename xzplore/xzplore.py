@@ -273,6 +273,7 @@ class Star():
             self.y = (SCREEN_HEIGHT + respawn_dis)
 
 class Projectile():
+    projectile_delay = 100
     def __init__(self,position,size,speed,spread,color,transparency):
         self.x = position[0] - size/2
         self.y = position[1] - size/2
@@ -307,12 +308,29 @@ class Projectile():
         self.y += (self.dir[1] + self.spread) * self.speed
 
 
+class Parasite():
+    def __init__(self,x,y,image,size,speed):
+        self.x = x
+        self.y = y
+        self.position = (self.x,self,y)
+        self.image = image
+        self.surface = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(size,size))
+        self.rect = self.surface.get_rect(center=(100,100))
+        self.dir = (0,0)
+        self.size = size
+        self.speed = speed
 
-
-
-
-
-
+    def update(self):
+        dx = spaceship.position[0] - self.x
+        dy = spaceship.position[1] - self.y
+        dir = math.hypot(dx,dy)
+        dx /= dir
+        dy /= dir
+        self.x += dx * .7
+        self.y += dy * .7
+        screen.blit(self.surface,(self.x,self.y))
+        
+        
 '''
 class Planet():
     def __init__(self,position,size,color,radius,transparency):
@@ -339,7 +357,8 @@ space_station = Space_station("assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HE
 smoke_particles = []
 foreground_stars = []
 background_stars = []
-projectile_delay = 100
+parasites = []
+
 while True:
 
     screen.fill(BLACK)
@@ -375,13 +394,13 @@ while True:
         if particle.size <=0 or particle.lifetime <= 0:
             smoke_particles.remove(particle)
 
-    projectile_delay +=1 
+    Projectile.projectile_delay +=1 
 
-    if projectile_delay > 40:
+    if Projectile.projectile_delay > 30:
         if pygame.mouse.get_pressed()[2]:
             for i in range(2):
-                projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.02,.02),(255,231,0),100))
-            projectile_delay = 0
+                projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.03,.03),(255,231,0),100))
+            Projectile.projectile_delay = 0
 
 
     for projectile in projectiles[:]:
@@ -392,9 +411,17 @@ while True:
         elif projectile.y > SCREEN_HEIGHT +30 or projectile.y < -30:
             projectiles.remove(projectile)
 
+
     spaceship.update()
     spaceship.point_towards(mouse_pos)
     spaceship.move(mouse_pos)
+
+    if len(parasites) < 2:
+        parasites.append(Parasite(200,200,"assets/parasite1.png",20,2))
+    
+    for parasite in parasites:
+        parasite.update()
+        
 
     if len(foreground_stars) < 150:
         foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
