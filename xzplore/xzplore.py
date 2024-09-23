@@ -229,7 +229,7 @@ class Star():
         #print(dis)
 
         if dis < World_pos.offset_distance:
-            offset -=dis/100
+            offset -=1
 
         if (mouse_pos[0] - spaceship.position[0]) > angle:
             dx = -offset 
@@ -321,14 +321,15 @@ class Parasite():
         self.speed = speed
 
     def update(self):
-        dx = spaceship.position[0] - self.x
-        dy = spaceship.position[1] - self.y
+        dx = spaceship.position[0] - self.x + random.randint(-100,100)
+        dy = spaceship.position[1] - self.y + random.randint(-100,100)
         dir = math.hypot(dx,dy)
         dx /= dir
         dy /= dir
-        self.x += dx * .7
-        self.y += dy * .7
+        self.x += dx * self.speed/10 
+        self.y += dy * self.speed/10 
         screen.blit(self.surface,(self.x,self.y))
+  
         
         
 '''
@@ -416,11 +417,14 @@ while True:
     spaceship.point_towards(mouse_pos)
     spaceship.move(mouse_pos)
 
-    if len(parasites) < 2:
-        parasites.append(Parasite(200,200,"assets/parasite1.png",20,2))
+    if len(parasites) < 30:
+        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets/parasite1.png",20,random.uniform(1,10)))
     
     for parasite in parasites:
         parasite.update()
+    
+        if parasite.rect.collidepoint():
+            print("collide")
         
 
     if len(foreground_stars) < 150:
