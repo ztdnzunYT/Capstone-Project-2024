@@ -278,7 +278,8 @@ class Projectile():
         self.x = position[0] - size/2
         self.y = position[1] - size/2
         self.dir = Projectile.fire_projectile()
-        self.surface = pygame.Surface((size,size ),pygame.SRCALPHA)
+        self.surface = pygame.Surface((size,size),pygame.SRCALPHA)
+        self.rect = self.surface.get_rect()
         self.position = position 
         self.center =  (size/2,size/2)
         self.speed = speed
@@ -315,7 +316,7 @@ class Parasite():
         self.position = (self.x,self,y)
         self.image = image
         self.surface = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(size,size))
-        self.rect = self.surface.get_rect(center=(100,100))
+        self.rect = self.surface.get_rect()
         self.dir = (0,0)
         self.size = size
         self.speed = speed
@@ -404,7 +405,7 @@ while True:
             Projectile.projectile_delay = 0
 
 
-    for projectile in projectiles[:]:
+    for projectile in projectiles:
         projectile.draw()
         projectile.update()
         if projectile.x > SCREEN_WIDTH +30 or projectile.x < -30:
@@ -422,10 +423,16 @@ while True:
     
     for parasite in parasites:
         parasite.update()
-    
-        if parasite.rect.collidepoint():
-            print("collide")
         
+    '''
+    for projectile in projectiles:
+        if pygame.Rect.colliderect(parasite.rect,projectile.rect):
+            if parasite in parasites:
+                parasites.remove(parasite)
+            else:
+                pass
+    '''
+
 
     if len(foreground_stars) < 150:
         foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
@@ -446,4 +453,3 @@ while True:
                 pygame.quit()
                 sys.exit()
     quit_game()
-
