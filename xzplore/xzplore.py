@@ -19,8 +19,8 @@ class World_pos():
     world_startY = SCREEN_HEIGHT/2
 
     dir_offset = 25
-
     offset_distance = 45
+    movement_amount = 60 
 
     def dis_calc(mouse_pos,spaceship):
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship[1])**2+(mouse_pos[0]-spaceship[0])**2))
@@ -30,7 +30,7 @@ class World_pos():
     y_offset = .1
 
     def direction(angle,mouse_pos):
-        if World_pos.dis_calc(mouse_pos,spaceship.position) > 50 :
+        if World_pos.dis_calc(mouse_pos,spaceship.position) > World_pos.movement_amount :
             if (mouse_pos[0] - spaceship.position[0]) > -angle:
                 x = (spaceship.acceleration * -1)
             elif (mouse_pos[0] - spaceship.position[0]) < angle:
@@ -86,7 +86,7 @@ class Spaceship(pygame.sprite.Sprite):
         dis = math.sqrt((pygame.mouse.get_pos()[1] - spaceship.position[1])**2+(pygame.mouse.get_pos()[0] -spaceship.position[0])**2 )
         self.dir = dir
         
-        if dir.length() > 60:
+        if dir.length() > World_pos.movement_amount:
             dir = dir.normalize()
             self.position += dir * self.acceleration
             self.rect.center = self.position
@@ -322,19 +322,44 @@ class Parasite():
         self.size = size
         self.speed = speed
 
-    def update(self):
-        dx = spaceship.position[0] - self.x + random.randint(-100,100)
+    def update(self,angle):
+        dis = math.sqrt((pygame.mouse.get_pos()[1]-spaceship.position[1])**2 + (pygame.mouse.get_pos()[0] - spaceship.position[0])**2)
+        
+        if  dis > World_pos.offset_distance:
+            offset = spaceship.acceleration
+        else:
+            offset = 0
+
+        if World_pos.offset_distance > 60:
+            offset -=1
+
+        if (mouse_pos[0] - spaceship.position[0]) > angle:
+            offsetx = -offset 
+        elif (mouse_pos[0] - spaceship.position[0]) < -angle:
+            offsetx = offset
+        else:
+            offsetx = 0
+
+
+        if (mouse_pos[1] - spaceship.position[1]) > angle:
+            offsety = -offset
+        elif (mouse_pos[1] - spaceship.position[1]) < -angle:
+            offsety = offset
+        else:
+            offsety = 0
+
+        dx = spaceship.position[0] - self.x + random.randint(-100,100) 
         dy = spaceship.position[1] - self.y + random.randint(-100,100)
         dir = math.hypot(dx,dy)
         dx /= dir
         dy /= dir
         self.x += dx * self.speed/10 
         self.y += dy * self.speed/10   
+        self.x += offsetx
+        self.y += offsety
         self.rect.center = self.x,self.y
         screen.blit(self.surface,(self.rect))
   
-        
-        
 '''
 class Planet():
     def __init__(self,position,size,color,radius,transparency):
@@ -355,9 +380,9 @@ planet_rec = planet.get_rect(center=(400,400))
 '''
 
 crosshair = Crosshair(2,(170,0,0))
-spaceship = Spaceship("assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+spaceship = Spaceship("xzplore/assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 projectiles = []
-space_station = Space_station("assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+space_station = Space_station("xzplore/assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
 foreground_stars = []
 background_stars = []
@@ -400,12 +425,11 @@ while True:
     
     Projectile.projectile_delay +=1 
 
-    if Projectile.projectile_delay > 30:
+    if Projectile.projectile_delay > 10:
         if pygame.mouse.get_pressed()[2]:
             for i in range(2):
                 projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.03,.03),(255,231,0),100))
             Projectile.projectile_delay = 0
-
 
     for projectile in projectiles[:]:
         projectile.draw()
@@ -420,19 +444,16 @@ while True:
     spaceship.move(mouse_pos)
 
     if len(parasites) < 30:
-        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets/parasite1.png",20,random.uniform(1,10)))
+        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"xzplore/assets/parasite1.png",20,random.uniform(1,10)))
     for parasite in parasites:
-        parasite.update()
+        parasite.update(World_pos.dir_offset)
         for projectile in projectiles:
             if pygame.Rect.colliderect(parasite.rect,projectile.rect):
                 try:
                     projectiles.remove(projectile)
                     parasites.remove(parasite)
-                    
                 except:
                     pass
-
-
 
     if len(foreground_stars) < 150:
         foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
