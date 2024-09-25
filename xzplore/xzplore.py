@@ -278,7 +278,7 @@ class Projectile():
         self.x = position[0] - size/2
         self.y = position[1] - size/2
         self.dir = Projectile.fire_projectile()
-        self.surface = pygame.Surface((size,size),pygame.SRCALPHA)
+        self.surface = pygame.Surface((size,size ),pygame.SRCALPHA)
         self.rect = self.surface.get_rect()
         self.position = position 
         self.center =  (size/2,size/2)
@@ -305,6 +305,7 @@ class Projectile():
         return (dx,dy) 
 
     def update(self):
+        self.rect.center = self.x,self.y
         self.x += (self.dir[0] + self.spread) * self.speed
         self.y += (self.dir[1] + self.spread) * self.speed
 
@@ -328,8 +329,9 @@ class Parasite():
         dx /= dir
         dy /= dir
         self.x += dx * self.speed/10 
-        self.y += dy * self.speed/10 
-        screen.blit(self.surface,(self.x,self.y))
+        self.y += dy * self.speed/10   
+        self.rect.center = self.x,self.y
+        screen.blit(self.surface,(self.rect))
   
         
         
@@ -382,7 +384,6 @@ while True:
     #circle.draw()
     #screen.blit(planet,planet_rec)
 
-
     space_station.draw()
     space_station.update(World_pos.dir_offset)
     space_station.spin()
@@ -396,6 +397,7 @@ while True:
         if particle.size <=0 or particle.lifetime <= 0:
             smoke_particles.remove(particle)
 
+    
     Projectile.projectile_delay +=1 
 
     if Projectile.projectile_delay > 30:
@@ -405,33 +407,31 @@ while True:
             Projectile.projectile_delay = 0
 
 
-    for projectile in projectiles:
+    for projectile in projectiles[:]:
         projectile.draw()
         projectile.update()
         if projectile.x > SCREEN_WIDTH +30 or projectile.x < -30:
             projectiles.remove(projectile)
         elif projectile.y > SCREEN_HEIGHT +30 or projectile.y < -30:
             projectiles.remove(projectile)
-
-
+        
     spaceship.update()
     spaceship.point_towards(mouse_pos)
     spaceship.move(mouse_pos)
 
     if len(parasites) < 30:
         parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets/parasite1.png",20,random.uniform(1,10)))
-    
     for parasite in parasites:
         parasite.update()
-        
-    '''
-    for projectile in projectiles:
-        if pygame.Rect.colliderect(parasite.rect,projectile.rect):
-            if parasite in parasites:
-                parasites.remove(parasite)
-            else:
-                pass
-    '''
+        for projectile in projectiles:
+            if pygame.Rect.colliderect(parasite.rect,projectile.rect):
+                try:
+                    projectiles.remove(projectile)
+                    parasites.remove(parasite)
+                    
+                except:
+                    pass
+
 
 
     if len(foreground_stars) < 150:
@@ -453,3 +453,4 @@ while True:
                 pygame.quit()
                 sys.exit()
     quit_game()
+
