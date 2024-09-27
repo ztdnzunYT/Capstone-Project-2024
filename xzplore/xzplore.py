@@ -8,7 +8,7 @@ import time
 
 SCREEN_WIDTH = 950
 SCREEN_HEIGHT = 650
-FPS = 120
+FPS = 100
 BLACK  = (0,0,0)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
 pygame.mouse.set_visible(False)
@@ -289,7 +289,6 @@ class Projectile():
         self.radius = size/2 - 11
         self.transparency = transparency
         
-        
     def draw(self):
         self.position = (self.x,self.y)
         pygame.draw.circle(self.surface,(*self.color,self.transparency),self.center, (self.radius + 2.5))
@@ -310,6 +309,28 @@ class Projectile():
         self.y += (self.dir[1] + self.spread) * self.speed
 
 
+class Explosion_particles():
+    def __init__(self,collision_pos,explosion_size,explosion_life,explosion_dir):
+        self.collision_pos = collision_pos
+        self.x = self.collision_pos[0]
+        self.y = self.collision_pos[1]
+        self.explosion_size = explosion_size 
+        self.explosion_colors = [(168,87,41),(120,6,6)]
+        self.explosion_dir = explosion_dir
+        self.explosion_life = random.randint(explosion_life,explosion_life + 20)
+
+    def draw_explosion(self):
+        pygame.draw.circle(screen,self.explosion_colors[1],(self.x,self.y),self.explosion_size)
+
+    def update(self):
+        self.x += self.explosion_dir[0]
+        self.y += self.explosion_dir[1]
+        self.explosion_life -= 0.2
+        for explosion_particle in explosion_praticles:
+            if explosion_particle.explosion_life < 0:
+                explosion_praticles.remove(explosion_particle)
+
+    
 class Parasite():
     def __init__(self,x,y,image,size,speed):
         self.x = x
@@ -380,9 +401,10 @@ planet_rec = planet.get_rect(center=(400,400))
 '''
 
 crosshair = Crosshair(2,(170,0,0))
-spaceship = Spaceship("xzplore/assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+spaceship = Spaceship("assets\spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 projectiles = []
-space_station = Space_station("xzplore/assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+explosion_praticles = []
+space_station = Space_station("assets\spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
 foreground_stars = []
 background_stars = []
@@ -427,7 +449,7 @@ while True:
 
     if Projectile.projectile_delay > 10:
         if pygame.mouse.get_pressed()[2]:
-            for i in range(2):
+            for projectile_num in range(2):
                 projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.03,.03),(255,231,0),100))
             Projectile.projectile_delay = 0
 
@@ -444,16 +466,25 @@ while True:
     spaceship.move(mouse_pos)
 
     if len(parasites) < 30:
-        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"xzplore/assets/parasite1.png",20,random.uniform(1,10)))
+        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets\parasite1.png",20,random.uniform(1,10)))
     for parasite in parasites:
         parasite.update(World_pos.dir_offset)
         for projectile in projectiles:
             if pygame.Rect.colliderect(parasite.rect,projectile.rect):
+                for explosion_particle_num in range(random.randint(5,8)):
+                    explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,2.5),70,[random.uniform(-0.5,0.5),random.uniform(-0.2,0.2)]))
                 try:
                     projectiles.remove(projectile)
                     parasites.remove(parasite)
                 except:
                     pass
+
+    for explosion in explosion_praticles:
+        explosion.draw_explosion()
+        explosion.update()
+
+
+
 
     if len(foreground_stars) < 150:
         foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
@@ -474,4 +505,3 @@ while True:
                 pygame.quit()
                 sys.exit()
     quit_game()
-
