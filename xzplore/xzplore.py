@@ -472,7 +472,7 @@ while True:
         for projectile in projectiles:
             if pygame.Rect.colliderect(parasite.rect,projectile.rect):
                 for explosion_particle_num in range(random.randint(5,8)):
-                    explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,2.5),70,[random.uniform(-0.5,0.5),random.uniform(-0.2,0.2)]))
+                    explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,2.5),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
                 try:
                     projectiles.remove(projectile)
                     parasites.remove(parasite)
