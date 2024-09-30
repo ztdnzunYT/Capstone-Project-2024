@@ -108,7 +108,7 @@ while running:
     #print( (pygame.mouse.get_pos()[0] - width/2)/100 , (pygame.mouse.get_pos()[1] - height/3 )/100)
     
     
-    window.blit(surf,rect)
+
     if len(particles) < 5000:
         if x < 0:
             particles.append(Particle(x ,y,random.uniform(0,.3),random.uniform(1,2)))
