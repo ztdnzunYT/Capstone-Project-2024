@@ -6,8 +6,8 @@ import random
 import sys
 import time
 
-SCREEN_WIDTH = 950
-SCREEN_HEIGHT = 650
+SCREEN_WIDTH = 1200#950
+SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
@@ -51,18 +51,51 @@ class World_pos():
 
         return (dx,dy)
 
-
 class Crosshair():
-    def __init__(self,size,color):
-        self.center = (0,0)
+    def __init__(self,x,y,size,image):
+        self.x = x
+        self.y = y 
         self.size = size
-        self.color = color
-
+        self.surface = pygame.surface.Surface((self.size,self.size),pygame.SRCALPHA)
+        self.surface.set_alpha(0)
+        self.original_image = image
+        self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(self.size,self.size))
+        self.rect = self.image.get_rect(center=(self.size/2,self.size/2))
+        self.angle = 0 
+        self.rotation_amount = 0
+        self.rotated_image = pygame.transform.rotate(self.image,self.angle)
+        self.rotated_rect = self.rotated_image.get_rect(center=(self.size/2,self.size/2))
+    
     def update(self,mouse):
-        self.center = (mouse[0],mouse[1])
+        self.x = mouse[0]
+        self.y = mouse[1]
+        self.rect.center = (mouse[0],mouse[1])
+        self.image = pygame.transform.smoothscale(pygame.image.load(self.original_image).convert_alpha(),(self.size,self.size))
+    
+    def rotate(self):
+        if (pygame.mouse.get_pressed()[2]):
+            self.angle = (self.angle - self.rotation_amount) % 360
+            self.rotation_amount +=0.1
+            self.rotation_amount = min(self.rotation_amount,15)
+            self.size = min(self.size + self.rotation_amount,35)
+        else:
+            self.angle = (self.angle - self.rotation_amount) % 360
+            self.rotation_amount -=0.2
+            self.rotation_amount = max(self.rotation_amount,0)
+            self.size = max(self.size - self.rotation_amount,30)
+
+        self.rotated_image = pygame.transform.rotate(self.image,self.angle)
+        self.rotated_rect = self.rotated_image.get_rect(center=(self.size,self.size))
+        self.rotated_rect.center = (self.x,self.y)
+        
        
     def draw(self): 
-        pygame.draw.rect(screen,self.color,(self.center[0],self.center[1],3,3),self.size)
+        screen.blit(self.surface,self.rect)
+        screen.blit(self.rotated_image,self.rotated_rect)
+        Crosshair.rotate(self)
+        
+        
+        #pygame.draw.rect(screen,(255,0,0),(self.x,self.y,3,3),self.size)
 
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self,image,x,y,size):
@@ -315,7 +348,6 @@ class Projectile():
         self.x += (self.dir[0] + self.spread) * self.speed
         self.y += (self.dir[1] + self.spread) * self.speed
 
-
 class Explosion_particles():
     def __init__(self,collision_pos,explosion_size,explosion_life,explosion_dir):
         self.collision_pos = collision_pos
@@ -341,7 +373,6 @@ class Explosion_particles():
             if explosion_particle.explosion_life < 0:
                 explosion_praticles.remove(explosion_particle)
 
-    
 class Parasite():
     def __init__(self,x,y,image,size,speed):
         self.x = x
@@ -378,7 +409,6 @@ class Parasite():
             offsety = offset
         else:
             offsety = 0
-        
 
         dx = spaceship.position[0] - self.x + random.randint(-100,100) 
         dy = spaceship.position[1] - self.y + random.randint(-100,100)
@@ -392,7 +422,6 @@ class Parasite():
         self.rect.center = self.x,self.y
         screen.blit(self.surface,(self.rect))
   
-
 class Planet():
     def __init__(self,position,image,size,color,radius,transparency):
         self.position = position 
@@ -415,25 +444,20 @@ class Planet():
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
-
-planet = Planet((3000,-1000),"assets/desert_planet.png",2000,(0,223,135),720/2,20)
-crosshair = Crosshair(2,(170,0,0))
-spaceship = Spaceship("assets/spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
+planet = Planet((3000,-1000),"assets\desert_planet.png",1500,(0,223,135),720/2,20)
+crosshair = Crosshair(0,0,30,"assets\crosshair.png")
+spaceship = Spaceship("assets\spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
 projectiles = []
 explosion_praticles = []
-space_station = Space_station("assets/spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+space_station = Space_station("assets\spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
 foreground_stars = []
 background_stars = []
 parasites = []
 
-grid = pygame.transform.smoothscale(pygame.image.load("assets/grid.png").convert_alpha(),(250,150))
+grid = pygame.transform.smoothscale(pygame.image.load("assets\grid.png").convert_alpha(),(270,160))
 grid.set_alpha(70)
 grid_rect = grid.get_rect()
-grid_x = 0
-grid_y = 0
-x = 0
-y = 0 
 
 while True:
 
@@ -469,7 +493,7 @@ while True:
     if Projectile.projectile_delay > 20:
         if pygame.mouse.get_pressed()[2]:
             for projectile_num in range(2):
-                projectiles.append(Projectile(spaceship.position,25,4,random.uniform(-.03,.03),(255,231,0),100))
+                projectiles.append(Projectile(spaceship.position,25,4.5,random.uniform(-.03,.03),(255,231,0),100))
             Projectile.projectile_delay = 0
 
     for projectile in projectiles[:]:
@@ -485,7 +509,7 @@ while True:
     spaceship.move(mouse_pos)
 
     if len(parasites) < 50:
-        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets/parasite1.png",13,random.uniform(1,10)))
+        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets\parasite1.png",15,random.uniform(1,10)))
     for parasite in parasites:
         parasite.update(World_pos.dir_offset)
         for projectile in projectiles:
@@ -510,8 +534,7 @@ while True:
         star.reposition(random.randint(100,200),random.randint(10,90))
 
 
-    screen.blit(grid,(15,490))
-
+    screen.blit(grid,(15,SCREEN_HEIGHT-165))
     crosshair.draw()
     crosshair.update(pygame.mouse.get_pos())
 
