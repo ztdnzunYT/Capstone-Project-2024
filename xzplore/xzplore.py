@@ -5,6 +5,7 @@ import math
 import random
 import sys
 import time
+import os 
 
 SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
@@ -75,12 +76,12 @@ class Crosshair():
     def rotate(self):
         if (pygame.mouse.get_pressed()[2]):
             self.angle = (self.angle - self.rotation_amount) % 360
-            self.rotation_amount +=0.1
+            self.rotation_amount +=0.3
             self.rotation_amount = min(self.rotation_amount,15)
             self.size = min(self.size + self.rotation_amount,35)
         else:
             self.angle = (self.angle - self.rotation_amount) % 360
-            self.rotation_amount -=0.2
+            self.rotation_amount -=0.1
             self.rotation_amount = max(self.rotation_amount,0)
             self.size = max(self.size - self.rotation_amount,30)
 
@@ -156,6 +157,7 @@ class Space_station(pygame.sprite.Sprite):
         self.angle = 0
         self.rot_surf = self.surf
         self.velocity = 0
+        self.airlock = ((255,0,0),(self.x,self.y,10,10),1)
         
     def update(self,angle):
 
@@ -191,6 +193,7 @@ class Space_station(pygame.sprite.Sprite):
 
     def draw(self):
         screen.blit(self.rot_surf,self.rect)
+        pygame.draw.rect(screen,(255,255,255),(self.x,self.y,30,30),1)
 
 class Rocket_smoke():
     
@@ -444,22 +447,23 @@ class Planet():
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
-planet = Planet((3000,-1000),"assets\desert_planet.png",1500,(0,223,135),720/2,20)
-crosshair = Crosshair(0,0,30,"assets\crosshair.png")
-spaceship = Spaceship("assets\spaceship.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
+planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
+crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
+spaceship = Spaceship(os.path.join("assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
 projectiles = []
 explosion_praticles = []
-space_station = Space_station("assets\spacestation.png",SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+space_station = Space_station(os.path.join("assets","spacestation.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
 foreground_stars = []
 background_stars = []
 parasites = []
 
-grid = pygame.transform.smoothscale(pygame.image.load("assets\grid.png").convert_alpha(),(270,160))
+grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","grid.png")).convert_alpha(),(270,160))
 grid.set_alpha(70)
 grid_rect = grid.get_rect()
 
 while True:
+    
 
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
@@ -508,8 +512,8 @@ while True:
     spaceship.point_towards(mouse_pos)
     spaceship.move(mouse_pos)
 
-    if len(parasites) < 50:
-        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),"assets\parasite1.png",15,random.uniform(1,10)))
+    if len(parasites) < 50: #50
+        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
     for parasite in parasites:
         parasite.update(World_pos.dir_offset)
         for projectile in projectiles:
@@ -533,6 +537,9 @@ while True:
         star.draw()
         star.reposition(random.randint(100,200),random.randint(10,90))
 
+    if pygame.Rect.colliderect(spaceship.rect,space_station.rect):
+        #print("touching space station")
+        pass
 
     screen.blit(grid,(15,SCREEN_HEIGHT-165))
     crosshair.draw()
