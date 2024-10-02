@@ -11,10 +11,14 @@ SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=True)
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 Game_State = "Space"
+
+class Sounds():
+    lazer = pygame.mixer.Sound("laser-gun.mp3")
+    boom = pygame.mixer.Sound("boom.mp3")
 
 class World_pos():
     world_startX = SCREEN_WIDTH/2
@@ -158,8 +162,9 @@ class Space_station(pygame.sprite.Sprite):
         self.angle = 0
         self.rot_surf = self.surf
         self.velocity = 0
-        self.airlock = ((255,0,0),(self.x,self.y,10,10),1)
-        
+        self.airlock = None
+
+
     def update(self,angle):
 
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
@@ -195,7 +200,12 @@ class Space_station(pygame.sprite.Sprite):
 
     def draw(self):
         screen.blit(self.rot_surf,self.rect)
-        pygame.draw.rect(screen,(255,255,255),(self.x-100,self.y-100,200,200),1)
+        surf = pygame.Surface((200,200),pygame.SRCALPHA) 
+        self.airlock = surf.get_rect(center=(self.x,self.y))
+       
+        
+        
+
 
 class Rocket_smoke():
     
@@ -298,7 +308,7 @@ class Star():
 
     def blink(self):
         self.life_time+=0.02
-        transparency = round(50 * math.sin(self.life_time)+60) 
+        transparency = round(50 * math.sin(self.life_time)+self.transparency) 
         return transparency
 
     def draw(self):
@@ -457,11 +467,20 @@ class Transition_screen():
         self.transparecy = 200
         self.surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
         self.rect = self.surface.get_rect(center=(0,0))
-
-
-    def update(self):
+        self.detection = 0
+        
+    def update(self,spaceship):
         screen.blit(self.surface,(0,0))
         pygame.draw.rect(self.surface,(*self.color,self.transparecy),(0,0,SCREEN_WIDTH,SCREEN_HEIGHT))
+        mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
+        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
+            transition_screen.color = (0,0,0)
+            self.transparecy = min(self.transparecy +1,255)
+        else:
+            self.transparecy = max(self.transparecy -1.5,0)
+        if self.transparecy == 255:
+           global Game_State 
+           Game_State = "Spacestation"
 
 
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
@@ -490,7 +509,7 @@ while True:
             
         
         if len(background_stars) < 150:
-            background_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(0.1,1),random.uniform(-.002,.002)))
+            background_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),50,random.uniform(0.1,1),random.uniform(-.002,.002)))
         
         for star in background_stars:
             star.draw()
@@ -515,14 +534,18 @@ while True:
 
         Projectile.projectile_delay +=1 
 
-        if Projectile.projectile_delay > 20:
+        if Projectile.projectile_delay > 10:
             if pygame.mouse.get_pressed()[2]:
+                sounds = [Sounds.lazer.set_volume(0.1),Sounds.lazer.set_volume(0.4)]
+                random.choice(sounds)
+                Sounds.lazer.play()
                 for projectile_num in range(2):
-                    projectiles.append(Projectile(spaceship.position,25,4.5,random.uniform(-.03,.03),(255,231,0),100))
+                    projectiles.append(Projectile(spaceship.position,25,5,random.uniform(-.03,.03),(255,231,0),100))
                 Projectile.projectile_delay = 0
 
         for projectile in projectiles[:]:
             projectile.draw()
+            
             projectile.update()
             if projectile.x > SCREEN_WIDTH +30 or projectile.x < -30:
                 projectiles.remove(projectile)
@@ -533,17 +556,22 @@ while True:
         spaceship.point_towards(mouse_pos)
         spaceship.move(mouse_pos)
 
-        if len(parasites) < 0: #50
+        if len(parasites) < 50: #50
             parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
         for parasite in parasites:
             parasite.update(World_pos.dir_offset)
             for projectile in projectiles:
                 if pygame.Rect.colliderect(parasite.rect,projectile.rect):
+                    Sounds.boom.play()
                     for explosion_particle_num in range(random.randint(5,7)):
                         explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
                     try:
                         projectiles.remove(projectile)
                         parasites.remove(parasite)
+                        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) == False:
+                                
+                            transition_screen.color = (255,255,255)
+                            transition_screen.transparecy = random.randint(0,20)
                     except:
                         pass
 
@@ -552,7 +580,7 @@ while True:
             explosion.update()
 
         if len(foreground_stars) < 150:
-            foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
+            foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),50,random.uniform(5,15)/10,random.uniform(-.002,.002)))
             
         for star in foreground_stars:
             star.draw()
@@ -566,7 +594,9 @@ while True:
         crosshair.draw()
         crosshair.update(pygame.mouse.get_pos())
 
-    #transition_screen.update()
+    transition_screen.update(spaceship)
+    
+        
 
     Clock.tick(FPS)
     pygame.display.flip()
