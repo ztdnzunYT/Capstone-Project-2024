@@ -465,7 +465,7 @@ class Transition_screen():
         self.x = x
         self.y = y 
         self.color = color
-        self.transparecy = 200
+        self.transparecy = 150
         self.surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
         self.rect = self.surface.get_rect(center=(0,0))
         self.detection = 0
@@ -478,7 +478,7 @@ class Transition_screen():
             transition_screen.color = (0,0,0)
             self.transparecy = min(self.transparecy +1,255)
         else:
-            self.transparecy = max(self.transparecy -1.5,0)
+            self.transparecy = max(self.transparecy -1,0)
         if self.transparecy == 255:
            global Game_State 
            Game_State = "Spacestation"
