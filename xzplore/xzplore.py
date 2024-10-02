@@ -11,7 +11,7 @@ SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=True)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 Game_State = "Space"
@@ -536,7 +536,7 @@ while True:
 
         if Projectile.projectile_delay > 10:
             if pygame.mouse.get_pressed()[2]:
-                sounds = [Sounds.lazer.set_volume(0.1),Sounds.lazer.set_volume(0.4)]
+                sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.1)]
                 random.choice(sounds)
                 Sounds.lazer.play()
                 for projectile_num in range(2):
@@ -556,7 +556,7 @@ while True:
         spaceship.point_towards(mouse_pos)
         spaceship.move(mouse_pos)
 
-        if len(parasites) < 50: #50
+        if len(parasites) < 15: #50
             parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
         for parasite in parasites:
             parasite.update(World_pos.dir_offset)
