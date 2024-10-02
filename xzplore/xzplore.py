@@ -535,7 +535,7 @@ while True:
 
         Projectile.projectile_delay +=1 
 
-        if Projectile.projectile_delay > 10:
+        if Projectile.projectile_delay > 15:
             if pygame.mouse.get_pressed()[2]:
                 sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.01)]
                 random.choice(sounds)
@@ -571,7 +571,6 @@ while True:
                         projectiles.remove(projectile)
                         parasites.remove(parasite)
                         if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) == False:
-                                
                             transition_screen.color = (255,255,255)
                             transition_screen.transparecy = random.randint(0,20)
                     except:
