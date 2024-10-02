@@ -26,7 +26,8 @@ class World_pos():
 
     dir_offset = 25
     offset_distance = 45
-    movement_amount = 60 
+    movement_amount = 60
+    parasite1amount = 30 
 
     def dis_calc(mouse_pos,spaceship):
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship[1])**2+(mouse_pos[0]-spaceship[0])**2))
@@ -536,9 +537,9 @@ while True:
 
         if Projectile.projectile_delay > 10:
             if pygame.mouse.get_pressed()[2]:
-                sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.1)]
+                sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.01)]
                 random.choice(sounds)
-                Sounds.lazer.play()
+                Sounds.lazer.play(loops=0)
                 for projectile_num in range(2):
                     projectiles.append(Projectile(spaceship.position,25,5,random.uniform(-.03,.03),(255,231,0),100))
                 Projectile.projectile_delay = 0
@@ -556,12 +557,13 @@ while True:
         spaceship.point_towards(mouse_pos)
         spaceship.move(mouse_pos)
 
-        if len(parasites) < 15: #50
+        if len(parasites) < World_pos.parasite1amount: #50
             parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
         for parasite in parasites:
             parasite.update(World_pos.dir_offset)
             for projectile in projectiles:
                 if pygame.Rect.colliderect(parasite.rect,projectile.rect):
+                    Sounds.boom.set_volume(2)
                     Sounds.boom.play()
                     for explosion_particle_num in range(random.randint(5,7)):
                         explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
