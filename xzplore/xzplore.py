@@ -14,6 +14,7 @@ BLACK  = (0,0,0)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
+Game_State = "Space"
 
 class World_pos():
     world_startX = SCREEN_WIDTH/2
@@ -57,7 +58,7 @@ class Crosshair():
         self.x = x
         self.y = y 
         self.size = size
-        self.surface = pygame.surface.Surface((self.size,self.size),pygame.SRCALPHA)
+        self.surface = pygame.Surface((self.size,self.size),pygame.SRCALPHA)
         self.surface.set_alpha(0)
         self.original_image = image
         self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(self.size,self.size))
@@ -184,6 +185,7 @@ class Space_station(pygame.sprite.Sprite):
         
         self.x += dx
         self.y +=dy
+        
     
     def spin(self):
         self.angle +=1
@@ -193,7 +195,7 @@ class Space_station(pygame.sprite.Sprite):
 
     def draw(self):
         screen.blit(self.rot_surf,self.rect)
-        pygame.draw.rect(screen,(255,255,255),(self.x,self.y,30,30),1)
+        pygame.draw.rect(screen,(255,255,255),(self.x-100,self.y-100,200,200),1)
 
 class Rocket_smoke():
     
@@ -447,6 +449,21 @@ class Planet():
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
+class Transition_screen():
+    def __init__(self,x,y,color):
+        self.x = x
+        self.y = y 
+        self.color = color
+        self.transparecy = 200
+        self.surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
+        self.rect = self.surface.get_rect(center=(0,0))
+
+
+    def update(self):
+        screen.blit(self.surface,(0,0))
+        pygame.draw.rect(self.surface,(*self.color,self.transparecy),(0,0,SCREEN_WIDTH,SCREEN_HEIGHT))
+
+
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
 crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
 spaceship = Spaceship(os.path.join("assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
@@ -457,6 +474,7 @@ smoke_particles = []
 foreground_stars = []
 background_stars = []
 parasites = []
+transition_screen = Transition_screen(0,0,(0,0,0))
 
 grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","grid.png")).convert_alpha(),(270,160))
 grid.set_alpha(70)
@@ -467,84 +485,88 @@ while True:
 
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
-    
-    if len(background_stars) < 150:
-        background_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(0.1,1),random.uniform(-.002,.002)))
-    
-    for star in background_stars:
-        star.draw()
-        star.reposition(random.randint(100,200),random.randint(10,95))
 
-    #circle.draw()
-    planet.draw()
-    planet.update()
-
-    space_station.draw()
-    space_station.update(World_pos.dir_offset)
-    space_station.spin()
-
-    smoke_particles.append(Rocket_smoke(spaceship.rect.center[0],spaceship.rect.center[1]))
-
-    for particle in smoke_particles[:]:
-        particle.draw()
-        particle.update()
-        particle.direction(World_pos.dir_offset,mouse_pos)
-        if particle.size <= 0 or particle.lifetime <= 0:
-            smoke_particles.remove(particle)
-
-    Projectile.projectile_delay +=1 
-
-    if Projectile.projectile_delay > 20:
-        if pygame.mouse.get_pressed()[2]:
-            for projectile_num in range(2):
-                projectiles.append(Projectile(spaceship.position,25,4.5,random.uniform(-.03,.03),(255,231,0),100))
-            Projectile.projectile_delay = 0
-
-    for projectile in projectiles[:]:
-        projectile.draw()
-        projectile.update()
-        if projectile.x > SCREEN_WIDTH +30 or projectile.x < -30:
-            projectiles.remove(projectile)
-        elif projectile.y > SCREEN_HEIGHT +30 or projectile.y < -30:
-            projectiles.remove(projectile)
+    if Game_State == "Space":
+            
         
-    spaceship.update()
-    spaceship.point_towards(mouse_pos)
-    spaceship.move(mouse_pos)
-
-    if len(parasites) < 50: #50
-        parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
-    for parasite in parasites:
-        parasite.update(World_pos.dir_offset)
-        for projectile in projectiles:
-            if pygame.Rect.colliderect(parasite.rect,projectile.rect):
-                for explosion_particle_num in range(random.randint(5,7)):
-                    explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
-                try:
-                    projectiles.remove(projectile)
-                    parasites.remove(parasite)
-                except:
-                    pass
-
-    for explosion in explosion_praticles:
-        explosion.draw_explosion()
-        explosion.update()
-
-    if len(foreground_stars) < 150:
-        foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
+        if len(background_stars) < 150:
+            background_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(0.1,1),random.uniform(-.002,.002)))
         
-    for star in foreground_stars:
-        star.draw()
-        star.reposition(random.randint(100,200),random.randint(10,90))
+        for star in background_stars:
+            star.draw()
+            star.reposition(random.randint(100,200),random.randint(10,95))
 
-    if pygame.Rect.colliderect(spaceship.rect,space_station.rect):
-        #print("touching space station")
-        pass
+        #circle.draw()
+        planet.draw()
+        planet.update()
 
-    screen.blit(grid,(15,SCREEN_HEIGHT-165))
-    crosshair.draw()
-    crosshair.update(pygame.mouse.get_pos())
+        space_station.draw()
+        space_station.update(World_pos.dir_offset)
+        space_station.spin()
 
+        smoke_particles.append(Rocket_smoke(spaceship.rect.center[0],spaceship.rect.center[1]))
+
+        for particle in smoke_particles[:]:
+            particle.draw()
+            particle.update()
+            particle.direction(World_pos.dir_offset,mouse_pos)
+            if particle.size <= 0 or particle.lifetime <= 0:
+                smoke_particles.remove(particle)
+
+        Projectile.projectile_delay +=1 
+
+        if Projectile.projectile_delay > 20:
+            if pygame.mouse.get_pressed()[2]:
+                for projectile_num in range(2):
+                    projectiles.append(Projectile(spaceship.position,25,4.5,random.uniform(-.03,.03),(255,231,0),100))
+                Projectile.projectile_delay = 0
+
+        for projectile in projectiles[:]:
+            projectile.draw()
+            projectile.update()
+            if projectile.x > SCREEN_WIDTH +30 or projectile.x < -30:
+                projectiles.remove(projectile)
+            elif projectile.y > SCREEN_HEIGHT +30 or projectile.y < -30:
+                projectiles.remove(projectile)
+            
+        spaceship.update()
+        spaceship.point_towards(mouse_pos)
+        spaceship.move(mouse_pos)
+
+        if len(parasites) < 0: #50
+            parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
+        for parasite in parasites:
+            parasite.update(World_pos.dir_offset)
+            for projectile in projectiles:
+                if pygame.Rect.colliderect(parasite.rect,projectile.rect):
+                    for explosion_particle_num in range(random.randint(5,7)):
+                        explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
+                    try:
+                        projectiles.remove(projectile)
+                        parasites.remove(parasite)
+                    except:
+                        pass
+
+        for explosion in explosion_praticles:
+            explosion.draw_explosion()
+            explosion.update()
+
+        if len(foreground_stars) < 150:
+            foreground_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),120,random.uniform(5,15)/10,random.uniform(-.002,.002)))
+            
+        for star in foreground_stars:
+            star.draw()
+            star.reposition(random.randint(100,200),random.randint(10,90))
+
+        if pygame.Rect.colliderect(spaceship.rect,space_station.rect):
+            #print("touching space station")
+            pass
+
+        screen.blit(grid,(15,SCREEN_HEIGHT-170))
+        crosshair.draw()
+        crosshair.update(pygame.mouse.get_pos())
+
+    #transition_screen.update()
 
     Clock.tick(FPS)
     pygame.display.flip()
