@@ -17,8 +17,8 @@ Clock = pygame.time.Clock()
 Game_State = "Space"
 
 class Sounds():
-    lazer = pygame.mixer.Sound("laser-gun.mp3")
-    boom = pygame.mixer.Sound("boom.mp3")
+    lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.mp3"))
+    boom = pygame.mixer.Sound(os.path.join("sounds","boom.mp3"))
 
 class World_pos():
     world_startX = SCREEN_WIDTH/2
@@ -563,8 +563,8 @@ while True:
             parasite.update(World_pos.dir_offset)
             for projectile in projectiles:
                 if pygame.Rect.colliderect(parasite.rect,projectile.rect):
-                    Sounds.boom.set_volume(2)
-                    Sounds.boom.play()
+                    Sounds.boom.set_volume(.5)
+                    Sounds.boom.play(fade_ms=1)
                     for explosion_particle_num in range(random.randint(5,7)):
                         explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
                     try:
