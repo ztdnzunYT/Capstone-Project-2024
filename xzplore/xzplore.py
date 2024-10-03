@@ -27,7 +27,7 @@ class World_pos():
     dir_offset = 25
     offset_distance = 45
     movement_amount = 60
-    parasite1amount = 30 
+    parasite1amount = 20
 
     def dis_calc(mouse_pos,spaceship):
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship[1])**2+(mouse_pos[0]-spaceship[0])**2))
@@ -157,6 +157,8 @@ class Space_station(pygame.sprite.Sprite):
         self.image = image
         self.surf = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(500,500))
         self.rect = self.surf.get_rect()
+        self.spacestation_inside = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","inside_spacestation.png")),(1800,900))
+        self.spacestation_inside_rect = self.spacestation_inside.get_rect(center=(SCREEN_WIDTH/2,SCREEN_WIDTH/2-190))
         self.x = x
         self.y = y
         self.center = (self.x,self.y)
@@ -203,10 +205,6 @@ class Space_station(pygame.sprite.Sprite):
         screen.blit(self.rot_surf,self.rect)
         surf = pygame.Surface((200,200),pygame.SRCALPHA) 
         self.airlock = surf.get_rect(center=(self.x,self.y))
-       
-        
-        
-
 
 class Rocket_smoke():
     
@@ -279,7 +277,7 @@ class Star():
     def update(self,angle):
         dis = math.sqrt((pygame.mouse.get_pos()[1]-spaceship.position[1])**2 + (pygame.mouse.get_pos()[0] - spaceship.position[0])**2)
         if self.layer > 1:
-            offset = self.layer + spaceship.acceleration
+            offset = self.layer + spaceship.acceleration +.5
         else:
             offset = self.layer + .5
         #print(dis)
@@ -483,6 +481,9 @@ class Transition_screen():
            global Game_State 
            Game_State = "Spacestation"
 
+        if Game_State == "SpaceStation" : 
+            self.transparecy +=1
+
 
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
 crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
@@ -495,13 +496,11 @@ foreground_stars = []
 background_stars = []
 parasites = []
 transition_screen = Transition_screen(0,0,(0,0,0))
-
 grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","grid.png")).convert_alpha(),(270,160))
 grid.set_alpha(70)
 grid_rect = grid.get_rect()
 
 while True:
-    
 
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
@@ -537,7 +536,7 @@ while True:
 
         if Projectile.projectile_delay > 15:
             if pygame.mouse.get_pressed()[2]:
-                sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.01)]
+                sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.07)]
                 random.choice(sounds)
                 Sounds.lazer.play(loops=0)
                 for projectile_num in range(2):
@@ -563,8 +562,8 @@ while True:
             parasite.update(World_pos.dir_offset)
             for projectile in projectiles:
                 if pygame.Rect.colliderect(parasite.rect,projectile.rect):
-                    Sounds.boom.set_volume(.5)
-                    Sounds.boom.play(fade_ms=1)
+                    Sounds.boom.set_volume(10)
+                    Sounds.boom.play()
                     for explosion_particle_num in range(random.randint(5,7)):
                         explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
                     try:
@@ -595,8 +594,15 @@ while True:
         crosshair.draw()
         crosshair.update(pygame.mouse.get_pos())
 
+    #Game_State = "Spacestation"
+    #transition_screen.transparecy = 0
+
+    if Game_State == "Spacestation":
+        
+        screen.blit(space_station.spacestation_inside,space_station.spacestation_inside_rect)
+        pygame.draw.rect(screen,(255,214,164),(300,300,15,15))
+
     transition_screen.update(spaceship)
-    
         
 
     Clock.tick(FPS)
