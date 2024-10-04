@@ -1,6 +1,7 @@
 import pygame
 from pygame.sprite import Group
 pygame.init()
+pygame.mixer.init(buffer=2480)
 import math
 import random
 import sys
@@ -11,14 +12,16 @@ SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
+SPACESTATION_GREY = (50,50,50)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
-pygame.mouse.set_visible(False)
+pygame.mouse.set_visible(True)
 Clock = pygame.time.Clock()
 Game_State = "Space"
 
 class Sounds():
     lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.mp3"))
     boom = pygame.mixer.Sound(os.path.join("sounds","boom.mp3"))
+  
 
 class World_pos():
     world_startX = SCREEN_WIDTH/2
@@ -137,7 +140,6 @@ class Spaceship(pygame.sprite.Sprite):
             self.position += dir * self.acceleration
             self.rect.center = self.position
         
-        
         if pygame.mouse.get_pressed()[0]:
             self.acceleration +=0.01
         else:  
@@ -147,7 +149,7 @@ class Spaceship(pygame.sprite.Sprite):
             self.acceleration = self.max_speed
         elif self.acceleration < 0:
             self.acceleration = 0.0
-
+    
     def update(self):
         screen.blit(self.surf,self.rect) 
 
@@ -158,7 +160,7 @@ class Space_station(pygame.sprite.Sprite):
         self.surf = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(500,500))
         self.rect = self.surf.get_rect()
         self.spacestation_inside = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","inside_spacestation.png")),(1800,900))
-        self.spacestation_inside_rect = self.spacestation_inside.get_rect(center=(SCREEN_WIDTH/2,SCREEN_WIDTH/2-190))
+        self.spacestation_inside_rect = self.spacestation_inside.get_rect(center=(SCREEN_WIDTH/2+30,SCREEN_WIDTH/2-200))
         self.x = x
         self.y = y
         self.center = (self.x,self.y)
@@ -166,7 +168,7 @@ class Space_station(pygame.sprite.Sprite):
         self.rot_surf = self.surf
         self.velocity = 0
         self.airlock = None
-
+        self.move_amount = 1.5
 
     def update(self,angle):
 
@@ -192,8 +194,7 @@ class Space_station(pygame.sprite.Sprite):
             dy = 0
         
         self.x += dx
-        self.y +=dy
-        
+        self.y +=dy      
     
     def spin(self):
         self.angle +=1
@@ -205,6 +206,13 @@ class Space_station(pygame.sprite.Sprite):
         screen.blit(self.rot_surf,self.rect)
         surf = pygame.Surface((200,200),pygame.SRCALPHA) 
         self.airlock = surf.get_rect(center=(self.x,self.y))
+    
+    def move(self):
+        keys = pygame.key.get_pressed()
+        if Game_State == "Spacestation":
+            if keys[pygame.K_a]:
+                self.spacestation_inside_rect.x += self.move_amount
+            
 
 class Rocket_smoke():
     
@@ -484,7 +492,6 @@ class Transition_screen():
         if Game_State == "SpaceStation" : 
             self.transparecy +=1
 
-
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
 crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
 spaceship = Spaceship(os.path.join("assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
@@ -506,6 +513,8 @@ while True:
     mouse_pos = pygame.mouse.get_pos()
 
     if Game_State == "Space":
+        #Sounds.space_background_noise.play(loops=0) 
+        
             
         
         if len(background_stars) < 150:
@@ -594,16 +603,21 @@ while True:
         crosshair.draw()
         crosshair.update(pygame.mouse.get_pos())
 
-    #Game_State = "Spacestation"
-    #transition_screen.transparecy = 0
+    Game_State = "Spacestation"
+    transition_screen.transparecy = 0
 
     if Game_State == "Spacestation":
         
         screen.blit(space_station.spacestation_inside,space_station.spacestation_inside_rect)
-        pygame.draw.rect(screen,(255,214,164),(300,300,15,15))
+        pygame.draw.rect(screen,(255,214,164),(SCREEN_WIDTH/2,SCREEN_HEIGHT/2,15,15))
+        space_station.move()
 
     transition_screen.update(spaceship)
+    
         
+    pixel_color = screen.get_at((mouse_pos))
+    if pixel_color == BLACK:
+        print(SPACESTATION_GREY)
 
     Clock.tick(FPS)
     pygame.display.flip()
