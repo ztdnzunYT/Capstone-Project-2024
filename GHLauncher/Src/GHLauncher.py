@@ -1,6 +1,9 @@
 import dearpygui.dearpygui as dpg
 import platform 
 import os
+import pathlib
+import subprocess
+
 
 class globals:
     if platform.system() == "Darwin":
@@ -23,12 +26,15 @@ class Thumbnail_props:
         self.height = self.load_image[1]
         self.channels = self.load_image[2]
         self.data = self.load_image[3]
+
         
 thumbnails = []
-kart_shifters_thumbnail = Thumbnail_props("GHLauncher/Assets/Kart-Shifters-Poster-1.png","pic1","Kart Shifters")
-basketball_thumbnail = Thumbnail_props("GHLauncher/Assets/Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
-bbal_thumbnail = Thumbnail_props("GHLauncher/Assets/bball-thumbnail.png","pic","B-Ball")
-thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail])
+kart_shifters_thumbnail = Thumbnail_props("Kart-Shifters-Poster-1.png","pic1","Kart Shifters")
+basketball_thumbnail = Thumbnail_props("Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
+bbal_thumbnail = Thumbnail_props("bball-thumbnail.png","pic3","B-Ball")
+pickle_jump_thumbnail = Thumbnail_props("Pickle-jump.png","pic4","Pickle Jump")
+
+thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail,pickle_jump_thumbnail])
 
 dpg.set_global_font_scale(1.2)
 with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_HEIGHT,no_move=True,no_title_bar=True,no_resize=True,no_bring_to_front_on_focus=True) as background_window:
@@ -48,7 +54,9 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
             dpg.add_static_texture(width=thumbnail.width,height=thumbnail.height,default_value=thumbnail.data,tag=thumbnail.tag)
 
     def openApp(sender, app_data, user_data):
-        os.system(f"open {user_data}")
+        #subprocess.call(["C:/Users/348580/Download/Kart_shifters/Kart_shifters.exe"])
+        os.startfile(os.path.abspath("Kart_shifters.exe"))
+
 
     with dpg.child_window(label="WHAT'S NEW",pos=(220,0),tag="whats_new_window") as whats_new_window:
         dpg.add_spacer(height=20)
