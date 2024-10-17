@@ -10,4 +10,4 @@ Trailer : #Will send a youtube video of the gameplay trailer
 
 Author : ztdnzun  #will give you a picture of my profile picture
 
- 
+Game Name : Kart Shifters 
