@@ -10,4 +10,15 @@ Trailer : #Will send a youtube video of the gameplay trailer
 
 Author : ztdnzun  #will give you a picture of my profile picture
 
+#Extra Date published, Game size, SinglePlayer/Multiplayer, Game Genre
+
+
+
+
 Game Name : Kart Shifters 
+
+Description : Kart shifters is a small pocket go kart drifting game where you do just that. DRIFT!! 
+
+Author : ztdnzun 
+
+#Extra Date published, Game size, SinglePlayer/Multiplayer, Game Genre
