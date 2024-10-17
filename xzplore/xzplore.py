@@ -14,7 +14,7 @@ FPS = 120
 BLACK  = (0,0,0)
 SPACESTATION_GREY = (50,50,50)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
-pygame.mouse.set_visible(True)
+pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 Game_State = "Space"
 
@@ -212,7 +212,13 @@ class Space_station(pygame.sprite.Sprite):
         if Game_State == "Spacestation":
             if keys[pygame.K_a]:
                 self.spacestation_inside_rect.x += self.move_amount
-            
+            if keys[pygame.K_d]:
+                self.spacestation_inside_rect.x -= self.move_amount
+            if keys[pygame.K_w]:
+                self.spacestation_inside_rect.y += self.move_amount
+            if keys[pygame.K_s]:
+                self.spacestation_inside_rect.y -= self.move_amount    
+
 
 class Rocket_smoke():
     
@@ -480,17 +486,37 @@ class Transition_screen():
         screen.blit(self.surface,(0,0))
         pygame.draw.rect(self.surface,(*self.color,self.transparecy),(0,0,SCREEN_WIDTH,SCREEN_HEIGHT))
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
-        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
-            transition_screen.color = (0,0,0)
-            self.transparecy = min(self.transparecy +1,255)
-        else:
-            self.transparecy = max(self.transparecy -1,0)
-        if self.transparecy == 255:
-           global Game_State 
-           Game_State = "Spacestation"
+        global Game_State
+        self.detection +=1 
+        transition_screen.color = (0,0,0)
 
-        if Game_State == "SpaceStation" : 
-            self.transparecy +=1
+        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
+            if self.detection > 200:
+                self.transparecy = min(self.transparecy +1,255)
+            if self.detection > 0  and self.transparecy == 255:
+                Game_State = "Spacestation"   
+                space_station.spacestation_inside_rect.y = -85
+                self.detection = 0
+        else:
+            if Game_State == "Space":
+                self.transparecy = max(self.transparecy -1,0)
+    
+        if Game_State == "Spacestation":
+            if space_station.spacestation_inside_rect.y < -91:
+                self.detection +=1
+                if self.detection > 200:
+                    self.transparecy = min(self.transparecy +1,255)
+                if self.detection > 0  and self.transparecy == 255:
+                    Game_State = "Space"   
+            else:
+                self.transparecy = max(self.transparecy -1,0)
+
+        
+
+
+
+
+
 
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
 crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
@@ -508,7 +534,6 @@ grid.set_alpha(70)
 grid_rect = grid.get_rect()
 
 while True:
-
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
 
@@ -603,8 +628,8 @@ while True:
         crosshair.draw()
         crosshair.update(pygame.mouse.get_pos())
 
-    Game_State = "Spacestation"
-    transition_screen.transparecy = 0
+    #Game_State = "Spacestation"
+    #transition_screen.transparecy = 0
 
     if Game_State == "Spacestation":
         
@@ -615,10 +640,7 @@ while True:
     transition_screen.update(spaceship)
     
         
-    pixel_color = screen.get_at((mouse_pos))
-    if pixel_color == BLACK:
-        print(SPACESTATION_GREY)
-
+    
     Clock.tick(FPS)
     pygame.display.flip()
     def quit_game():
