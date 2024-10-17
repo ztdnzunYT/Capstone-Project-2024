@@ -12,8 +12,7 @@ Author : ztdnzun  #will give you a picture of my profile picture
 
 #Extra Date published, Game size, SinglePlayer/Multiplayer, Game Genre
 
-
-
+---------------------------------------------------------
 
 Game Name : Kart Shifters 
 
