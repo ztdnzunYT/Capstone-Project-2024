@@ -22,7 +22,6 @@ class Sounds():
     lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.mp3"))
     boom = pygame.mixer.Sound(os.path.join("sounds","boom.mp3"))
   
-
 class World_pos():
     world_startX = SCREEN_WIDTH/2
     world_startY = SCREEN_HEIGHT/2
@@ -218,7 +217,6 @@ class Space_station(pygame.sprite.Sprite):
                 self.spacestation_inside_rect.y += self.move_amount
             if keys[pygame.K_s]:
                 self.spacestation_inside_rect.y -= self.move_amount    
-
 
 class Rocket_smoke():
     
@@ -512,10 +510,6 @@ class Transition_screen():
                 self.transparecy = max(self.transparecy -1,0)
 
         
-
-
-
-
 
 
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
