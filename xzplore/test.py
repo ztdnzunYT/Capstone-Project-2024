@@ -16,15 +16,12 @@ RED = (255, 0, 0)
 
 
 class Tile():
-    def __init__(self,image,x,y):
-        self.image = os.path.join("assets","orange_planet_tile.png")
+    def __init__(self,image,x,y,size):
+        self.image = os.path.join("assets",image)
         self.surf = pygame.image.load(self.image).convert_alpha()
         self.rect = self.surf.get_rect()
 
-
-
-
-
+orange_tile = Tile("orange_planet_tile.png",0,0,32)
 
 
 running = True
@@ -35,6 +32,7 @@ while running:
 
     # Clear the screen
     screen.fill(WHITE)
+    screen.blit(orange_tile.surf,(255,255))
 
     # Update the display
     pygame.display.flip()
