@@ -1,4 +1,4 @@
-Game Name : Xplore
+**Game Name** : Xplore
 
 Description : Xplore is an open world space exploration game with a vast majority of planets to document and discover. Through your journey you will uncover and identify rare and uncommon space resources while avoiding or eliminating the many different parasites that inhabit the galaxy. 
 
@@ -14,7 +14,7 @@ Author : ztdnzun  #will give you a picture of my profile picture
 
 ---------------------------------------------------------
 
-Game Name : Kart Shifters 
+**Game Name** : Kart Shifters 
 
 Description : Kart shifters is a small pocket go kart drifting game where you do just that. DRIFT!! 
 
