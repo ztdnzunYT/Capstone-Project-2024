@@ -1,32 +1,44 @@
 import pygame
 import sys
+import os 
+import pathlib
 
 # Initialize Pygame
 pygame.init()
 
-# Set up the display
-width, height = 800, 600
-window = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Transparent Image Example')
+# Set up display
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Color Collision Example")
 
-# Load the image
-image = pygame.image.load('assets/grid.png')  # Replace with your PNG file path
-image.set_alpha(0)
-newimg = pygame.transform.smoothscale(image,(500,500))
-  # Make white (255, 255, 255) transparent
+# Colors
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 
-# Main loop
-while True:
+
+class Tile():
+    def __init__(self,image,x,y):
+        self.image = os.path.join("assets","orange_planet_tile.png")
+        self.surf = pygame.image.load(self.image).convert_alpha()
+        self.rect = self.surf.get_rect()
+
+
+
+
+
+
+
+running = True
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            running = False
 
-    # Fill the background with a color (e.g., blue)
-    window.fill((0, 0, 255))
-
-    # Draw the image at (100, 100)
-    window.blit(newimg, (100, 100))
+    # Clear the screen
+    screen.fill(WHITE)
 
     # Update the display
     pygame.display.flip()
+
+# Quit Pygame
+pygame.quit()
+sys.exit()
