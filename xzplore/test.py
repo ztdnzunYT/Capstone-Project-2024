@@ -33,7 +33,6 @@ class Tile():
         [0,0,0,0,0,0,0,0],
         ])
 
-
     TILE_SIZE = 200    
     def __init__(self,image):
         self.tile_size = Tile.TILE_SIZE
@@ -74,7 +73,7 @@ while running:
             x,y = (row*Tile.TILE_SIZE)+Tile.world_x,(_*Tile.TILE_SIZE)+Tile.world_y
             screen.blit(orange_tile.surf,(x,y))
 
-    pygame.draw.rect(screen,(0,0,0),(350,300,20,20))
+    pygame.draw.rect(screen,(85,85,95),(350,300,20,20))
     # Update the display
     pygame.display.flip()
 
