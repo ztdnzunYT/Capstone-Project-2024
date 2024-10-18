@@ -1,7 +1,7 @@
 import pygame
 from pygame.sprite import Group
 pygame.init()
-pygame.mixer.init(buffer=2480)
+pygame.mixer.init(frequency=22050, size=-16, channels=16, buffer=1024)
 import math
 import random
 import sys
@@ -19,8 +19,8 @@ Clock = pygame.time.Clock()
 Game_State = "Space"
 
 class Sounds():
-    lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.mp3"))
-    boom = pygame.mixer.Sound(os.path.join("sounds","boom.mp3"))
+    lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.wav"))
+    boom = pygame.mixer.Sound(os.path.join("sounds","boom.wav"))
   
 class World_pos():
     world_startX = SCREEN_WIDTH/2
@@ -567,10 +567,10 @@ while True:
             if pygame.mouse.get_pressed()[2]:
                 sounds = [Sounds.lazer.set_volume(0.05),Sounds.lazer.set_volume(0.07)]
                 random.choice(sounds)
-                Sounds.lazer.play(loops=0)
                 for projectile_num in range(2):
                     projectiles.append(Projectile(spaceship.position,25,5,random.uniform(-.03,.03),(255,231,0),100))
                 Projectile.projectile_delay = 0
+                pygame.mixer.Sound.play(Sounds.lazer,loops=0)
 
         for projectile in projectiles[:]:
             projectile.draw()
@@ -592,7 +592,7 @@ while True:
             for projectile in projectiles:
                 if pygame.Rect.colliderect(parasite.rect,projectile.rect):
                     Sounds.boom.set_volume(10)
-                    Sounds.boom.play()
+                    pygame.mixer.Sound.play(Sounds.boom)
                     for explosion_particle_num in range(random.randint(5,7)):
                         explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
                     try:
