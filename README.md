@@ -1,17 +1,9 @@
-GHLauncher
--------------------------
-App Name - GHLauncher (Game Host Launcher)
-App Description - GHLauncher is a cross platform game hosting application that allows users to upload and play games locally on their desktop computer 
-App Platforms - Mac | Windows 
-Languages - Python (dearpygui, pygame) Java, Html, Css, Sqlite
 
-Website Name - GHLauncher.io (Domain Name)
-Website Description - *Website should go deeper into aspects of the application*
+             Game Name: Pixel Baseball
 
-- Extra -
-Contributors...
-About us / Ghl team...
-What ghlauncher offers...
-How did ghlauncher come to be...
-Collections... (Short page on a few of the games all together)
-Contact Us page...
+             Description: Still like the feel of old school games? Well you have come to the right game! Pixel Baseball is a               
+             simple pitch and hit game. Get your time down just right for a powerful hit!
+
+             Objective: Easy, hit as many homeruns as you can!
+
+             Creator: T.Houston #Y'all can use whatever character for the profile picture
