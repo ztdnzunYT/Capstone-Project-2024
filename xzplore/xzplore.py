@@ -486,9 +486,10 @@ class Transition_screen():
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
         global Game_State
         self.detection +=1 
-        transition_screen.color = (0,0,0)
+        
 
         if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
+            transition_screen.color = (0,0,0)
             if self.detection > 200:
                 self.transparecy = min(self.transparecy +1,255)
             if self.detection > 0  and self.transparecy == 255:
