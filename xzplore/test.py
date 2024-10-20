@@ -131,7 +131,7 @@ while running:
             running = False
     screen.fill((0,0,0))
     # Clear the screen
-    print(pygame.mouse.get_pos())
+  
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
         Tile.world_x +=player_speed
