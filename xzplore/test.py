@@ -3,15 +3,17 @@ import sys
 import os 
 import pathlib
 import numpy as np
-
+import random
 # Initialize Pygame
 pygame.init()
 clock = pygame.time.Clock()
-
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 800
 # Set up display
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Color Collision Example")
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 
+pygame.display.set_caption("Color Collision Example")
+pygame.mouse.set_visible(False)
 # Colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -40,8 +42,86 @@ class Tile():
         self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
         self.rect = self.surf.get_rect(topleft=(0,0))
 
+class Item_display():
+    def __init__(self):
+        self.item = None
+        self.item_description = None
+        self.surface = pygame.Surface((200,400),pygame.SRCALPHA)
+        self.surf_rect = self.surface.get_rect(topright=(SCREEN_WIDTH-10,10))
+        self.image = None
+        self.rect = None
+        self.font = pygame.font.Font(None,18)
+        self.text = None
+        self.text_rect = None
+
+    
+    def draw_item_display_window(self):
+        screen.blit(self.surface,self.surf_rect)
+        pygame.draw.rect(self.surface,(0,0,0,150),(25,0,170,250),0,15)
+        pygame.draw.rect(self.surface,(0,0,0),(25,0,170,250),2,15)
+        pygame.draw.rect(self.surface,(0,0,0),(25,0,170,150),2,0,15,15)
+        try:
+            image,description = Item_display.find_item(self)
+            self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(150,150))
+            self.rect = self.image.get_rect()
+            screen.blit(self.image,(SCREEN_WIDTH-170,11))
+            split_text = description.split()
+            text_len = 0
+            text_height = 0
+            for text in split_text:
+                self.text = self.font.render(text,True,(255,255,255))
+                self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-175+text_len,170+text_height))
+                width = self.text.get_width()
+                text_len += width + 5
+                if self.text_rect.x > 1100:
+                    text_len = 0
+                    text_height += 15
+                screen.blit(self.text,self.text_rect)
+            
+                
+
+        except:
+            pass
+        
+    def find_item(self):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1], 1, 1)
+        for item in items:
+            if pygame.Rect.colliderect(item.rect,mouse_rect):
+                return item.image,item.item_description
+                
+            
+
+class Item():
+    def __init__(self,item,item_description,color,image) -> None:
+        self.pos = random.randint(200,800)
+        self.item = item
+        self.item_description = item_description
+        self.color = color
+        self.rect = None
+        self.image = image
+
+
+    def draw(self):
+        self.rect = pygame.rect.Rect((self.pos+Tile.world_x,self.pos+Tile.world_y,20,20))
+        pygame.draw.rect(screen,self.color,(self.rect))
+        
+
+
+
+
 orange_tile = Tile("orange_planet_tile.png")
 player_speed = .5
+
+item_display_window = Item_display()
+
+Rock = Item("Rock","Naturally occurring solid made up of minerals or mineral-like substances",(198, 126, 39),"assets/orange_rock.png")
+Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),"assets/fossil-5.png")
+
+items = [Rock,Fossil]
+
+player_crosshair = pygame.transform.smoothscale(pygame.image.load("assets/player_crosshair.png").convert_alpha(),(40,40))
+player_crosshair_rect = player_crosshair.get_rect()
 
 running = True
 while running:
@@ -51,7 +131,7 @@ while running:
             running = False
     screen.fill((0,0,0))
     # Clear the screen
-
+    print(pygame.mouse.get_pos())
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
         Tile.world_x +=player_speed
@@ -68,12 +148,24 @@ while running:
         player_speed =.5
 
 
-    for _,col in enumerate(Tile.tile_map):
+    for index,col in enumerate(Tile.tile_map):
         for row in range(len(col)):
-            x,y = (row*Tile.TILE_SIZE)+Tile.world_x,(_*Tile.TILE_SIZE)+Tile.world_y
+            x,y = (row*Tile.TILE_SIZE)+Tile.world_x,(index*Tile.TILE_SIZE)+Tile.world_y
             screen.blit(orange_tile.surf,(x,y))
 
-    pygame.draw.rect(screen,(85,85,95),(350,300,20,20))
+    pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
+
+    Rock.draw()
+    Fossil.draw()
+
+    item_display_window.draw_item_display_window()
+    
+    
+
+    screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
+
+
+
     # Update the display
     pygame.display.flip()
 
