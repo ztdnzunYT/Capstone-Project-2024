@@ -64,7 +64,7 @@ class Item_display():
             pygame.draw.rect(self.surface,(0,0,0,150),(30,0,170,250),0,self.window_radius)
             pygame.draw.rect(self.surface,(0,0,0),(30,0,170,250),4,self.window_radius)
             pygame.draw.rect(self.surface,(0,0,0),(30,0,170,150),3,0,self.window_radius,self.window_radius)
-            self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(150,150))
+            self.image = pygame.image.load(image).convert_alpha()
             self.rect = self.image.get_rect()
             screen.blit(self.image,(SCREEN_WIDTH-165,11))
             split_text = description.split()
