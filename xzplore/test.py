@@ -53,27 +53,33 @@ class Item_display():
         self.font = pygame.font.Font(None,18)
         self.text = None
         self.text_rect = None
+        self.window_radius = 5
 
     
     def draw_item_display_window(self):
-        screen.blit(self.surface,self.surf_rect)
-        pygame.draw.rect(self.surface,(0,0,0,150),(25,0,170,250),0,15)
-        pygame.draw.rect(self.surface,(0,0,0),(25,0,170,250),2,15)
-        pygame.draw.rect(self.surface,(0,0,0),(25,0,170,150),2,0,15,15)
+        
         try:
             image,description = Item_display.find_item(self)
+            screen.blit(self.surface,self.surf_rect)
+            pygame.draw.rect(self.surface,(0,0,0,150),(30,0,170,250),0,self.window_radius)
+            pygame.draw.rect(self.surface,(0,0,0),(30,0,170,250),4,self.window_radius)
+            pygame.draw.rect(self.surface,(0,0,0),(30,0,170,150),3,0,self.window_radius,self.window_radius)
             self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(150,150))
             self.rect = self.image.get_rect()
-            screen.blit(self.image,(SCREEN_WIDTH-170,11))
+            screen.blit(self.image,(SCREEN_WIDTH-165,11))
             split_text = description.split()
             text_len = 0
             text_height = 0
+            self.text = self.font.render("Info:",True,(255,255,255))
+            self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,170+text_height))
+            screen.blit(self.text,self.text_rect)
+            text_height = 20
             for text in split_text:
                 self.text = self.font.render(text,True,(255,255,255))
-                self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-175+text_len,170+text_height))
+                self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,170+text_height))
                 width = self.text.get_width()
                 text_len += width + 5
-                if self.text_rect.x > 1100:
+                if self.text_rect.x > 1090:
                     text_len = 0
                     text_height += 15
                 screen.blit(self.text,self.text_rect)
