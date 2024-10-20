@@ -13,7 +13,7 @@ SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
 SPACESTATION_GREY = (50,50,50)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME,vsync=False)
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 Game_State = "Space"
