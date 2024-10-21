@@ -5,11 +5,8 @@ pygame.mixer.init(frequency=22050, size=-16, channels=16, buffer=1024)
 import math
 import random
 import sys
-import time
 import os 
 import numpy as np
-
-
 
 SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
@@ -22,9 +19,24 @@ Clock = pygame.time.Clock()
 Game_State = "Space"
 
 class Sounds():
+    ambience = pygame.mixer.Channel(6)
+    rocket_engine = pygame.mixer.Channel(2)
+
     lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.wav"))
     boom = pygame.mixer.Sound(os.path.join("sounds","boom.wav"))
-  
+    space_ambience = pygame.mixer.Sound(os.path.join("sounds","space_background_noise.mp3"))
+    desert_wind = pygame.mixer.Sound(os.path.join("sounds","sandstorm.wav"))
+    rocket_engine_sound = pygame.mixer.Sound(os.path.join("sounds","short_rocket.mp3"))
+
+    def play_sound(sound,volume): 
+        while Sounds.ambience.get_busy() == False: 
+            Sounds.ambience.play(sound) 
+            Sounds.ambience.set_volume(volume)
+    
+    def play_engine():
+        while Sounds.rocket_engine.get_busy() == False:
+            Sounds.rocket_engine.play(Sounds.rocket_engine_sound)
+
 class World_pos():
     world_startX = SCREEN_WIDTH/2
     world_startY = SCREEN_HEIGHT/2
@@ -141,10 +153,13 @@ class Spaceship(pygame.sprite.Sprite):
             dir = dir.normalize()
             self.position += dir * self.acceleration
             self.rect.center = self.position
-        
+        volume = 0
+        Sounds.play_engine()
         if pygame.mouse.get_pressed()[0]:
             self.acceleration +=0.01
-        else:  
+            Sounds.rocket_engine.set_volume(1)
+        else:
+            Sounds.rocket_engine.set_volume(0.5)
             self.acceleration -= 0.002
         
         if self.acceleration > self.max_speed:
@@ -469,19 +484,19 @@ class Planet():
         world_y = 0 
 
         tile_map = np.array([
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,1,0,1],
+            [0,0,1,0,0,0,0,0],
+            [1,0,0,0,0,0,0,0],
+            [0,0,0,0,1,0,1,0],
+            [0,0,1,0,0,0,0,0],
+            [0,0,0,0,0,0,0,1],
             ])
 
         TILE_SIZE = 200    
 
         def __init__(self,image):
-            self.tile_size = Planet.Tile.TILE_SIZE
-            self.image = os.path.join("assets",image)
+            self.tile_size = 200
+            self.image = image
             self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
             self.rect = self.surf.get_rect(topleft=(0,0))
 
@@ -490,7 +505,7 @@ class Planet():
         #screen.blit(self.surf,(0,0))
         self.rect = self.image.get_rect(center=((self.x,self.y)))
         screen.blit(self.image,self.rect)
-
+ 
     def update(self):
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
@@ -501,11 +516,13 @@ class Planet():
                 x,y = (row*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
                 screen.blit(tile_set,(x,y))
         
-        for item in items:
+        for item in Resources.resources:
             item.draw()
 
     def draw_player():
+        
         pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
+        player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","player_crosshair.png")).convert_alpha(),(40,40))
         screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
 
     def map_move():
@@ -525,8 +542,18 @@ class Planet():
             Planet.Tile.world_y +=player_speed
         if keys[pygame.K_s]:
             Planet.Tile.world_y -=player_speed
-        
-      
+
+    
+    desert_planet = {
+        "path" : "assets\desert_planet_assets\desert_sandtiles",
+        "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"]
+    }
+    
+    orange_tile = Tile(os.path.join("assets\desert_planet_assets\desert_sandtiles","desert_sandtile_0.png"))
+
+
+    
+
 class Item_display():
     def __init__(self):
         self.item = None
@@ -535,12 +562,11 @@ class Item_display():
         self.surf_rect = self.surface.get_rect(topright=(SCREEN_WIDTH-10,10))
         self.image = None
         self.rect = None
-        self.font = pygame.font.Font(None,18)
+        self.font = pygame.font.Font(None,17)
         self.text = None
         self.text_rect = None
         self.window_radius = 5
-
-    
+  
     def draw_item_display_window(self):
         
         try:
@@ -574,7 +600,7 @@ class Item_display():
     def find_item(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1], 1, 1)
-        for item in items:
+        for item in Resources.resources:
             if pygame.Rect.colliderect(item.rect,mouse_rect):
                 return item.image,item.item,item.item_description
         
@@ -590,6 +616,12 @@ class Item():
     def draw(self):
         self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,20,20))
         pygame.draw.rect(screen,self.color,(self.rect))
+
+class Resources():
+    Rock = Item("Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("assets","orange_rock.png"))
+    Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("assets","fossil-5.png"))
+
+    resources = [Rock,Fossil]
         
 class Transition_screen():
 
@@ -609,6 +641,7 @@ class Transition_screen():
             self.transparecy = min(self.transparecy +1,255)
         if self.detection > 0  and self.transparecy == 255:
             Game_State = gamestate  
+            Sounds.ambience.stop()
             self.detection = 0
 
         if Game_State == "Spacestation":
@@ -620,6 +653,11 @@ class Transition_screen():
                     Game_State = "Space"   
             else:
                 self.transparecy = max(self.transparecy -1,0)
+        
+        if Game_State == "Desert_planet":
+            self.detection = 0
+            self.transparecy = max(self.transparecy -1,55)
+
 
     def update(self,spaceship):
         screen.blit(self.surface,(0,0))
@@ -627,24 +665,16 @@ class Transition_screen():
         mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
         global Game_State
         self.detection +=1 
-
-        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
-            Transition_screen.change_state(self,"Spacestation",(0,0,0))
-        elif pygame.Rect.colliderect(spaceship.rect,planet.rect):
-            Transition_screen.change_state(self,"Desert_planet",(191,123,32))
+        if mtos_dis < World_pos.offset_distance:
+            if pygame.Rect.colliderect(spaceship.rect,space_station.airlock):
+                Transition_screen.change_state(self,"Spacestation",(0,0,0))
+            elif pygame.Rect.colliderect(spaceship.rect,planet.rect):
+                Transition_screen.change_state(self,"Desert_planet",(191,123,32))
         else:
             if Game_State == "Space":
                 self.transparecy = max(self.transparecy -1,0)
     
-orange_tile = Planet.Tile("orange_planet_tile.png")
-item_display_window = Item_display()
-Rock = Item("Rock","Naturally occurring solid made up of minerals or mineral-like substances",(198, 126, 39),os.path.join("assets","orange_rock.png"))
-Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("assets","fossil-5.png"))
-items = [Rock,Fossil]
 
-player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","player_crosshair.png")).convert_alpha(),(40,40))
-player_crosshair_rect = player_crosshair.get_rect()
-   
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
 crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
 spaceship = Spaceship(os.path.join("assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
@@ -659,15 +689,15 @@ transition_screen = Transition_screen(0,0,(0,0,0))
 grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","grid.png")).convert_alpha(),(270,160))
 grid.set_alpha(70)
 grid_rect = grid.get_rect()
+item_display_window = Item_display()
 
 while True:
+
     screen.fill(BLACK)
     mouse_pos = pygame.mouse.get_pos()
 
     if Game_State == "Space":
-        #Sounds.space_background_noise.play(loops=0) 
-        
-            
+        #Sounds.space_background_noise.play(loops=0)
         
         if len(background_stars) < 150:
             background_stars.append(Star(random.randint(-25,SCREEN_WIDTH),random.randint(-25,SCREEN_HEIGHT),25,random.uniform(0,4),50,random.uniform(0.1,1),random.uniform(-.002,.002)))
@@ -723,7 +753,7 @@ while True:
             parasite.update(World_pos.dir_offset)
             for projectile in projectiles:
                 if pygame.Rect.colliderect(parasite.rect,projectile.rect):
-                    Sounds.boom.set_volume(10)
+                    Sounds.boom.set_volume(1)
                     pygame.mixer.Sound.play(Sounds.boom)
                     for explosion_particle_num in range(random.randint(5,7)):
                         explosion_praticles.append(Explosion_particles((parasite.x,parasite.y),random.uniform(1,3),70,[random.uniform(-0.5,0.5),random.uniform(-0.3,0.3)]))
@@ -754,6 +784,8 @@ while True:
         screen.blit(grid,(15,SCREEN_HEIGHT-170))
         crosshair.draw()
         crosshair.update(pygame.mouse.get_pos())
+        
+        Sounds.play_sound(Sounds.space_ambience,.3)
     if Game_State == "Spacestation":
         
         screen.blit(space_station.spacestation_inside,space_station.spacestation_inside_rect)
@@ -761,19 +793,16 @@ while True:
         space_station.move()
 
     if Game_State == "Desert_planet":
-
-        transition_screen.transparecy = 0
-        Planet.draw_map(orange_tile.surf)
+        
+        Planet.draw_map(Planet.orange_tile.surf)
         Planet.map_move()
         Planet.draw_player()
-        item_display_window.draw_item_display_window()
-
-        
-
+        Sounds.play_sound(Sounds.desert_wind,0.1)
 
     transition_screen.update(spaceship)
+    item_display_window.draw_item_display_window()
+    Game_State = "Desert_planet"
     
-        
     
     Clock.tick(FPS)
     pygame.display.flip()
