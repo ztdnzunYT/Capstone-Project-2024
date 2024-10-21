@@ -9,6 +9,8 @@ import time
 import os 
 import numpy as np
 
+
+
 SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
 FPS = 120
@@ -461,7 +463,29 @@ class Planet():
         self.radius = radius
         self.transparency = transparency    
 
-    def draw(self):
+    class Tile():
+
+        world_x = 0 
+        world_y = 0 
+
+        tile_map = np.array([
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            ])
+
+        TILE_SIZE = 200    
+
+        def __init__(self,image):
+            self.tile_size = Planet.Tile.TILE_SIZE
+            self.image = os.path.join("assets",image)
+            self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
+            self.rect = self.surf.get_rect(topleft=(0,0))
+
+    def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
         #screen.blit(self.surf,(0,0))
         self.rect = self.image.get_rect(center=((self.x,self.y)))
@@ -471,28 +495,38 @@ class Planet():
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
-class Tile():
+    def draw_map(tile_set):
+        for index,col in enumerate(Planet.Tile.tile_map):
+            for row in range(len(col)):
+                x,y = (row*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
+                screen.blit(tile_set,(x,y))
+        
+        for item in items:
+            item.draw()
 
-    world_x = 0 
-    world_y = 0 
+    def draw_player():
+        pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
+        screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
 
-    tile_map = np.array([
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        ])
+    def map_move():
 
-    TILE_SIZE = 200    
+        keys = pygame.key.get_pressed()
 
-    def __init__(self,image):
-        self.tile_size = Tile.TILE_SIZE
-        self.image = os.path.join("assets",image)
-        self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
-        self.rect = self.surf.get_rect(topleft=(0,0))
-
+        if keys[pygame.K_LSHIFT]:
+            player_speed = 1
+        else:
+            player_speed =.5
+            
+        if keys[pygame.K_a]:
+            Planet.Tile.world_x +=player_speed
+        if keys[pygame.K_d]:
+            Planet.Tile.world_x -=player_speed
+        if keys[pygame.K_w]:
+            Planet.Tile.world_y +=player_speed
+        if keys[pygame.K_s]:
+            Planet.Tile.world_y -=player_speed
+        
+      
 class Item_display():
     def __init__(self):
         self.item = None
@@ -554,10 +588,9 @@ class Item():
         self.image = image
 
     def draw(self):
-        self.rect = pygame.rect.Rect((self.pos+Tile.world_x,self.pos+Tile.world_y,20,20))
+        self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,20,20))
         pygame.draw.rect(screen,self.color,(self.rect))
         
-
 class Transition_screen():
 
     def __init__(self,x,y,color):
@@ -603,11 +636,12 @@ class Transition_screen():
             if Game_State == "Space":
                 self.transparecy = max(self.transparecy -1,0)
     
-orange_tile = Tile("orange_planet_tile.png")
+orange_tile = Planet.Tile("orange_planet_tile.png")
 item_display_window = Item_display()
 Rock = Item("Rock","Naturally occurring solid made up of minerals or mineral-like substances",(198, 126, 39),os.path.join("assets","orange_rock.png"))
 Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("assets","fossil-5.png"))
 items = [Rock,Fossil]
+
 player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","player_crosshair.png")).convert_alpha(),(40,40))
 player_crosshair_rect = player_crosshair.get_rect()
    
@@ -643,7 +677,7 @@ while True:
             star.reposition(random.randint(100,200),random.randint(10,95))
 
         #circle.draw()
-        planet.draw()
+        planet.draw_planet()
         planet.update()
 
         space_station.draw()
@@ -725,46 +759,16 @@ while True:
         screen.blit(space_station.spacestation_inside,space_station.spacestation_inside_rect)
         pygame.draw.rect(screen,(255,214,164),(SCREEN_WIDTH/2,SCREEN_HEIGHT/2,15,15))
         space_station.move()
+
     if Game_State == "Desert_planet":
 
         transition_screen.transparecy = 0
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            Tile.world_x +=player_speed
-        if keys[pygame.K_d]:
-            Tile.world_x -=player_speed
-        if keys[pygame.K_w]:
-            Tile.world_y +=player_speed
-        if keys[pygame.K_s]:
-            Tile.world_y -=player_speed
-        
-        if keys[pygame.K_LSHIFT]:
-            player_speed = 1
-        else:
-            player_speed =.5
-
-
-        for index,col in enumerate(Tile.tile_map):
-            for row in range(len(col)):
-                x,y = (row*Tile.TILE_SIZE)+Tile.world_x,(index*Tile.TILE_SIZE)+Tile.world_y
-                screen.blit(orange_tile.surf,(x,y))
-
-        pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
-
-        Rock.draw()
-        Fossil.draw()
-
+        Planet.draw_map(orange_tile.surf)
+        Planet.map_move()
+        Planet.draw_player()
         item_display_window.draw_item_display_window()
 
-        screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
-
-
-
-
-
-
-
+        
 
 
     transition_screen.update(spaceship)
