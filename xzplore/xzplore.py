@@ -545,11 +545,11 @@ class Planet():
 
     
     desert_planet = {
-        "path" : "assets\desert_planet_assets\desert_sandtiles",
+        "path" : os.path.normpath("assets\desert_planet_assets\desert_sandtiles"),
         "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"]
     }
     
-    orange_tile = Tile(os.path.join("assets\desert_planet_assets\desert_sandtiles","desert_sandtile_0.png"))
+    orange_tile = Tile(os.path.normpath("assets\desert_planet_assets\desert_sandtiles\desert_sandtile_0.png"))
 
 
     
