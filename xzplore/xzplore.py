@@ -7,6 +7,7 @@ import random
 import sys
 import time
 import os 
+import numpy as np
 
 SCREEN_WIDTH = 1200#950
 SCREEN_HEIGHT = 800 #650
@@ -456,7 +457,6 @@ class Planet():
         self.size = size
         self.surf = pygame.Surface((self.size,self.size),pygame.SRCALPHA)
         self.image = pygame.transform.smoothscale(pygame.image.load(image),(self.size/2,self.size/2))
-        self.rect = self.image.get_rect(center=(self.x,self.y))
         self.color = color
         self.radius = radius
         self.transparency = transparency    
@@ -464,13 +464,102 @@ class Planet():
     def draw(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
         #screen.blit(self.surf,(0,0))
-        screen.blit(self.image,(self.x,self.y))
+        self.rect = self.image.get_rect(center=((self.x,self.y)))
+        screen.blit(self.image,self.rect)
 
     def update(self):
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
+class Tile():
+
+    world_x = 0 
+    world_y = 0 
+
+    tile_map = np.array([
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        ])
+
+    TILE_SIZE = 200    
+
+    def __init__(self,image):
+        self.tile_size = Tile.TILE_SIZE
+        self.image = os.path.join("assets",image)
+        self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
+        self.rect = self.surf.get_rect(topleft=(0,0))
+
+class Item_display():
+    def __init__(self):
+        self.item = None
+        self.item_description = None
+        self.surface = pygame.Surface((200,400),pygame.SRCALPHA)
+        self.surf_rect = self.surface.get_rect(topright=(SCREEN_WIDTH-10,10))
+        self.image = None
+        self.rect = None
+        self.font = pygame.font.Font(None,18)
+        self.text = None
+        self.text_rect = None
+        self.window_radius = 5
+
+    
+    def draw_item_display_window(self):
+        
+        try:
+            image,item,description = Item_display.find_item(self)
+            screen.blit(self.surface,self.surf_rect)
+            pygame.draw.rect(self.surface,(0,0,0,150),(30,0,170,250),0,self.window_radius)
+            pygame.draw.rect(self.surface,(0,0,0),(30,0,170,250),4,self.window_radius)
+            pygame.draw.rect(self.surface,(0,0,0),(30,0,170,150),3,0,self.window_radius,self.window_radius)
+            self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(130,130))
+            self.rect = self.image.get_rect()
+            screen.blit(self.image,(SCREEN_WIDTH-160,25))
+            split_text = description.split()
+            text_len = 0
+            text_height = 0
+            self.text = self.font.render(item,True,(255,255,255))
+            self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,170+text_height))
+            screen.blit(self.text,self.text_rect)
+            text_height = 23
+            for text in split_text:
+                self.text = self.font.render(text,True,(255,255,255))
+                self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,170+text_height))
+                width = self.text.get_width()
+                text_len += width + 5
+                if self.text_rect.x > 1090:
+                    text_len = 0
+                    text_height += 15
+                screen.blit(self.text,self.text_rect)
+        except:
+            pass
+        
+    def find_item(self):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1], 1, 1)
+        for item in items:
+            if pygame.Rect.colliderect(item.rect,mouse_rect):
+                return item.image,item.item,item.item_description
+        
+class Item():
+    def __init__(self,item,item_description,color,image) -> None:
+        self.pos = random.randint(200,800)
+        self.item = item
+        self.item_description = item_description
+        self.color = color
+        self.rect = None
+        self.image = image
+
+    def draw(self):
+        self.rect = pygame.rect.Rect((self.pos+Tile.world_x,self.pos+Tile.world_y,20,20))
+        pygame.draw.rect(screen,self.color,(self.rect))
+        
+
 class Transition_screen():
+
     def __init__(self,x,y,color):
         self.x = x
         self.y = y 
@@ -479,27 +568,16 @@ class Transition_screen():
         self.surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
         self.rect = self.surface.get_rect(center=(0,0))
         self.detection = 0
-        
-    def update(self,spaceship):
-        screen.blit(self.surface,(0,0))
-        pygame.draw.rect(self.surface,(*self.color,self.transparecy),(0,0,SCREEN_WIDTH,SCREEN_HEIGHT))
-        mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
-        global Game_State
-        self.detection +=1 
-        
 
-        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
-            transition_screen.color = (0,0,0)
-            if self.detection > 200:
-                self.transparecy = min(self.transparecy +1,255)
-            if self.detection > 0  and self.transparecy == 255:
-                Game_State = "Spacestation"   
-                space_station.spacestation_inside_rect.y = -85
-                self.detection = 0
-        else:
-            if Game_State == "Space":
-                self.transparecy = max(self.transparecy -1,0)
-    
+    def change_state(self,gamestate,window_color):
+        global Game_State
+        transition_screen.color = window_color
+        if self.detection > 200:
+            self.transparecy = min(self.transparecy +1,255)
+        if self.detection > 0  and self.transparecy == 255:
+            Game_State = gamestate  
+            self.detection = 0
+
         if Game_State == "Spacestation":
             if space_station.spacestation_inside_rect.y < -91:
                 self.detection +=1
@@ -510,9 +588,29 @@ class Transition_screen():
             else:
                 self.transparecy = max(self.transparecy -1,0)
 
-        
+    def update(self,spaceship):
+        screen.blit(self.surface,(0,0))
+        pygame.draw.rect(self.surface,(*self.color,self.transparecy),(0,0,SCREEN_WIDTH,SCREEN_HEIGHT))
+        mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
+        global Game_State
+        self.detection +=1 
 
-
+        if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) and mtos_dis < World_pos.offset_distance:
+            Transition_screen.change_state(self,"Spacestation",(0,0,0))
+        elif pygame.Rect.colliderect(spaceship.rect,planet.rect):
+            Transition_screen.change_state(self,"Desert_planet",(191,123,32))
+        else:
+            if Game_State == "Space":
+                self.transparecy = max(self.transparecy -1,0)
+    
+orange_tile = Tile("orange_planet_tile.png")
+item_display_window = Item_display()
+Rock = Item("Rock","Naturally occurring solid made up of minerals or mineral-like substances",(198, 126, 39),os.path.join("assets","orange_rock.png"))
+Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("assets","fossil-5.png"))
+items = [Rock,Fossil]
+player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","player_crosshair.png")).convert_alpha(),(40,40))
+player_crosshair_rect = player_crosshair.get_rect()
+   
 planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
 crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
 spaceship = Spaceship(os.path.join("assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
@@ -622,15 +720,52 @@ while True:
         screen.blit(grid,(15,SCREEN_HEIGHT-170))
         crosshair.draw()
         crosshair.update(pygame.mouse.get_pos())
-
-    #Game_State = "Spacestation"
-    #transition_screen.transparecy = 0
-
     if Game_State == "Spacestation":
         
         screen.blit(space_station.spacestation_inside,space_station.spacestation_inside_rect)
         pygame.draw.rect(screen,(255,214,164),(SCREEN_WIDTH/2,SCREEN_HEIGHT/2,15,15))
         space_station.move()
+    if Game_State == "Desert_planet":
+
+        transition_screen.transparecy = 0
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            Tile.world_x +=player_speed
+        if keys[pygame.K_d]:
+            Tile.world_x -=player_speed
+        if keys[pygame.K_w]:
+            Tile.world_y +=player_speed
+        if keys[pygame.K_s]:
+            Tile.world_y -=player_speed
+        
+        if keys[pygame.K_LSHIFT]:
+            player_speed = 1
+        else:
+            player_speed =.5
+
+
+        for index,col in enumerate(Tile.tile_map):
+            for row in range(len(col)):
+                x,y = (row*Tile.TILE_SIZE)+Tile.world_x,(index*Tile.TILE_SIZE)+Tile.world_y
+                screen.blit(orange_tile.surf,(x,y))
+
+        pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
+
+        Rock.draw()
+        Fossil.draw()
+
+        item_display_window.draw_item_display_window()
+
+        screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
+
+
+
+
+
+
+
+
 
     transition_screen.update(spaceship)
     
