@@ -492,13 +492,20 @@ class Planet():
             [0,0,0,0,0,0,0,1],
             ])
 
-        TILE_SIZE = 200    
+        TILE_SIZE = 200  
 
-        def __init__(self,image):
+        desert_planet = {
+            "path" : os.path.normpath("assets\desert_planet_assets\desert_sandtiles"),
+            "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"]
+        }
+
+        def __init__(self):
             self.tile_size = 200
-            self.image = image
-            self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
-            self.rect = self.surf.get_rect(topleft=(0,0))
+            self.image = None
+            self.surf = None
+            self.rect = "nothing"
+            self.x = 0
+            self.y = 0
 
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
@@ -510,11 +517,45 @@ class Planet():
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
-    def draw_map(tile_set):
+    def draw_map(planet):
+        
+        if len(Planet.tiles) < 48:
+
+            for index,col in enumerate(Planet.Tile.tile_map):
+                
+                Planet.tile.image = (os.path.join(planet["path"],planet["tiles"][0]))
+                Planet.tile.surf = pygame.transform.smoothscale(pygame.image.load(Planet.tile.image).convert_alpha(),(Planet.tile.tile_size,Planet.tile.tile_size))
+                Planet.tile.rect = Planet.tile.surf.get_rect(topleft=(0,0))
+                for row in range(len(col)):
+                    Planet.tiles.append(Planet.tile)
+
+
+    
+        tile_num = -1
+
         for index,col in enumerate(Planet.Tile.tile_map):
-            for row in range(len(col)):
-                x,y = (row*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
-                screen.blit(tile_set,(x,y))
+            for _ in range(len(col)):
+                tile_num +=1
+                
+                Planet.tile.x,Planet.tile.y = (_*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
+                
+                
+                
+        
+                #print(Planet.tiles[tile_num].rect)
+                
+                print(_*200)
+                
+                Planet.tiles[tile_num].rect = Planet.tiles[tile_num].surf.get_rect(topleft=(Planet.Tile.world_x,0))
+                screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].x,Planet.tiles[tile_num].y))
+
+        
+        if pygame.Rect.colliderect(Planet.tiles[1].rect,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
+            print("Touching 1")
+        
+    
+    
+        
         
         for item in Resources.resources:
             item.draw()
@@ -543,16 +584,15 @@ class Planet():
         if keys[pygame.K_s]:
             Planet.Tile.world_y -=player_speed
 
+    tile = Tile()
     
-    desert_planet = {
-        "path" : os.path.normpath("assets\desert_planet_assets\desert_sandtiles"),
-        "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"]
-    }
+    tiles = []
     
-    orange_tile = Tile(os.path.normpath("assets\desert_planet_assets\desert_sandtiles\desert_sandtile_0.png"))
+    #orange_tile = Tile(os.path.normpath("assets\desert_planet_assets\desert_sandtiles\desert_sandtile_0.png"))
 
 
-    
+
+
 
 class Item_display():
     def __init__(self):
@@ -794,7 +834,7 @@ while True:
 
     if Game_State == "Desert_planet":
         
-        Planet.draw_map(Planet.orange_tile.surf)
+        Planet.draw_map(Planet.Tile.desert_planet)
         Planet.map_move()
         Planet.draw_player()
         Sounds.play_sound(Sounds.desert_wind,0.1)
