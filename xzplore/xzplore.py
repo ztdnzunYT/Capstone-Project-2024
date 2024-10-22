@@ -13,7 +13,7 @@ SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
 SPACESTATION_GREY = (50,50,50)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME,vsync=False)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 Game_State = "Space"
@@ -22,7 +22,7 @@ class Sounds():
     ambience = pygame.mixer.Channel(6)
     rocket_engine = pygame.mixer.Channel(2)
 
-    lazer = pygame.mixer.Sound(os.path.join("sounds","laser-gun.wav"))
+    lazer = pygame.mixer.Sound(os.path.join("sounds","laser_gun.wav"))
     boom = pygame.mixer.Sound(os.path.join("sounds","boom.wav"))
     space_ambience = pygame.mixer.Sound(os.path.join("sounds","space_background_noise.mp3"))
     desert_wind = pygame.mixer.Sound(os.path.join("sounds","sandstorm.wav"))
@@ -494,7 +494,7 @@ class Planet():
 
         TILE_SIZE = 200  
 
-        desert_planet = {
+        desert_planet = { 
             "path" : os.path.normpath("assets\desert_planet_assets\desert_sandtiles"),
             "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"]
         }
@@ -503,7 +503,7 @@ class Planet():
             self.tile_size = 200
             self.image = None
             self.surf = None
-            self.rect = "nothing"
+            self.rect = None
             self.x = 0
             self.y = 0
 
@@ -523,35 +523,34 @@ class Planet():
 
             for index,col in enumerate(Planet.Tile.tile_map):
                 
-                Planet.tile.image = (os.path.join(planet["path"],planet["tiles"][0]))
+                #Planet.tile.image = (os.path.normpath(os.path.join(planet["path"],planet["tiles"][0])))
+
+                Planet.tile.image = os.path.normpath(("assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
                 Planet.tile.surf = pygame.transform.smoothscale(pygame.image.load(Planet.tile.image).convert_alpha(),(Planet.tile.tile_size,Planet.tile.tile_size))
-                Planet.tile.rect = Planet.tile.surf.get_rect(topleft=(0,0))
+                #Planet.tile.rect = Planet.tile.surf.get_rect(topleft=(0,0))
                 for row in range(len(col)):
                     Planet.tiles.append(Planet.tile)
 
-
-    
         tile_num = -1
 
         for index,col in enumerate(Planet.Tile.tile_map):
-            for _ in range(len(col)):
+            for num in range(len(col)):
                 tile_num +=1
                 
-                Planet.tile.x,Planet.tile.y = (_*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
+                Planet.tile.x,Planet.tile.y = (num*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
                 
+                Planet.tiles[tile_num].rect = Planet.tiles[tile_num].surf.get_rect(topleft=(0,0))
                 
-                
+                #print(Planet.tiles[tile_num].rect.x)
+                screen.blit(Planet.tiles[tile_num].surf,(Planet.tile.x,Planet.tile.y))
+
+        if pygame.Rect.colliderect(Planet.tiles[0].rect,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):    
+            print("touching")
         
-                #print(Planet.tiles[tile_num].rect)
-                
-                print(_*200)
-                
-                Planet.tiles[tile_num].rect = Planet.tiles[tile_num].surf.get_rect(topleft=(Planet.Tile.world_x,0))
-                screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].x,Planet.tiles[tile_num].y))
 
         
-        if pygame.Rect.colliderect(Planet.tiles[1].rect,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
-            print("Touching 1")
+        
+       
         
     
     
