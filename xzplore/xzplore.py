@@ -819,7 +819,7 @@ while True:
 
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
-    #Game_State = "Desert_planet"
+    Game_State = "Desert_planet"
     
     
     Clock.tick(FPS)
