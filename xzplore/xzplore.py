@@ -499,14 +499,14 @@ class Planet():
             "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"]
         }
 
-        def __init__(self):
+        def __init__(self,image):
             self.tile_size = 200
-            self.image = None
-            self.surf = None
-            self.rect = None
+            self.image = image
             self.x = 0
             self.y = 0
-
+            self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
+            self.rect = self.surf.get_rect(topleft=(self.x,self.y))
+            
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
         #screen.blit(self.surf,(0,0))
@@ -519,42 +519,23 @@ class Planet():
 
     def draw_map(planet):
         
-        if len(Planet.tiles) < 48:
-
-            for index,col in enumerate(Planet.Tile.tile_map):
-                
-                #Planet.tile.image = (os.path.normpath(os.path.join(planet["path"],planet["tiles"][0])))
-
-                Planet.tile.image = os.path.normpath(("assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
-                Planet.tile.surf = pygame.transform.smoothscale(pygame.image.load(Planet.tile.image).convert_alpha(),(Planet.tile.tile_size,Planet.tile.tile_size))
-                #Planet.tile.rect = Planet.tile.surf.get_rect(topleft=(0,0))
-                for row in range(len(col)):
-                    Planet.tiles.append(Planet.tile)
-
-        tile_num = -1
+        #image = (os.path.normpath(os.path.join(planet["path"],planet["tiles"][0])))
+        image = os.path.normpath(("assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
+    
+        tile_num = 0
 
         for index,col in enumerate(Planet.Tile.tile_map):
-            for num in range(len(col)):
-                tile_num +=1
-                
-                Planet.tile.x,Planet.tile.y = (num*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
-                
-                Planet.tiles[tile_num].rect = Planet.tiles[tile_num].surf.get_rect(topleft=(0,0))
-                
-                #print(Planet.tiles[tile_num].rect.x)
-                screen.blit(Planet.tiles[tile_num].surf,(Planet.tile.x,Planet.tile.y))
+            for row in range(len(col)):
 
-        if pygame.Rect.colliderect(Planet.tiles[0].rect,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):    
-            print("touching")
-        
+                if len(Planet.tiles) < 48:
+                    Planet.tiles.append(Planet.Tile(image))
 
-        
-        
-       
-        
-    
-    
-        
+                Planet.tiles[tile_num].rect.topleft = (row*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x,(index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y
+                screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].rect))
+                tile_num+=1
+
+        if pygame.Rect.colliderect(Planet.tiles[2].rect,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):    
+            pass
         
         for item in Resources.resources:
             item.draw()
@@ -582,8 +563,6 @@ class Planet():
             Planet.Tile.world_y +=player_speed
         if keys[pygame.K_s]:
             Planet.Tile.world_y -=player_speed
-
-    tile = Tile()
     
     tiles = []
     
@@ -616,7 +595,7 @@ class Item_display():
             pygame.draw.rect(self.surface,(0,0,0),(30,0,170,150),3,0,self.window_radius,self.window_radius)
             self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(130,130))
             self.rect = self.image.get_rect()
-            screen.blit(self.image,(SCREEN_WIDTH-160,25))
+            screen.blit(self.image,(SCREEN_WIDTH-159,25))
             split_text = description.split()
             text_len = 0
             text_height = 0
@@ -840,7 +819,7 @@ while True:
 
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
-    Game_State = "Desert_planet"
+    #Game_State = "Desert_planet"
     
     
     Clock.tick(FPS)
