@@ -8,9 +8,8 @@ import sys
 import os 
 import numpy as np
 
-from asset_dicts import Desert_planet
 
-print(Desert_planet)
+from asset_dicts import Desert_planet
 
 
 SCREEN_WIDTH = 1200#950
@@ -489,43 +488,35 @@ class Planet():
         world_y = 0 
 
         tile_map = np.array([
+            [0,0,0,0,0,1,0,0],
+            [0,1,0,0,0,0,0,0],
+            [0,0,0,0,1,0,0,0],
+            [0,0,0,0,0,0,0,1],
             [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
+            [0,1,0,0,0,0,1,0],
             ])
         
-     
-        '''
-        def map_reset():
-            dig_sites = random.randint(2,6)
-
-            for index,row in enumerate(Planet.Tile.tile_map):
-                print(row)
-                
-        map_reset()  
-        '''
-
+        ecosystem_map =  np.array([
+            [0,0,2,0,0,1,2,0],
+            [2,1,0,0,0,0,0,2],
+            [0,0,0,2,1,0,0,0],
+            [0,2,0,0,0,0,0,1],
+            [0,0,2,0,0,2,0,0],
+            [0,1,0,2,0,0,1,0],
+            ])
         
-
-
+        num_tile_in_tilemap = len(tile_map[0])*len(tile_map)
+     
         TILE_SIZE = 200  
 
-        desert_planet = { 
-            "tile_path" : os.path.normpath("assets\desert_planet_assets\desert_sandtiles"),
-            "tiles" : ["desert_sandtile_0.png","desert_sandtile_1.png","desert_sandtile_2.png","desert_sandtile_3.png"], 
-        }
-
-        def __init__(self,image):
-            self.tile_size = 200
+        def __init__(self,image,size,tile_num):
+            self.tile_size = size
             self.image = image
             self.x = 0
             self.y = 0
             self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.tile_size,self.tile_size))
             self.rect = self.surf.get_rect(topleft=(self.x,self.y))
-            self.tile_num = 0 
+            self.tile_num = tile_num
             
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
@@ -538,37 +529,48 @@ class Planet():
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
 
+    def draw_map(map_tile):
 
+        #image = os.path.normpath(("assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
+        tile_num = 0
+        
+            
+        for index,row in enumerate(Planet.Tile.tile_map):
+            for col in range(len(row)):
+                try:
+                    if len(Planet.tiles) < Planet.Tile.num_tile_in_tilemap: #hardcoded number
+                        if row[col] == 0:
+                            image = (os.path.normpath(os.path.join(map_tile["path"],map_tile["normal_tiles"])))
+                        if row[col] == 1:
+                            image = (os.path.normpath(os.path.join(map_tile["path"],random.choice(map_tile["dig_tiles"]))))
+                        Planet.tiles.append(Planet.Tile(image,200,tile_num))
+
+        
+                    screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].rect.topleft))
+                    
+                    x,y = int((col*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x),int((index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y)
+                    
+                    Planet.tiles[tile_num].rect.topleft = x,y
     
 
 
 
-    def draw_map(planet):
+                    #print(Planet.Tile.ecosystem_map[index][col])
+                except:
+                    print(FileNotFoundError)
 
-        #image = os.path.normpath(("assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
-        tile_num = 0
 
-        for index,row in enumerate(Planet.Tile.tile_map):
-            for col in range(len(row)):
-                if len(Planet.tiles) < 48: #hardcoded number
-                    if row[col] == 0:
-                        image = (os.path.normpath(os.path.join(planet["tile_path"],planet["tiles"][0])))
-                    if row[col] == 1:
-                        image = (os.path.normpath(os.path.join(planet["tile_path"],random.choice(planet["tiles"][1:]))))
-                    Planet.tiles.append(Planet.Tile(image))
 
-                    
-                
-                screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].rect.topleft))
-                Planet.tiles[tile_num].rect.center = int((col*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x),int((index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y)
+
+
+
                 tile_num+=1
+        
+
 
         for item in Resources.resources:
             item.draw()
-
-
-
-
+    
 
 
     def draw_player():
@@ -656,8 +658,10 @@ class Item():
         self.item = item
         self.item_description = item_description
         self.color = color
-        self.rect = None
         self.image = image
+        self.surf = pygame.image.load(self.image).convert_alpha()
+        self.rect = self.surf.get_rect()
+        
 
     def draw(self):
         self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,20,20))
@@ -666,17 +670,7 @@ class Item():
 
 class Resources():
 
-    desert_rocks = {
-        "path" : "assets\desert_planet_assets\desert_rocks",
-        "rocks" : ["desert_rock_0.png"],
-    }
-
-
-
-
-
-
-    Rock = Item("Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("assets","orange_rock.png"))
+    Rock = Item("Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("assets","orange_rock.png"))
     Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("assets","fossil-5.png"))
 
     resources = [Rock,Fossil]
@@ -856,9 +850,11 @@ while True:
         Planet.map_move()
         Planet.draw_player()
         Sounds.play_sound(Sounds.desert_wind,0.1)
+        
 
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
+
     Game_State = "Desert_planet"
     
     
