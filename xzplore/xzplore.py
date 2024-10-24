@@ -907,8 +907,8 @@ while True:
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
 
-    # = "Desert_planet"
-    #transition_screen.transparecy = 0
+    Game_State = "Desert_planet"
+    transition_screen.transparecy = 0
     
     
     Clock.tick(FPS)
