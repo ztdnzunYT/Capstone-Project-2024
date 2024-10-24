@@ -19,7 +19,6 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
 
-
 class Tile():
 
     world_x = 0 

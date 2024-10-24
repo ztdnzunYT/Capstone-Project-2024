@@ -1,8 +1,9 @@
 import os
 
+
 class Desert_planet():
 
-    path = str(os.path.normpath("assets/desert_planet_assets"))
+    path = str(os.path.normpath("xzplore/assets/desert_planet_assets"))
 
     map_tiles = { 
         "path" : str(os.path.join(path,"desert_sandtiles")),

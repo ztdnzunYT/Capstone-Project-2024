@@ -26,11 +26,11 @@ class Sounds():
     ambience = pygame.mixer.Channel(6)
     rocket_engine = pygame.mixer.Channel(2)
 
-    lazer = pygame.mixer.Sound(os.path.join("sounds","laser_gun.wav"))
-    boom = pygame.mixer.Sound(os.path.join("sounds","boom.wav"))
-    space_ambience = pygame.mixer.Sound(os.path.join("sounds","space_background_noise.mp3"))
-    desert_wind = pygame.mixer.Sound(os.path.join("sounds","sandstorm.wav"))
-    rocket_engine_sound = pygame.mixer.Sound(os.path.join("sounds","short_rocket.mp3"))
+    lazer = pygame.mixer.Sound(os.path.join("xzplore/sounds","laser_gun.wav"))
+    boom = pygame.mixer.Sound(os.path.join("xzplore/sounds","boom.wav"))
+    space_ambience = pygame.mixer.Sound(os.path.join("xzplore/sounds","space_background_noise.mp3"))
+    desert_wind = pygame.mixer.Sound(os.path.join("xzplore/sounds","sandstorm.wav"))
+    rocket_engine_sound = pygame.mixer.Sound(os.path.join("xzplore/sounds","short_rocket.mp3"))
 
     def play_sound(sound,volume): 
         while Sounds.ambience.get_busy() == False: 
@@ -180,7 +180,7 @@ class Space_station(pygame.sprite.Sprite):
         self.image = image
         self.surf = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(500,500))
         self.rect = self.surf.get_rect()
-        self.spacestation_inside = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","inside_spacestation.png")),(1800,900))
+        self.spacestation_inside = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","inside_spacestation.png")),(1800,900))
         self.spacestation_inside_rect = self.spacestation_inside.get_rect(center=(SCREEN_WIDTH/2+30,SCREEN_WIDTH/2-200))
         self.x = x
         self.y = y
@@ -536,7 +536,7 @@ class Planet():
 
     def draw_map(map_tile,grass,rocks,bush):
 
-        #image = os.path.normpath(("assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
+        #image = os.path.normpath(("xzplore/assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
         tile_num = 0
         
         for index,row in enumerate(Planet.Tile.tile_map):
@@ -594,7 +594,7 @@ class Planet():
         
     def draw_player():
         
-        player = pygame.transform.smoothscale(pygame.image.load(os.path.normpath("assets/player_example.png")).convert_alpha(),(50,50))
+        player = pygame.transform.smoothscale(pygame.image.load(os.path.normpath("xzplore/assets/player_example.png")).convert_alpha(),(50,50))
         player_rect = player.get_rect(center=(SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
         #pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
         
@@ -605,7 +605,7 @@ class Planet():
 
 
 
-        player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","player_crosshair.png")).convert_alpha(),(40,40))
+        player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
         screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
 
     def map_move():
@@ -722,8 +722,8 @@ class Item():
 
 class Resources():
 
-    Rock = Item("Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("assets","orange_rock.png"))
-    Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("assets","fossil-5.png"))
+    Rock = Item("Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("xzplore/assets","orange_rock.png"))
+    Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("xzplore/assets","fossil-5.png"))
 
     resources = [Rock,Fossil]
         
@@ -779,18 +779,18 @@ class Transition_screen():
                 self.transparecy = max(self.transparecy -1,0)
     
 
-planet = Planet((3000,-1000),os.path.join("assets","desert_planet.png"),1500,(0,223,135),720/2,20)
-crosshair = Crosshair(0,0,30,os.path.join("assets","crosshair.png"))
-spaceship = Spaceship(os.path.join("assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
+planet = Planet((3000,-1000),os.path.join("xzplore/assets","desert_planet.png"),1500,(0,223,135),720/2,20)
+crosshair = Crosshair(0,0,30,os.path.join("xzplore/assets","crosshair.png"))
+spaceship = Spaceship(os.path.join("xzplore/assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
 projectiles = []
 explosion_praticles = []
-space_station = Space_station(os.path.join("assets","spacestation.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+space_station = Space_station(os.path.join("xzplore/assets","spacestation.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
 smoke_particles = []
 foreground_stars = []
 background_stars = []
 parasites = []
 transition_screen = Transition_screen(0,0,(0,0,0))
-grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("assets","grid.png")).convert_alpha(),(270,160))
+grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","grid.png")).convert_alpha(),(270,160))
 grid.set_alpha(70)
 grid_rect = grid.get_rect()
 item_display_window = Item_display()
@@ -852,7 +852,7 @@ while True:
         spaceship.move(mouse_pos)
 
         if len(parasites) < World_pos.parasite1amount: #50
-            parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("assets","parasite1.png"),15,random.uniform(1,10)))
+            parasites.append(Parasite(random.randint(0,SCREEN_WIDTH),random.randint(0,SCREEN_HEIGHT),os.path.join("xzplore/assets","parasite1.png"),15,random.uniform(1,10)))
         for parasite in parasites:
             parasite.update(World_pos.dir_offset)
             for projectile in projectiles:
