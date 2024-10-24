@@ -545,7 +545,7 @@ class Planet():
                     if len(Planet.tiles) <= Planet.Tile.num_tile_in_tilemap: #hardcoded number
                         if row[col] == 0:
                             image = (os.path.normpath(os.path.join(map_tile["path"],map_tile["normal_tiles"])))
-                        if row[col] == 1:
+                        elif row[col] == 1:
                             image = (os.path.normpath(os.path.join(map_tile["path"],random.choice(map_tile["dig_tiles"]))))
                         Planet.tiles.append(Planet.Tile(image,200,tile_num,0,0,None))
                         
@@ -569,7 +569,7 @@ class Planet():
                             rock_image = os.path.normpath(os.path.join(rocks["path"],random.choice(rocks["rocks"])))
                             Planet.ecosystem.append(Planet.Tile(rock_image,200,None,random.randint(75,125),random.randint(75,125),rocks))
                         elif  Planet.Tile.ecosystem_map[index][col] == 4:
-                            bush_image = os.path.normpath(os.path.join(bush["path"],random.choice(bush["bushes"][2:])))
+                            bush_image = os.path.normpath(os.path.join(bush["path"],random.choice(bush["bushes"])))
                             Planet.ecosystem.append(Planet.Tile(bush_image,80,None,random.randint(75,125),random.randint(75,125),bush))
                         else:
                             Planet.ecosystem.append(None)
@@ -594,7 +594,7 @@ class Planet():
         
     def draw_player():
         
-        player = pygame.transform.smoothscale(pygame.image.load("assets\player_example.png").convert_alpha(),(50,50))
+        player = pygame.transform.smoothscale(pygame.image.load(os.path.normpath("assets/player_example.png")).convert_alpha(),(50,50))
         player_rect = player.get_rect(center=(SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
         #pygame.draw.rect(screen,(85,85,95),(1200/2-10,800/2-10,20,20),0,2)
         
