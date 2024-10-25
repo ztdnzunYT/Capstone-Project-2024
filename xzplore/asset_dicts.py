@@ -10,19 +10,23 @@ class Player_animations():
 
         #"idle" :  sorted(list(os.listdir(os.path.join(path,"desert_sandtiles")))),
         "up_walk_path" : os.path.normpath(os.path.join(path,"player_up")),
+        "up_idle" : os.path.normpath(os.path.join(path,"player_up_idle"))+".png",
         "up_walk" : sorted(list(os.listdir(os.path.join(path,"player_up")))),
-        "down_walk_path" : os.path.normpath(os.path.join(path,"player")),
+
+        "down_walk_path" : os.path.normpath(os.path.join(path,"player_down")),
+        "down_idle" : os.path.normpath(os.path.join(path,"player_down_idle"))+".png",
         "down_walk" :  sorted(list(os.listdir(os.path.join(path,"player_down")))),
+
+        "left_walk_path" : os.path.normpath(os.path.join(path,"player_left")),
+        "left_idle" : os.path.normpath(os.path.join(path,"player_left_idle"))+".png",
         "left_walk" :  sorted(list(os.listdir(os.path.join(path,"player_left")))),
+
+        "right_walk_path" : os.path.normpath(os.path.join(path,"player_right")),
+        "right_idle" : os.path.normpath(os.path.join(path,"player_right_idle"))+".png",
         "right_walk" :  sorted(list(os.listdir(os.path.join(path,"player_right")))),
+
     }
-
-
-
-
-
-
-
+print(Player_animations.player_assests["down_idle"]+".png")
 
 
 class Clouds():
@@ -66,5 +70,7 @@ class Desert_planet():
         "item" : "Dried Bush",
         "description": "Wooded dried plant with short branches"
     }
+
+
 
 
