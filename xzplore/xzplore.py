@@ -498,8 +498,8 @@ class Planet():
         
         ecosystem_map =  np.array([
             [3,0,2,4,0,1,2,0,0],
-            [2,1,3,0,4,2,2,0,0],
-            [0,3,0,2,1,2,2,0,0],
+            [2,1,0,0,4,0,2,0,0],
+            [0,3,0,2,0,0,2,0,0],
             [0,2,4,0,0,3,4,0,0],
             [3,0,2,0,4,2,0,0,0],
             [0,0,0,0,0,0,0,0,0],
@@ -697,7 +697,6 @@ class Player():
             Player.idle_state  = str(Player_animations.player_assests["right_idle"])
             return animations_path,animations
         else:
-            print(Player.idle_state)
             return path,Player.idle_state
             
 
@@ -733,7 +732,6 @@ class Player():
 
         player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
         screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
-
 
 class Item_display():
     def __init__(self):
