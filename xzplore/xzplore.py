@@ -494,8 +494,9 @@ class Planet():
             [0,0,0,0,0,0,0,1,0],
             [0,1,0,1,0,0,0,0,0],
             [0,0,0,0,0,0,1,0,0],
-            ])
+        ])
         
+    
         ecosystem_map =  np.array([
             [3,0,2,4,0,1,2,0,0],
             [2,1,0,0,4,0,2,0,0],
@@ -503,7 +504,7 @@ class Planet():
             [0,2,4,0,0,3,4,0,0],
             [3,0,2,0,4,2,0,0,0],
             [0,0,0,0,0,0,0,0,0],
-            ])
+        ])
         
         num_tile_in_tilemap = len(tile_map[0])*len(tile_map)
      
@@ -630,7 +631,6 @@ class Planet():
         for item in Resources.resources:
             item.draw()
         
-    
     def map_move():
 
         keys = pygame.key.get_pressed()
@@ -699,7 +699,6 @@ class Player():
         else:
             return path,Player.idle_state
             
-
     def draw_player(animation):
 
         Player.timer = pygame.time.get_ticks() 
@@ -732,6 +731,7 @@ class Player():
 
         player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
         screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
+
 
 class Item_display():
     def __init__(self):
