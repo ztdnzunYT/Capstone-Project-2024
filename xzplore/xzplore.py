@@ -657,6 +657,13 @@ class Planet():
 
 class Player():
 
+    animation_number = 0 
+    animation_delay = 50
+    curr_time = 0
+    timer = 0
+
+    idle_state = str(Player_animations.player_assests["down_idle"])
+
     def __init__(self,image):
         self.image = image
         self.surf = pygame.transform.smoothscale(pygame.image.load(os.path.normpath(self.image)).convert_alpha(),(50,50))
@@ -664,37 +671,58 @@ class Player():
     
     def get_animation(path,player_assets):
         key = pygame.key.get_pressed()
-        animations = None
 
         if key[pygame.K_w]:
             direction = "up"
             animations_path = player_assets["up_walk_path"]
-            animations = player_assets["up_walk"]
-            print(animations)
-            for animation in animations:
-                print(animation)
-                return os.path.join(animations_path,animation)
-            
+            animations = Player_animations.player_assests["up_walk"]
+            Player.idle_state = str(Player_animations.player_assests["up_idle"])
+            return animations_path,animations
         elif key[pygame.K_s]:
             direction = "down"
             animations_path = player_assets["down_walk_path"]
             animations = player_assets["down_walk"]
+            Player.idle_state = str(Player_animations.player_assests["down_idle"])
+            return animations_path,animations
         elif key[pygame.K_a]:
             direction = "left"
-            #animations_path = player_assets["left_walk_path"]
+            animations_path = player_assets["left_walk_path"]
             animations = player_assets["left_walk"]
+            Player.idle_state = str(Player_animations.player_assests["left_idle"])
+            return animations_path,animations
         elif key[pygame.K_d]:
             direction = "right"
-            #animations_path = player_assets["right_walk_path"]
+            animations_path = player_assets["right_walk_path"]
             animations = player_assets["right_walk"]
+            Player.idle_state  = str(Player_animations.player_assests["right_idle"])
+            return animations_path,animations
+        else:
+            print(Player.idle_state)
+            return path,Player.idle_state
             
 
-    def draw_player():
+    def draw_player(animation):
+
+        Player.timer = pygame.time.get_ticks() 
+        
+        try:
+            if Player.animation_number > len(animation[1]) -1:
+                Player.animation_number = 0
+
+            player_animation = (os.path.normpath(os.path.join(animation[0],animation[1][Player.animation_number])))
+
+            player = pygame.transform.smoothscale(pygame.image.load(player_animation).convert_alpha(),(50,50))
+        except:
+            player = pygame.transform.smoothscale(pygame.image.load(Player.idle_state).convert_alpha(),(50,50))
             
-        player = pygame.transform.smoothscale(pygame.image.load(os.path.normpath("xzplore/assets/player_example.png")).convert_alpha(),(50,50))
+        if Player.timer > Player.curr_time:
+            Player.animation_number+=1
+            Player.curr_time = Player.timer + Player.animation_delay
+
+            #print(Player.animation_number)
+
         player_rect = player.get_rect(center=(SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
    
-        
         shadow_surface = pygame.Surface((50,50),pygame.SRCALPHA)
         pygame.draw.ellipse(shadow_surface,(0,0,0,50),(15,30,20,15),50)
        
@@ -796,7 +824,6 @@ class Item():
     def draw(self):
         self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,20,20))
         pygame.draw.rect(screen,self.color,(self.rect))
-
 
 class Resources():
 
@@ -979,8 +1006,7 @@ while True:
         Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,Desert_planet.bush_assets)
         Planet.map_move()
         #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
-        Player.get_animation(Player_animations.path,Player_animations.player_assests)
-        Player.draw_player()
+        Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
         Sounds.play_sound(Sounds.desert_wind,0.1)
         
 
