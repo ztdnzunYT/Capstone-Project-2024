@@ -1,0 +1,213 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>About</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #1c1c1c;
+			color: #f0f0f0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.wrapper {
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
+
+		header {
+			background-color: #111;
+			padding: 30px;
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+			
+		}
+
+		.logo h1 {
+			color: #fd2e2e;
+			font-size: 40px;
+			display: inline-block;
+		}
+
+		nav {
+			padding-bottom: 10px;
+		}
+
+		nav .menu {
+			float: right;
+			list-style: none;
+		}
+
+		nav .menu li {
+			display: inline-block;
+			margin-left: 40px;
+			margin-right: 40px;
+		}
+
+		nav .menu li a {
+			color: #f0f0f0;
+			text-decoration: none;
+			font-size: 20px;
+			padding: 10px;
+		}
+
+		nav .menu li a:hover {
+			color: #ff4500;
+		}
+
+		main {
+			padding: 50px;
+			flex: 1; /* This allows the main content to grow and push the footer to the bottom */
+		}
+
+		#container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			gap: 100px;
+		}
+
+		h2 {
+			font-size: 2.5rem;
+			margin-bottom: 20px;
+			color: #ff4500;
+		}
+
+		.about-section {
+			flex: 0 1 60%;
+			background-color: #2a2a2a;
+			padding: 40px;
+			border-radius: 8px;
+		}
+
+		.about-section h3 {
+			font-size: 1.8rem;
+			color: #ff4500;
+			margin-bottom: 20px;
+		}
+
+		.about-section p {
+			font-size: 1rem;
+			line-height: 1.6;
+			margin-bottom: 20px;
+		}
+
+		.app-info {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			margin-top: 40px;
+			background-color: #333;
+			padding: 40px;
+			border-radius: 8px;
+			color: #f0f0f0;
+			align-items: center;
+			text-align: center;
+		}
+
+		img {
+			margin-bottom: 30px;
+		}
+
+		.app-info h3 {
+			color: #ff4500;
+			font-size: 1.5rem;
+			margin-bottom: 20px;
+		}
+
+		.btn {
+			background-color: #ff4500;
+			border-radius: 5px;
+			border: none;
+			padding: 10px 20px;
+			color: white;
+			font-size: 1rem;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+
+		.btn:hover {
+			background-color: #e63900;
+			transform: scale(1.05);
+		}
+
+		footer {
+			text-align: center;
+			background-color: #111;
+			padding: 20px;
+			color: #777;
+		}
+
+		footer p {
+			margin-top: 20px;
+			font-size: 0.9rem;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<header>
+			<nav>
+				<div class="logo">
+					<h1>GHLauncher</h1>
+				</div>
+				<ul class="menu">
+					<li><a href="index.html">About</a></li>
+					<li><a href="games.html">Games</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main>
+			<div id="container">
+				<section class="about-section">
+					<h2>Introducing GHLauncher</h2>
+					<p>Welcome to <strong>GHLauncher</strong>, the ultimate platform for hosting and playing games. Whether you’re a developer wanting to share your creations or a gamer looking to explore new titles, GHLauncher is designed to be user-friendly and efficient, making game hosting easy for all.</p>
+
+
+					<h3>What We Offer</h3>
+					<p>At GHLauncher, we are committed to providing a space where smaller, independent creators can showcase their games, while offering players a seamless experience to access, download, and enjoy them on their desktop. Our platform supports both <strong>Mac</strong> and <strong>Windows</strong>, with compatibility across a variety of development languages including <strong>Python (DearPyGUI, Pygame)</strong>, <strong>Java</strong>, <strong>HTML</strong>, <strong>CSS</strong>, and <strong>SQLite</strong>.</p>
+
+				
+					<h3>Contributors & Our Team</h3>
+					<p><strong>GHLauncher.io</strong> is driven by a dedicated team of developers, designers, and gaming enthusiasts committed to creating a platform that empowers indie creators. Our contributors bring expertise from various programming backgrounds, working together to make GHLauncher robust, adaptable, and user-friendly.</p>
+
+				</section>
+
+				<section class="app-info">
+					<h3>Download the App here!</h3>
+					<img src="thumbnails/App1.png" height="350" width="350">
+					<div>
+						<button class="btn">Download</button>	
+					</div>
+				</section>
+			</div>
+		</main>
+
+		<footer>
+			<p>&copy; 2024 GHLauncher. All Rights Reserved.</p>
+		</footer>
+	</div>
+</body>
+
+</html>

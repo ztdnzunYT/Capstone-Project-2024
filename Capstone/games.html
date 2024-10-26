@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Game</title>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #1c1c1c; /* Dark background */
+			color: #f0f0f0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.wrapper {
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
+
+		header {
+			background-color: #111; /* Darker header */
+			padding: 30px;
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+		}
+
+		.logo h1 {
+			color: #fd2e2e; /* logo color */
+			font-size: 40px;
+			display: inline-block;
+		}
+
+		nav {
+			padding-bottom: 10px;
+		}
+
+		nav .menu {
+			float: right;
+			list-style: none;
+		}
+
+		nav .menu li {
+			display: inline-block;
+			margin-left: 40px;
+			margin-right: 40px;
+		}
+
+		nav .menu li a {
+			color: #f0f0f0;
+			text-decoration: none;
+			font-size: 20px;
+			padding: 10px;
+		}
+
+		nav .menu li a:hover {
+			color: #ff4500; /* Hover effect for links */
+		}
+
+		#hero {
+			text-align: center;
+			padding: 60px 0;
+			color: #fff;
+			background: radial-gradient(circle at 0.2% 1.8%, rgb(255, 90, 8) 0%, rgb(88, 0, 0) 100.2%);
+
+
+		}
+
+		#hero h2:first-of-type {
+			font-size: 3.5rem; /* Larger font size */
+			font-weight: bold;
+			text-transform: uppercase;
+			text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7); /* Subtle shadow effect */
+			animation: glow 1.5s ease-in-out infinite alternate; /* Text glow effect */
+		}
+
+		#hero h2:nth-of-type(2) {
+			font-size: 2.5rem;
+			margin-bottom: 20px;
+			color: #fff; /* Highlighted color */
+		}
+
+			@keyframes glow {
+			from {
+				text-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500;
+			}
+			to {
+				text-shadow: 0 0 20px #ff4500, 0 0 30px #ff4500;
+			}
+		}
+
+
+		
+
+		main {
+			padding: 50px;
+			flex: 1;
+		}
+
+		#container {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+			gap: 75px;
+		}
+
+		.game-card {
+			background-color: #2a2a2a;
+			border-radius: 8px;
+			padding: 30px;
+			color: white;
+			text-align: center;
+			transition: transform 0.2s ease;
+		}
+
+		.game-card:hover {
+			transform: translateY(-10px); /* Lifts the card slightly on hover */
+		}
+
+		.game-card img {
+			border-radius: 5px;
+		}
+		
+		.game-card h3 {
+			padding: 8px;
+		}
+		
+		.details {
+			background-color: #ff4500;
+			color: white;
+			padding: 5px 10px;
+			border-radius: 5px;
+			margin-top: 10px;
+			display: inline-block;
+			text-decoration: none;
+		}
+
+		.details:hover {
+			background-color: #e63900;
+		}
+
+		footer {
+			text-align: center;
+			background-color: #111;
+			padding: 20px;
+			color: #777;
+		}
+
+		footer p {
+			margin-top: 20px;
+			font-size: 0.9rem;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<header>
+			<nav>
+				<div class="logo">
+					<h1>GHLauncher</h1>
+				</div>
+				<ul class="menu">
+					<li><a href="index.html">About</a></li>
+					<li><a href="games.html">Games</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<div id="hero">
+			<h2>Play Now!</h2>
+			<h2>Check Out Our Downloadable Games!</h2>
+			
+		</div>
+
+		<main>
+			<div id="container">
+				<div class="game-catalog">
+					<div class="game-card">
+						<img src="thumbnails/KartShifters.png" height="350" width="300">
+						<h3>Kart Shifters</h3>
+						<p><strong>Genre:</strong> Racing</p>	
+						
+						<a href="game-details-kartshifters.html" class="details">Details</a>
+					</div>
+				</div>
+
+				<div class="game-catalog">
+					<div class="game-card">
+						<img src="thumbnails/BBall.png" height="350" width="300">
+						<h3>Pixel Baseball</h3>
+						<p><strong>Genre:</strong> Sports</p>
+						
+						<a href="game-details-pixelbaseball.html" class="details">Details</a>
+					</div>
+				</div>
+
+				<div class="game-catalog">
+					<div class="game-card">
+						<img src="thumbnails/FIGHTRZ.png" height="350" width="300">
+						<h3>FIGHTRZ</h3>
+						<p><strong>Genre:</strong> Action</p>
+						
+						<a href="game-details-fightrz.html" class="details">Details</a>
+					</div>
+				</div>
+
+				<div class="game-catalog">
+					<div class="game-card">
+						<img src="thumbnails/KartShifters.png" height="350" width="300">
+						<h3>Kart Shifters</h3>
+						<p><strong>Genre:</strong> Racing</p>
+						
+						<a href="game-details-kartshifters-2.html" class="details">Details</a>
+					</div>
+				</div>
+
+				<div class="game-catalog">
+					<div class="game-card">
+						<img src="thumbnails/KartShifters.png" height="350" width="300">
+						<h3>Xplore</h3>
+						<p><strong>Genre:</strong> Adventure, Survival</p>
+					
+						<a href="game-details-xplore.html" class="details">Details</a>
+					</div>
+				</div>
+
+				<div class="game-catalog">
+					<div class="game-card">
+						<img src="thumbnails/PickleJump.png" height="350" width="300">
+						<h3>Pickle Jump</h3>
+						<p><strong>Genre:</strong> Casual</p>
+						
+						<a href="game-details-picklejump.html" class="details">Details</a>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<footer>
+			<p>&copy; 2024 GHLauncher. All Rights Reserved.</p>
+		</footer>
+	</div>
+</body>
+
+</html>

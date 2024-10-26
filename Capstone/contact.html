@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Contact</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1c1c1c;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #111;
+            padding: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            
+        }
+        
+        .logo h1 {
+            color: #fd2e2e;
+            font-size: 40px;
+            display: inline-block;
+        }
+        
+        nav {
+            padding-bottom: 10px;
+        }
+        
+        nav .menu {
+            float: right;
+            list-style: none;
+        }
+        
+        nav .menu li {
+            display: inline-block;
+            margin-left: 40px;
+            margin-right: 40px;
+        }
+        
+        nav .menu li a {
+            color: #f0f0f0;
+            text-decoration: none;
+            font-size: 20px;
+            padding: 10px;
+        }
+        
+        nav .menu li a:hover {
+            color: #ff4500;
+        }
+        
+        .text {
+            text-align: center;
+            color: white;
+            width: 80%;
+            padding: 3%;
+            margin: 0 auto;
+            margin-top: 5%;
+            align-items: center;
+            background: radial-gradient(circle at center, #ff4500 14%,  #740000, #1c1c1c 95%);
+            letter-spacing: 20px;
+        }
+        
+        .contact-form {
+            margin-top: 5%;
+            align-content: center;
+            text-align: center;
+            font-size: larger;
+        }
+        
+        .form-boxes {
+            padding-bottom: 2.5%;
+            color: white;
+        }
+
+        .form-boxes p {
+            padding-bottom: 1%;
+            justify-content: center;
+        }
+
+        
+        .form-container {
+            justify-content: center;
+            display: flex;
+        }
+
+        .check-boxes {
+            height: 80%;
+        }
+
+        .map {
+            width: 65%;
+            margin: 0 auto;
+            margin-top: 5%;
+            background-color: #2a2a2a;
+            padding: 2%;
+            border-radius: 15px;
+        }
+        
+        footer {
+			text-align: center;
+			background-color: #111;
+			padding: 20px;
+            margin-top: 5%;
+			color: #777;
+		}
+
+		footer p {
+			margin-top: 20px;
+			font-size: 0.9rem;
+		}
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+		<header>
+			<nav>
+				<div class="logo">
+					<h1>GHLauncher</h1>
+				</div>
+				<ul class="menu">
+					<li><a href="index.html">About</a></li>
+					<li><a href="games.html">Games</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</nav>
+		</header>
+
+        <div class="text">
+            <h1>Contact Us</h1>
+        </div>
+
+        <div class="contact-form">
+            <form action="" method="POST" /*remember to finish here*/
+            enctype="multipart/form-data">
+            <p>
+                <div class="form-boxes">
+                    <label for="First Name">First Name:</label>
+                    <input type="text" name="firstName" id="firstName" placeholder="First Name" required>
+
+                    <label for="Last Name">&nbsp;&nbsp;&nbsp;&nbsp;Last Name:</label>
+                    <input type="text" name="lastName" id="lastName" placeholder="Last Name" required>
+                </div>
+            </p>
+            <p>
+                <div class="form-boxes">
+                    <label for="Email">Email address:</label>
+                    <input type="text" name="email" id="email" placeholder="example@example.com" required>
+   
+                    <label for="Phone Number">&nbsp;&nbsp;&nbsp;&nbsp;Phone Number:</label>
+                    <input type="text" name="phoneNumber" id="phoneNumber" placeholder="(123) 456-7890" required>
+                </div>
+            </p>
+            <p>
+                <div class="form-boxes">
+                    <p>Is there an application in particular you are having problems with?</p>
+
+                    <form>
+                        <div class="form-container">
+                            <div class="check-boxes">
+                                <input type="checkbox" id="game1" name="Kart Shifters" value="Kart Shifters">
+                                <label for="game1"> Kart Shifters&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                <input type="checkbox" id="game2" name="Pixel Baseball" value="Pixel Baseball">
+                                <label for="game2"> Pixel Baseball</label><br>
+                                <input type="checkbox" id="game3" name="FIGHTRZ" value="FIGHTERZ">
+                                <label for="game3"> FIGHTERZ&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                <input type="checkbox" id="game4" name="XPlore" value="XPlore">
+                                <label for="game4"> XPlore</label><br>
+                                <input type="checkbox" id="game5" name="--Kart Shifters--" value="--Kart Shifters--">
+                                <label for="game5"> --Kart Shifters--&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                <input type="checkbox" id="game6" name="Pickle Jump" value="Pickel Jump">
+                                <label for="game6"> Pickel Jump</label><br>
+                                <input type="checkbox" id="game7" name="Other" value="Other">
+                                <label for="game7"> Other&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                <input type="checkbox" id="game8" name="general" value="general">
+                                <label for="game8"> General</label><br>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+            <p>
+                <div class="form-boxes">
+                    <p>Describe the issue:</p>
+                    <label for=""></label>
+                    <textarea id="reason" name="reason" placeholder="please explain your problem here..." rows="10" cols="80"></textarea>
+                </div>
+
+            <p>
+                <div class="form-boxes">
+                    <p>Do you have a photo/screenshot?</p>
+                    <label for="picture">Photo:&nbsp;</label>
+                    <input type="file" name="picture" id="picture">
+                </div>
+            </p>
+            <p>
+                <div>
+                    <input type="submit" value="Submit">
+                </div>
+            </p>
+        </form>
+
+        <div class="map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6566.468650107878!2d-89.97327552548568!3d34.62351828735223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x887ff8e66a5f8041%3A0x27bfe55a3816e973!2sBerry%20Building!5e0!3m2!1sen!2sus!4v1729536688745!5m2!1sen!2sus" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        
+        <footer>
+			<p>&copy; 2024 GHLauncher. All Rights Reserved.</p>
+		</footer>
+    </div>
+</body>
+</html>
