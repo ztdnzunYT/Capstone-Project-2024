@@ -17,7 +17,8 @@ SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
 SPACESTATION_GREY = (50,50,50)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=False)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME ,vsync=True)
+
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
 Game_State = "Space"
@@ -487,6 +488,8 @@ class Planet():
         world_x = 0 
         world_y = 0 
 
+        move_amount = 0
+
         tile_map = np.array([
             [0,0,0,0,0,0,1,0,0],
             [0,1,0,0,0,0,0,0,0],
@@ -558,9 +561,7 @@ class Planet():
 
                 if cloud.rect.x > SCREEN_WIDTH:
                     cloud.rect.x = cloud.start_x
-
-            
-             
+         
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
         #screen.blit(self.surf,(0,0))
@@ -636,18 +637,18 @@ class Planet():
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LSHIFT]:
-            player_speed = 1
+            Planet.Tile.move_amount = 1
         else:
-            player_speed = .5
+            Planet.Tile.move_amount = .5
             
         if keys[pygame.K_a]:
-            Planet.Tile.world_x +=player_speed
+            Planet.Tile.world_x +=Planet.Tile.move_amount
         elif keys[pygame.K_d]:
-            Planet.Tile.world_x -=player_speed
+            Planet.Tile.world_x -=Planet.Tile.move_amount
         if keys[pygame.K_w]:
-            Planet.Tile.world_y +=player_speed
+            Planet.Tile.world_y +=Planet.Tile.move_amount
         elif keys[pygame.K_s]:
-            Planet.Tile.world_y -=player_speed
+            Planet.Tile.world_y -=Planet.Tile.move_amount
     
     tiles = []
     ecosystem = []
@@ -663,6 +664,11 @@ class Player():
     timer = 0
 
     idle_state = str(Player_animations.player_assests["down_idle"])
+
+    tool_range = 70
+    tool_distance = 0
+
+    
 
     def __init__(self,image):
         self.image = image
@@ -701,7 +707,7 @@ class Player():
             
     def draw_player(animation):
 
-        Player.timer = pygame.time.get_ticks() 
+        
         
         try:
             if Player.animation_number > len(animation[1]) -1:
@@ -712,10 +718,12 @@ class Player():
             player = pygame.transform.smoothscale(pygame.image.load(player_animation).convert_alpha(),(50,50))
         except:
             player = pygame.transform.smoothscale(pygame.image.load(Player.idle_state).convert_alpha(),(50,50))
-            
-        if Player.timer > Player.curr_time:
+
+
+        Player.curr_time = pygame.time.get_ticks() 
+        if  Player.curr_time > Player.timer:
             Player.animation_number+=1
-            Player.curr_time = Player.timer + Player.animation_delay
+            Player.timer  = Player.curr_time + Player.animation_delay
 
             #print(Player.animation_number)
 
@@ -729,14 +737,16 @@ class Player():
         screen.blit(player,player_rect)
 
     def draw_crosshair():
-        if pygame.mouse.get_pressed()[0] == False:
-            player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
-            screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
 
+        player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
+       
+        if pygame.mouse.get_pressed()[2] == False or Player.tool_distance > Player.tool_range:
+            screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
     
 class Toolbar():
-    tool_num = 0
+    tool_num = 2
     def draw_toolbar():
+        
         if Game_State != "Space":
             start_x = SCREEN_WIDTH - 203
             start_y = 15
@@ -745,13 +755,13 @@ class Toolbar():
             pygame.draw.rect(toolbar_surface,(0,0,0,150),(391,5,200,40),border_radius=8)
             pygame.draw.rect(toolbar_surface,(0,0,0,250),(391,5,200,40),3,8)
 
-            shovel = pygame.transform.smoothscale(pygame.image.load("xzplore\\assets\\tools\\toolbar_shovel.png").convert_alpha(),(35,30))
+            shovel = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/toolbar_shovel.png").convert_alpha(),(35,30))
             shovel_rect = shovel.get_rect()
-            pickaxe =  pygame.transform.smoothscale(pygame.image.load("xzplore\\assets\\tools\\toolbar_pickaxel.png").convert_alpha(),(35,30))
+            pickaxe =  pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/toolbar_pickaxel.png").convert_alpha(),(35,30))
             pickaxe_rect = pickaxe.get_rect()
-            gen5 = pygame.transform.smoothscale(pygame.image.load("xzplore\\assets\\tools\\toolbar_gen5.png").convert_alpha(),(30,30))
+            gen5 = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/toolbar_gen5.png").convert_alpha(),(30,30))
             gen5_rect = gen5.get_rect()
-            book = pygame.transform.smoothscale(pygame.image.load("xzplore\\assets\\tools\\toolbar_book.png").convert_alpha(),(30,30))
+            book = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/toolbar_book.png").convert_alpha(),(30,30))
             book_rect = book.get_rect()
 
 
@@ -773,15 +783,114 @@ class Toolbar():
             screen.blit(book,book_rect)
 
     def draw_tool():
+    
         mouse_pos = pygame.mouse.get_pos()
-        if pygame.mouse.get_pressed()[0] == True:
-            shovel = pygame.transform.smoothscale(pygame.image.load("xzplore\\assets\\tools\\shovel.png").convert_alpha(),(25,25))
+        Player.tool_distance = math.sqrt(int(mouse_pos[1] - SCREEN_HEIGHT/2)**2 + int(mouse_pos[0] - SCREEN_WIDTH/2)**2)
+        
+        if pygame.mouse.get_pressed()[2] == True:
+
+            pickaxe = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/pickaxe.png").convert_alpha(),(33,30))
+            pickaxe_rect = pickaxe.get_rect(topleft=(0,0))
+            pickaxe_rect.centerx = mouse_pos[0]
+            pickaxe_rect.centery = mouse_pos[1] - 5
+
+            shovel = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/shovel.png").convert_alpha(),(40,25))
             shovel_rect = shovel.get_rect(topleft=(0,0))
             shovel_rect.centerx = mouse_pos[0]
-            shovel_rect.centery = mouse_pos[1] - 5
+            shovel_rect.centery = mouse_pos[1] - 5 #+ random.randint(-3,3)
 
-            screen.blit(shovel,shovel_rect)
+            player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
+       
+            if Player.tool_distance < Player.tool_range:
+                if Toolbar.tool_num == 0:
+                    screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
+                if Toolbar.tool_num == 1:
+                    screen.blit(pickaxe,pickaxe_rect)
+                if Toolbar.tool_num == 2:
+                    screen.blit(shovel,shovel_rect)
+        
 
+        #print(screen.get_at(mouse_pos))
+
+class Tool_particles():
+
+    def __init__(self,x,y,color,size,speed,lifespan) -> None:
+        self.x = x
+        self.y = y
+        self.color = color
+        self.size = size
+        self.speed = speed
+        self.spread = random.uniform(-1,1),random.uniform(-1,1)
+        self.lifetime = 0
+        self.lifespan = lifespan
+
+    surface = pygame.Surface((50,50),pygame.SRCALPHA)
+
+    def draw_particles():
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_rect = pygame.Rect((mouse_pos[0],mouse_pos[1],1,1))
+        
+
+        try:
+            color = screen.get_at((mouse_pos[0],mouse_pos[1]+10))
+
+            if pygame.mouse.get_pressed()[2] == True:
+                if Player.tool_distance < Player.tool_range:
+                    for col in range(len(color)):
+                        color[col] = color[col] - random.randint(10,20)
+
+                    for item in Planet.ecosystem:
+                        if len(Tool_particles.tool_particles) < 150:
+
+                            try:
+                                item_rect = pygame.Rect(item.rect.x+(item.rect.width/3),item.rect.y+(item.rect.height/3),item.rect.width/3,item.rect.height/3)
+                                #pygame.draw.rect(screen,(255,0,0),item_rect,1)
+                                if pygame.Rect.colliderect(item_rect,mouse_rect):
+                                    if Toolbar.tool_num == 1:
+                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],(color),random.randint(3,7),random.uniform(-1,1),random.uniform(200,400)))
+                                
+                                elif pygame.Rect.colliderect(item_rect,mouse_rect) == False:
+                                    if Toolbar.tool_num == 2:
+                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],(color),random.randint(3,7),random.uniform(-2,2),random.uniform(200,300)))
+                
+                            except:
+                                pass
+        except:
+            pass
+
+
+        for particle in Tool_particles.tool_particles:
+
+            pygame.draw.rect(screen,(particle.color),(particle.x,particle.y,particle.size,particle.size))
+        
+    def update():
+        keys = pygame.key.get_pressed()
+        for particle in Tool_particles.tool_particles:
+
+            if particle.lifetime > 21:
+                if keys[pygame.K_a]:
+                    particle.x += Planet.Tile.move_amount
+                elif keys[pygame.K_d]:
+                    particle.x -= Planet.Tile.move_amount
+                if keys[pygame.K_w]:
+                    particle.y += Planet.Tile.move_amount
+                elif keys[pygame.K_s]:
+                    particle.y -= Planet.Tile.move_amount
+                
+            if particle.lifetime < random.uniform(18,20):
+                particle.x += particle.spread[0] + random.randint(-1,1)
+                particle.y += particle.spread[1] + random.randint(-1,1)
+            
+            particle.lifetime +=1
+            if particle.size > 1:
+                
+                particle.size -= random.uniform(0,0.01)
+
+            if particle.lifetime > particle.lifespan:
+                Tool_particles.tool_particles.remove(particle)
+        
+
+    tool_particles = []
 
 
 class Item_display():
@@ -801,35 +910,36 @@ class Item_display():
         self.window_radius = 10
   
     def draw_item_display_window(self):
-        
-        try:
-            image,item,description = Item_display.find_item(self)
-            screen.blit(self.surface,self.surf_rect)
-            pygame.draw.rect(self.surface,(0,0,0,140),(30,Item_display.display_y,170,250),0,self.window_radius)
-            pygame.draw.rect(self.surface,(0,0,0),(30,Item_display.display_y,170,250),3,self.window_radius)
-            pygame.draw.rect(self.surface,(0,0,0),(30,Item_display.display_y,170,150),3,0,self.window_radius,self.window_radius)
-            self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(130,130))
-            self.rect = self.image.get_rect()
-            screen.blit(self.image,(SCREEN_WIDTH-160,Item_display.display_y+20))
-            split_text = description.split()
-            text_len = 0
-            text_height = 0
-            self.text = self.font.render(item,True,(255,255,255))
-            self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,Item_display.display_y+170+text_height))
-            screen.blit(self.text,self.text_rect)
-            text_height = 23
-            for text in split_text:
-                self.text = self.font.render(text,True,(255,255,255))
+        if Game_State != "Space":
+                
+            try:
+                image,item,description = Item_display.find_item(self)
+                screen.blit(self.surface,self.surf_rect)
+                pygame.draw.rect(self.surface,(0,0,0,140),(30,Item_display.display_y,170,250),0,self.window_radius)
+                pygame.draw.rect(self.surface,(0,0,0),(30,Item_display.display_y,170,250),3,self.window_radius)
+                pygame.draw.rect(self.surface,(0,0,0),(30,Item_display.display_y,170,150),3,0,self.window_radius,self.window_radius)
+                self.image = pygame.transform.smoothscale(pygame.image.load(image).convert_alpha(),(130,130))
+                self.rect = self.image.get_rect()
+                screen.blit(self.image,(SCREEN_WIDTH-160,Item_display.display_y+20))
+                split_text = description.split()
+                text_len = 0
+                text_height = 0
+                self.text = self.font.render(item,True,(255,255,255))
                 self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,Item_display.display_y+170+text_height))
-                width = self.text.get_width()
-                text_len += width + 5
-                if self.text_rect.x > 1090:
-                    text_len = 0
-                    text_height += 15
                 screen.blit(self.text,self.text_rect)
-        except:
-            pass
-        
+                text_height = 23
+                for text in split_text:
+                    self.text = self.font.render(text,True,(255,255,255))
+                    self.text_rect = self.text.get_rect(topleft=(SCREEN_WIDTH-165+text_len,Item_display.display_y+170+text_height))
+                    width = self.text.get_width()
+                    text_len += width + 5
+                    if self.text_rect.x > 1090:
+                        text_len = 0
+                        text_height += 15
+                    screen.blit(self.text,self.text_rect)
+            except:
+                pass
+            
     def find_item(self):    
 
         mouse_pos = pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)
@@ -1024,6 +1134,7 @@ while True:
                         if pygame.Rect.colliderect(spaceship.rect,space_station.airlock) == False:
                             transition_screen.color = (255,255,255)
                             transition_screen.transparecy = random.randint(0,20)
+                            
                     except:
                         pass
 
@@ -1054,14 +1165,18 @@ while True:
         space_station.move()
 
     if Game_State == "Desert_planet":
-        
+        Sounds.play_sound(Sounds.desert_wind,0.1)
         Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,Desert_planet.bush_assets)
         Planet.map_move()
         #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
+        Tool_particles.draw_particles()
+        Tool_particles.update()
+        
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
-        Sounds.play_sound(Sounds.desert_wind,0.1)
+        
         Player.draw_crosshair()
         Toolbar.draw_tool()
+        
         
    
     transition_screen.update(spaceship)
