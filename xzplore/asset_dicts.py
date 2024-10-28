@@ -74,12 +74,16 @@ class Desert_planet():
         
 
 class Colletibles():
-    pass
+
+    collectible_items = {
+        #"fossils" : os.path.normpath() ,  os.listdir(os.path.normpath("xzplore/assets/fossils"))
+
+    }
 
 
 
 
-
+print(Colletibles.collectible_items["fossils"])
 
 
 
