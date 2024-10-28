@@ -71,6 +71,16 @@ class Desert_planet():
         "description": "Wooded dried plant with short branches"
     }
 
+        
+
+class Colletibles():
+    pass
+
+
+
+
+
+
 
 
 
