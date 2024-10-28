@@ -814,13 +814,13 @@ class Toolbar():
 
 class Tool_particles():
 
-    def __init__(self,x,y,color,size,speed,lifespan) -> None:
+    def __init__(self,x,y,color,size,spread,speed,lifespan) -> None:
         self.x = x
         self.y = y
         self.color = color
         self.size = size
         self.speed = speed
-        self.spread = random.uniform(-1,1),random.uniform(-0.5,1)
+        self.spread = spread
         self.lifetime = 0
         self.lifespan = lifespan
 
@@ -847,12 +847,20 @@ class Tool_particles():
                                 #pygame.draw.rect(screen,(255,0,0),item_rect,1)
                                 if pygame.Rect.colliderect(item_rect,mouse_rect):
                                     if Toolbar.tool_num == 1:
-                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],(color),random.randint(3,7),random.uniform(-1,1),random.uniform(200,400)))
+                                        Tool_particles.tool_particles.append(
+                                            Tool_particles(mouse_pos[0],mouse_pos[1],
+                                                           (color),size=random.randint(3,7),
+                                                           spread=(random.uniform(-.5,.5),random.uniform(-.5,.5)),
+                                                           speed=random.uniform(-1,1),
+                                                           lifespan=random.uniform(200,400)))
                                 
                                 elif pygame.Rect.colliderect(item_rect,mouse_rect) == False:
                                     if Toolbar.tool_num == 2:
-                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],(color),random.randint(3,7),random.uniform(-2,2),random.uniform(200,300)))
-                
+                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],
+                                                           (color),size=random.randint(3,7),
+                                                           spread=(random.uniform(-1.5,1.5),random.uniform(-1,1.5)),
+                                                           speed=random.uniform(-1,1),
+                                                           lifespan=random.uniform(200,400)))
                             except:
                                 pass
         except:
@@ -889,9 +897,7 @@ class Tool_particles():
             if particle.lifetime > particle.lifespan:
                 Tool_particles.tool_particles.remove(particle)
         
-
     tool_particles = []
-
 
 class Item_display():
     display_x = 170
@@ -973,7 +979,7 @@ class Item_display():
         '''
         
 class Item():
-    def __init__(self,item,item_description,color,image,size) -> None:
+    def __init__(self,item,item_description,color,image,size,detection_time) -> None:
         self.pos = random.randint(200,800)
         self.item = item
         self.item_description = item_description
@@ -983,25 +989,38 @@ class Item():
         self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size,self.size))
         self.rect = self.surf.get_rect()
         self.surf.set_alpha(0)
+        self.detection_time = detection_time
         
 
     def draw(self):
-        self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,self.size/2,self.size/2))
+        self.rect.center = (self.pos+Planet.Tile.world_x),(self.pos+Planet.Tile.world_y)
         
         screen.blit(self.surf,self.rect)
         for item in range(len(Resources.resources)):
             pygame.draw.rect(screen,(255,0,0),self.rect,1)
             if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Resources.resources[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
-                Resources.resources[item].surf.set_alpha(round(Resources.resources[item].surf.get_alpha()+0.6))
-                print(Resources.resources[item].surf.get_alpha())
-
+                if Player.tool_distance < Player.tool_range:
+                    Resources.resources[item].detection_time -= 0.1
+                    if Resources.resources[item].detection_time < 0:
+                        Resources.resources[item].surf.set_alpha(round(Resources.resources[item].surf.get_alpha()+0.6))
+                   
 class Resources():
 
-    Rock = Item("Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("xzplore/assets","orange_rock.png"),100)
-    Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("xzplore/assets","fossil-5.png"),50)
+    Rock = "Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("xzplore/assets","orange_rock.png"),100,100
+    Fossil = "Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("xzplore/assets","fossil-5.png"),50,500
+    
+    all_item = [Rock,Fossil]
 
-    resources = [Rock,Fossil]
-        
+    resources = []
+
+
+
+
+
+
+    for i in range(7):
+        resources.append(Item(*Fossil))
+
 class Transition_screen():
 
     def __init__(self,x,y,color):
