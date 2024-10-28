@@ -8,8 +8,7 @@ import sys
 import os 
 import numpy as np
 
-from asset_dicts import Player_animations
-from asset_dicts import Desert_planet,Clouds
+from asset_dicts import *
 
 
 SCREEN_WIDTH = 1200#950w
@@ -17,7 +16,7 @@ SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
 SPACESTATION_GREY = (50,50,50)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME ,vsync=True)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME ,vsync=False)
 
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
@@ -840,7 +839,7 @@ class Tool_particles():
                         color[col] = color[col] - random.randint(10,20)
 
                     for item in Planet.ecosystem:
-                        if len(Tool_particles.tool_particles) < 150:
+                        if len(Tool_particles.tool_particles) < 130:
 
                             try:
                                 item_rect = pygame.Rect(item.rect.x+(item.rect.width/3),item.rect.y+(item.rect.height/3),item.rect.width/3,item.rect.height/3)
@@ -860,7 +859,7 @@ class Tool_particles():
                                                            (color),size=random.randint(3,7),
                                                            spread=(random.uniform(-1.5,1.5),random.uniform(-1,1.5)),
                                                            speed=random.uniform(-1,1),
-                                                           lifespan=random.uniform(200,400)))
+                                                           lifespan=random.uniform(200,250)))
                             except:
                                 pass
         except:
@@ -979,8 +978,8 @@ class Item_display():
         '''
         
 class Item():
-    def __init__(self,item,item_description,color,image,size,detection_time) -> None:
-        self.pos = random.randint(200,800)
+    def __init__(self,item,item_description,pos,color,image,size,detection_time) -> None:
+        self.pos = pos
         self.item = item
         self.item_description = item_description
         self.color = color
@@ -1006,20 +1005,17 @@ class Item():
                    
 class Resources():
 
-    Rock = "Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("xzplore/assets","orange_rock.png"),100,100
-    Fossil = "Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("xzplore/assets","fossil-5.png"),50,500
-    
-    all_item = [Rock,Fossil]
+    Rock = ("Sand Rock","Naturally occurring solid made up of a mineral like substance",random.randint(200,800),(198, 126, 39),
+            os.path.join("xzplore/assets","orange_rock.png"),100,100)
+    def random_fossil():
+        Fossil = ("Fossil","Skeletal remains of a once living organism",random.randint(200,800),(255, 228, 196),
+                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(300,400))
+        return Fossil
 
     resources = []
 
-
-
-
-
-
-    for i in range(7):
-        resources.append(Item(*Fossil))
+    for i in range(5):
+        resources.append(Item(*random_fossil()))
 
 class Transition_screen():
 
