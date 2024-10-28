@@ -1,5 +1,5 @@
 import os
-
+import random
 
 
 
@@ -71,20 +71,14 @@ class Desert_planet():
         "description": "Wooded dried plant with short branches"
     }
 
-        
+
 
 class Colletibles():
 
     collectible_items = {
-        #"fossils" : os.path.normpath() ,  os.listdir(os.path.normpath("xzplore/assets/fossils"))
-
+        "fossil_path" : os.path.normpath("xzplore/assets/fossils"),
+        "fossils" : os.listdir(os.path.normpath("xzplore/assets/fossils")),
+        "random_fossil" : random.choice(os.listdir(os.path.normpath("xzplore/assets/fossils")))
     }
 
-
-
-
-print(Colletibles.collectible_items["fossils"])
-
-
-
-
+print(Colletibles.collectible_items["fossil_path"])
