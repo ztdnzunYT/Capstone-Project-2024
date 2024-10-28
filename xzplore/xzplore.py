@@ -820,7 +820,7 @@ class Tool_particles():
         self.color = color
         self.size = size
         self.speed = speed
-        self.spread = random.uniform(-1,1),random.uniform(-1,1)
+        self.spread = random.uniform(-1,1),random.uniform(-0.5,1)
         self.lifetime = 0
         self.lifespan = lifespan
 
@@ -973,24 +973,32 @@ class Item_display():
         '''
         
 class Item():
-    def __init__(self,item,item_description,color,image) -> None:
+    def __init__(self,item,item_description,color,image,size) -> None:
         self.pos = random.randint(200,800)
         self.item = item
         self.item_description = item_description
         self.color = color
         self.image = image
-        self.surf = pygame.image.load(self.image).convert_alpha()
+        self.size  = size
+        self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size,self.size))
         self.rect = self.surf.get_rect()
+        self.surf.set_alpha(0)
         
 
     def draw(self):
-        self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,20,20))
-        pygame.draw.rect(screen,self.color,(self.rect))
+        self.rect = pygame.rect.Rect((self.pos+Planet.Tile.world_x,self.pos+Planet.Tile.world_y,self.size/2,self.size/2))
+        
+        screen.blit(self.surf,self.rect)
+        for item in range(len(Resources.resources)):
+            pygame.draw.rect(screen,(255,0,0),self.rect,1)
+            if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Resources.resources[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
+                Resources.resources[item].surf.set_alpha(round(Resources.resources[item].surf.get_alpha()+0.6))
+                print(Resources.resources[item].surf.get_alpha())
 
 class Resources():
 
-    Rock = Item("Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("xzplore/assets","orange_rock.png"))
-    Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("xzplore/assets","fossil-5.png"))
+    Rock = Item("Sand Rock","Naturally occurring solid made up of a mineral like substance",(198, 126, 39),os.path.join("xzplore/assets","orange_rock.png"),100)
+    Fossil = Item("Fossil","Skeletal remains of a once living organism",(255, 228, 196),os.path.join("xzplore/assets","fossil-5.png"),50)
 
     resources = [Rock,Fossil]
         
