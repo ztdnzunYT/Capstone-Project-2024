@@ -588,10 +588,10 @@ class Planet():
                         elif row[col] == 1:
                             image = (os.path.normpath(os.path.join(map_tile["path"],random.choice(map_tile["dig_tiles"]))))
                             if random.randint(1,5) == 2: #PUTS FOSSIL ON DIG TILE
-                                Resources.buried_collectables.append(Item(*Resources.random_fossil()))
-                                Resources.buried_collectables[buried_collectible_num].pos = int(col*Planet.Tile.TILE_SIZE)+random.randint(70,150),int((index*Planet.Tile.TILE_SIZE))+random.randint(50,150)
+                                Collectibles.buried_collectables.append(Item(*Collectibles.random_fossil()))
+                                Collectibles.buried_collectables[buried_collectible_num].pos = int(col*Planet.Tile.TILE_SIZE)+random.randint(70,150),int((index*Planet.Tile.TILE_SIZE))+random.randint(50,150)
                                 buried_collectible_num +=1
-                                #print(Resources.buried_collectables[buried_collectible_num].pos)
+                                #print(Collectibles.buried_collectables[buried_collectible_num].pos)
                     
                         Planet.tiles.append(Planet.Tile(image,200,tile_num,0,0,None))                        
                     screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].rect.topleft))
@@ -602,7 +602,7 @@ class Planet():
                     pass 
                 tile_num+=1
         
-        for item in Resources.buried_collectables:
+        for item in Collectibles.buried_collectables:
             item.draw()
 
         tile1_num = 0
@@ -617,8 +617,8 @@ class Planet():
                             rock_image = os.path.normpath(os.path.join(rocks["path"],random.choice(rocks["rocks"])))
                             Planet.ecosystem.append(Planet.Tile(rock_image,200,None,random.randint(75,125),random.randint(75,125),rocks))
                             
-                            Resources.rock_collectables.append(Item(*Resources.random_gem(gems)))
-                            Resources.rock_collectables[rock_collectibles_num].pos = int(col*Planet.Tile.TILE_SIZE)+200,int((index*Planet.Tile.TILE_SIZE))+200
+                            Collectibles.rock_collectables.append(Item(*Collectibles.random_gem(gems)))
+                            Collectibles.rock_collectables[rock_collectibles_num].pos = int(col*Planet.Tile.TILE_SIZE)+200,int((index*Planet.Tile.TILE_SIZE))+200
                             rock_collectibles_num+=1
 
                         elif  Planet.Tile.ecosystem_map[index][col] == 4:
@@ -642,8 +642,8 @@ class Planet():
                     pass
                 tile1_num+=1
 
-        print(len(Resources.rock_collectables))
-        for item in Resources.rock_collectables:    
+      
+        for item in Collectibles.rock_collectables:    
             item.draw()
         
         
@@ -807,7 +807,7 @@ class Toolbar():
             pickaxe = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/pickaxe.png").convert_alpha(),(33,30))
             pickaxe_rect = pickaxe.get_rect(topleft=(0,0))
             pickaxe_rect.centerx = mouse_pos[0]
-            pickaxe_rect.centery = mouse_pos[1] - 5
+            pickaxe_rect.centery = mouse_pos[1] + 5
 
             shovel = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/shovel.png").convert_alpha(),(40,25))
             shovel_rect = shovel.get_rect(topleft=(0,0))
@@ -883,7 +883,6 @@ class Tool_particles():
 
 
         for particle in Tool_particles.tool_particles:
-
             pygame.draw.rect(screen,(particle.color),(particle.x,particle.y,particle.size,particle.size))
         
     def update():
@@ -968,17 +967,17 @@ class Item_display():
         mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1], 1, 1)
 
 
-        for item in Resources.buried_collectables:
+        for item in Collectibles.buried_collectables:
             try:
                 if pygame.Rect.colliderect(item.rect,mouse_rect) and item.detection_time <= 0:
                     return item.image,item.item,item.item_description
             except:
                 pass
         
-        for item in Resources.rock_collectables:
+        for item in Collectibles.rock_collectables:
             try:
                 item_rect = pygame.Rect(item.rect.x+(item.rect.width/3),item.rect.y+(item.rect.height/3),item.rect.width/3,item.rect.height/3)
-                if pygame.Rect.colliderect(item.rect,mouse_rect): #ADD DETECTION TIME
+                if pygame.Rect.colliderect(item.rect,mouse_rect) and item.detection_time <= 0: #ADD DETECTION TIME
                     return item.image,item.item,item.item_description
             except:
                 pass
@@ -1011,34 +1010,38 @@ class Item():
 
     def draw(self):
         self.rect.center = (self.pos[0]+Planet.Tile.world_x),(self.pos[1]+Planet.Tile.world_y)
-        
+        pygame.draw.rect(screen,(255,0,0),self.rect,1)  #self.rect every image that passes throught the draw parameter
         screen.blit(self.surf,self.rect)
-        for item in range(len(Resources.buried_collectables)):
-            pygame.draw.rect(screen,(255,0,0),self.rect,1)
-            if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Resources.buried_collectables[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
+        for item in range(len(Collectibles.buried_collectables)):
+            
+            if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Collectibles.buried_collectables[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
                 if Player.tool_distance < Player.tool_range and Toolbar.tool_num == 2:
-                    Resources.buried_collectables[item].detection_time -= 0.1
-                    if Resources.buried_collectables[item].detection_time < 0:
-                        Resources.buried_collectables[item].surf.set_alpha(round(Resources.buried_collectables[item].surf.get_alpha()+0.6))
-                   
-class Resources():
+                    Collectibles.buried_collectables[item].detection_time -= 0.1
+                    if Collectibles.buried_collectables[item].detection_time < 0:
+                        Collectibles.buried_collectables[item].surf.set_alpha(round(Collectibles.buried_collectables[item].surf.get_alpha()+0.6))
+
+        for item in range(len(Collectibles.rock_collectables)):
+            if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Collectibles.rock_collectables[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
+                if Player.tool_distance < Player.tool_range and Toolbar.tool_num == 1:
+                    Collectibles.rock_collectables[item].detection_time -= 0.1
+                    if Collectibles.rock_collectables[item].detection_time < 0:
+                        Collectibles.rock_collectables[item].surf.set_alpha(round(Collectibles.rock_collectables[item].surf.get_alpha()+0.6))
+            
+
+
+class Collectibles():
 
     def random_fossil():
         Fossil = ("Fossil","Skeletal remains of a once living organism",random.randint(200,800),
-                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(200,300))
+                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(250,300))
         return Fossil
 
 
     def random_gem(gem):
-        print(random.choice(gem))
+        #print(random.choice(gem))
         gem_parameters = random.choice(gem)
-        Gem = (gem_parameters["item"],gem_parameters["description"],0,gem_parameters["image"],25,50)
+        Gem = (gem_parameters["item"],gem_parameters["description"],0,gem_parameters["image"],25,150)
         return Gem
-
-   
-    Fossil = random_fossil 
-
-
 
     buried_collectables = []
     rock_collectables = []
