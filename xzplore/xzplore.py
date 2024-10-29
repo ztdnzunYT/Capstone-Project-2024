@@ -575,6 +575,8 @@ class Planet():
 
         #image = os.path.normpath(("xzplore/assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
         tile_num = 0
+
+        collectible_num = 0
         
         for index,row in enumerate(Planet.Tile.tile_map):
             for col in range(len(row)):
@@ -584,17 +586,28 @@ class Planet():
                             image = (os.path.normpath(os.path.join(map_tile["path"],map_tile["normal_tiles"])))
                         elif row[col] == 1:
                             image = (os.path.normpath(os.path.join(map_tile["path"],random.choice(map_tile["dig_tiles"]))))
-                        Planet.tiles.append(Planet.Tile(image,200,tile_num,0,0,None))
-                        
+                        Planet.tiles.append(Planet.Tile(image,200,tile_num,0,0,None))                        
                     screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].rect.topleft))
                     x,y = int((col*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x),int((index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y)
                     Planet.tiles[tile_num].rect.topleft = x,y
+
+
+                    if len(Planet.tiles) <= Planet.Tile.num_tile_in_tilemap:
+                        if row[col] == 1:
+                            if random.randint(2,3) == 2:  #random places the fossils
+                                Resources.buried_collectables.append(Item(*Resources.Fossil()))
+                                Resources.buried_collectables[collectible_num].pos = int(col*Planet.Tile.TILE_SIZE)+random.randint(70,150),int((index*Planet.Tile.TILE_SIZE))+random.randint(50,150)
+                            #print(Resources.buried_collectables[collectible_num].pos)
+                                collectible_num +=1
+                          
+
                 except:
                     pass 
                 tile_num+=1
         
+        for item in Resources.buried_collectables:
+            item.draw()
 
-    
 
         tile1_num = 0
         for index,row in enumerate(Planet.Tile.tile_map):
@@ -628,8 +641,7 @@ class Planet():
                     pass
                 tile1_num+=1
 
-        for item in Resources.resources:
-            item.draw()
+        
         
     def map_move():
 
@@ -952,9 +964,9 @@ class Item_display():
         mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1], 1, 1)
 
 
-        for item in Resources.resources:
+        for item in Resources.buried_collectables:
             try:
-                if pygame.Rect.colliderect(item.rect,mouse_rect):
+                if pygame.Rect.colliderect(item.rect,mouse_rect) and item.detection_time <= 0:
                     return item.image,item.item,item.item_description
             except:
                 pass
@@ -992,30 +1004,33 @@ class Item():
         
 
     def draw(self):
-        self.rect.center = (self.pos+Planet.Tile.world_x),(self.pos+Planet.Tile.world_y)
+        self.rect.center = (self.pos[0]+Planet.Tile.world_x),(self.pos[1]+Planet.Tile.world_y)
         
         screen.blit(self.surf,self.rect)
-        for item in range(len(Resources.resources)):
+        for item in range(len(Resources.buried_collectables)):
             pygame.draw.rect(screen,(255,0,0),self.rect,1)
-            if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Resources.resources[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
-                if Player.tool_distance < Player.tool_range:
-                    Resources.resources[item].detection_time -= 0.1
-                    if Resources.resources[item].detection_time < 0:
-                        Resources.resources[item].surf.set_alpha(round(Resources.resources[item].surf.get_alpha()+0.6))
+            if pygame.mouse.get_pressed()[2] and pygame.Rect.colliderect(Resources.buried_collectables[item].rect ,pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)):
+                if Player.tool_distance < Player.tool_range and Toolbar.tool_num == 2:
+                    Resources.buried_collectables[item].detection_time -= 0.1
+                    if Resources.buried_collectables[item].detection_time < 0:
+                        Resources.buried_collectables[item].surf.set_alpha(round(Resources.buried_collectables[item].surf.get_alpha()+0.6))
                    
 class Resources():
 
     Rock = ("Sand Rock","Naturally occurring solid made up of a mineral like substance",random.randint(200,800),(198, 126, 39),
             os.path.join("xzplore/assets","orange_rock.png"),100,100)
+
     def random_fossil():
         Fossil = ("Fossil","Skeletal remains of a once living organism",random.randint(200,800),(255, 228, 196),
-                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(300,400))
+                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(300,350))
         return Fossil
 
-    resources = []
+    Fossil = random_fossil 
 
-    for i in range(5):
-        resources.append(Item(*random_fossil()))
+    buried_collectables = []
+
+
+
 
 class Transition_screen():
 
@@ -1206,8 +1221,8 @@ while True:
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    Game_State = "Desert_planet"
-    transition_screen.transparecy = 0
+    #Game_State = "Desert_planet"
+    #transition_screen.transparecy = 0
     
     
     Clock.tick(FPS)
