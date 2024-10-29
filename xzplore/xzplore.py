@@ -991,8 +991,6 @@ class Item_display():
                     return item.image,item.item,item.item_description
             except:
                 pass
-   
-
         
 class Item():
     def __init__(self,item,item_description,pos,image,size,detection_time) -> None:
@@ -1027,8 +1025,6 @@ class Item():
                     if Collectibles.rock_collectables[item].detection_time < 0:
                         Collectibles.rock_collectables[item].surf.set_alpha(round(Collectibles.rock_collectables[item].surf.get_alpha()+0.6))
             
-
-
 class Collectibles():
 
     def random_fossil():
