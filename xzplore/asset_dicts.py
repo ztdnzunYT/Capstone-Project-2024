@@ -72,8 +72,8 @@ class Desert_planet():
     desert_worms = {
         "enemy" : "Desert Worm",
         "description" :  "Toxic parasite found in desert regions",
-        "path" : "xzplore/assets/desert_worm",
-        "animations" : sorted(os.listdir("xzplore/assets/desert_worm")) 
+        "path" : "xzplore/assets/desert_planet_assets/desert_worm",
+        "animations" : sorted(os.listdir("xzplore/assets/desert_planet_assets/desert_worm")) 
 
     }
 
