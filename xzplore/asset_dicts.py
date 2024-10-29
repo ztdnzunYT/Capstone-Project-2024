@@ -4,7 +4,7 @@ import random
 
 
 class Player_animations():
-    path = os.path.normpath("xzplore/assets/player_animations")
+    path = os.path.normpath("xzplore\\assets\\player_animations")
 
     player_assests = {
 
@@ -26,8 +26,6 @@ class Player_animations():
         "right_walk" :  sorted(list(os.listdir(os.path.join(path,"player_right")))),
 
     }
-print(Player_animations.player_assests["down_idle"]+".png")
-
 
 class Clouds():
 
@@ -80,5 +78,97 @@ class Colletibles():
         "fossils" : os.listdir(os.path.normpath("xzplore/assets/fossils")),
         "random_fossil" : random.choice(os.listdir(os.path.normpath("xzplore/assets/fossils")))
     }
+
+    malachite = { 
+        "item" : "Malachite",
+        "description" : "Vivid green gemstone with swirling banded patterns and smooth, glossy finish", 
+        "image" : "xzplore/assets/gems/malachite.png"
+    }
+
+    quartz = { 
+        "item" : "Quartz",
+        "description" : "Clear to milky white gemstone with hexagonal shapes and a glassy luster", 
+        "image" : "xzplore/assets/gems/quartz.png"
+    }
+
+    agate = { 
+        "item" : "Agate",
+        "description" : "Banded gemstone with smooth layers of color, typically in earthy tones",
+        "image" : "xzplore/assets/gems/agate.png"
+    }
+    opal = { 
+        "item" : "Opal",
+        "description" : "Colorful gemstone with shifting hues and a translucent to opaque look",
+        "image" : "xzplore/assets/gems/opal.png"
+    }
+    topaz = { 
+        "item" : "Topaz",
+        "description" : "Transparent gemstone often showcasing a brilliant luster and clarity",
+        "image" : "xzplore/assets/gems/topaz.png"
+    }
+    peridot = { 
+        "item" : "Peridot",
+        "description" : "Vibrant green gemstone known for its distinctive olive hue and clarity",
+        "image" : "xzplore/assets/gems/peridot.png"
+    }
+    arizona = { 
+        "item" : "Arizona",
+        "description" : "Unique stone like turquoise, known for its striking blue color",
+        "image" : "xzplore/assets/gems/arizona.png"
+    }
+    obsidian = { 
+        "item" : "Obsidian",
+        "description" : "Volcanic black glass with shiny surface and sharp edges",
+        "image" : "xzplore/assets/gems/obsidian.png"
+    }
+
+    chrysocolla ={ 
+        "item" : "Chrysocolla",
+        "description" : "Vibrant blue-green mineral with smooth, waxy luster mottled patterns",
+        "image" : "xzplore/assets/gems/chrysocolla.png"
+    }
+
+    petrified_wood = { 
+        "item" : "Petrified Wood",
+        "description" : "Fossilized tree remains that display wood-like patterns",
+        "image" : "xzplore/assets/gems/petrified_wood.png"
+    }
+
+    turquoise = { 
+        "item" : "Turquoise",
+        "description" : "Blue-green mineral with unique matrix patterns and polished surface",
+        "image" : "xzplore/assets/gems/turquoise.png"
+    }
+
+    garnet = { 
+        "item" : "Garnet",
+        "description" : "Red gemstone known for its brilliance and vitreous luster",
+        "image" : "xzplore/assets/gems/garnet.png"
+    }
+
+
+
+    desert_collectibles = [turquoise,quartz,opal,peridot,agate,garnet]
+
+
+
+print(os.path.normpath(Colletibles.malachite["image"]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 print(Colletibles.collectible_items["fossil_path"])
