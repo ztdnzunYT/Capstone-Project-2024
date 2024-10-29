@@ -571,12 +571,13 @@ class Planet():
         self.x += World_pos.direction(spaceship,World_pos.dir_offset)[0]
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
-    def draw_map(map_tile,grass,rocks,bush):
+    def draw_map(map_tile,grass,rocks,bush,gems):
 
         #image = os.path.normpath(("xzplore/assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
         tile_num = 0
 
-        collectible_num = 0
+        buried_collectible_num = 0
+        rock_collectibles_num = 0
         
         for index,row in enumerate(Planet.Tile.tile_map):
             for col in range(len(row)):
@@ -586,20 +587,16 @@ class Planet():
                             image = (os.path.normpath(os.path.join(map_tile["path"],map_tile["normal_tiles"])))
                         elif row[col] == 1:
                             image = (os.path.normpath(os.path.join(map_tile["path"],random.choice(map_tile["dig_tiles"]))))
+                            if random.randint(1,5) == 2: #PUTS FOSSIL ON DIG TILE
+                                Resources.buried_collectables.append(Item(*Resources.random_fossil()))
+                                Resources.buried_collectables[buried_collectible_num].pos = int(col*Planet.Tile.TILE_SIZE)+random.randint(70,150),int((index*Planet.Tile.TILE_SIZE))+random.randint(50,150)
+                                buried_collectible_num +=1
+                                #print(Resources.buried_collectables[buried_collectible_num].pos)
+                    
                         Planet.tiles.append(Planet.Tile(image,200,tile_num,0,0,None))                        
                     screen.blit(Planet.tiles[tile_num].surf,(Planet.tiles[tile_num].rect.topleft))
                     x,y = int((col*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x),int((index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y)
                     Planet.tiles[tile_num].rect.topleft = x,y
-
-
-                    if len(Planet.tiles) <= Planet.Tile.num_tile_in_tilemap:
-                        if row[col] == 1:
-                            if random.randint(2,3) == 2:  #random places the fossils
-                                Resources.buried_collectables.append(Item(*Resources.Fossil()))
-                                Resources.buried_collectables[collectible_num].pos = int(col*Planet.Tile.TILE_SIZE)+random.randint(70,150),int((index*Planet.Tile.TILE_SIZE))+random.randint(50,150)
-                            #print(Resources.buried_collectables[collectible_num].pos)
-                                collectible_num +=1
-                          
 
                 except:
                     pass 
@@ -607,7 +604,6 @@ class Planet():
         
         for item in Resources.buried_collectables:
             item.draw()
-
 
         tile1_num = 0
         for index,row in enumerate(Planet.Tile.tile_map):
@@ -620,6 +616,11 @@ class Planet():
                         elif Planet.Tile.ecosystem_map[index][col] == 3:
                             rock_image = os.path.normpath(os.path.join(rocks["path"],random.choice(rocks["rocks"])))
                             Planet.ecosystem.append(Planet.Tile(rock_image,200,None,random.randint(75,125),random.randint(75,125),rocks))
+                            
+                            Resources.rock_collectables.append(Item(*Resources.random_gem(gems)))
+                            Resources.rock_collectables[rock_collectibles_num].pos = int(col*Planet.Tile.TILE_SIZE)+200,int((index*Planet.Tile.TILE_SIZE))+200
+                            rock_collectibles_num+=1
+
                         elif  Planet.Tile.ecosystem_map[index][col] == 4:
                             bush_image = os.path.normpath(os.path.join(bush["path"],random.choice(bush["bushes"])))
                             Planet.ecosystem.append(Planet.Tile(bush_image,80,None,random.randint(75,125),random.randint(75,125),bush))
@@ -641,6 +642,9 @@ class Planet():
                     pass
                 tile1_num+=1
 
+        print(len(Resources.rock_collectables))
+        for item in Resources.rock_collectables:    
+            item.draw()
         
         
     def map_move():
@@ -970,6 +974,15 @@ class Item_display():
                     return item.image,item.item,item.item_description
             except:
                 pass
+        
+        for item in Resources.rock_collectables:
+            try:
+                item_rect = pygame.Rect(item.rect.x+(item.rect.width/3),item.rect.y+(item.rect.height/3),item.rect.width/3,item.rect.height/3)
+                if pygame.Rect.colliderect(item.rect,mouse_rect): #ADD DETECTION TIME
+                    return item.image,item.item,item.item_description
+            except:
+                pass
+    
 
         for item in Planet.ecosystem:
             try:
@@ -979,28 +992,21 @@ class Item_display():
                     return item.image,item.item,item.item_description
             except:
                 pass
+   
 
         
-            
-        ''' 
-        if pygame.Rect.colliderect(Planet.tiles[3].rect,mouse_rect):
-            print("touching")
-        else:
-            print("not touching")
-        '''
-        
 class Item():
-    def __init__(self,item,item_description,pos,color,image,size,detection_time) -> None:
+    def __init__(self,item,item_description,pos,image,size,detection_time) -> None:
         self.pos = pos
         self.item = item
         self.item_description = item_description
-        self.color = color
         self.image = image
         self.size  = size
+        self.detection_time = detection_time
         self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size,self.size))
         self.rect = self.surf.get_rect()
-        self.surf.set_alpha(0)
-        self.detection_time = detection_time
+        self.surf.set_alpha(0) #0
+        
         
 
     def draw(self):
@@ -1017,20 +1023,25 @@ class Item():
                    
 class Resources():
 
-    Rock = ("Sand Rock","Naturally occurring solid made up of a mineral like substance",random.randint(200,800),(198, 126, 39),
-            os.path.join("xzplore/assets","orange_rock.png"),100,100)
-
     def random_fossil():
-        Fossil = ("Fossil","Skeletal remains of a once living organism",random.randint(200,800),(255, 228, 196),
-                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(300,350))
+        Fossil = ("Fossil","Skeletal remains of a once living organism",random.randint(200,800),
+                  os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(200,300))
         return Fossil
 
+
+    def random_gem(gem):
+        print(random.choice(gem))
+        gem_parameters = random.choice(gem)
+        Gem = (gem_parameters["item"],gem_parameters["description"],0,gem_parameters["image"],25,50)
+        return Gem
+
+   
     Fossil = random_fossil 
 
+
+
     buried_collectables = []
-
-
-
+    rock_collectables = []
 
 class Transition_screen():
 
@@ -1204,7 +1215,7 @@ while True:
 
     if Game_State == "Desert_planet":
         Sounds.play_sound(Sounds.desert_wind,0.1)
-        Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,Desert_planet.bush_assets)
+        Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,Desert_planet.bush_assets,Colletibles.desert_collectibles)
         Planet.map_move()
         #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
         Tool_particles.draw_particles()
@@ -1221,8 +1232,8 @@ while True:
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    #Game_State = "Desert_planet"
-    #transition_screen.transparecy = 0
+    Game_State = "Desert_planet"
+    transition_screen.transparecy = 0
     
     
     Clock.tick(FPS)
