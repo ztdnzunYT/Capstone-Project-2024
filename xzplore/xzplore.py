@@ -591,7 +591,7 @@ class Planet():
         def draw(enemy):
 
             if len(Planet.enemy1) < 30:
-                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),32,enemy["path"],enemy["pngs"],5,0))
+                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],5,0))
             
             for enemy in Planet.enemy1:
                 
@@ -604,7 +604,7 @@ class Planet():
                 enemy.rect.x +=.5
         
         def point_towards():
-            
+
             pass
                 
 
