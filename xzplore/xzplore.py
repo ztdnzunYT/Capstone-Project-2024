@@ -16,7 +16,7 @@ SCREEN_HEIGHT = 800 #650
 FPS = 120
 BLACK  = (0,0,0)
 SPACESTATION_GREY = (50,50,50)
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME ,vsync=False)
+screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.NOFRAME ,vsync=True)
 
 pygame.mouse.set_visible(False)
 Clock = pygame.time.Clock()
@@ -573,8 +573,13 @@ class Planet():
             self.size = size
             self.path = path
             self.animations = animations
-            self.image = os.path.normpath(os.path.join(self.path,self.animations[0]))
+            self.image = self.animations
             self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size,self.size))
+            self.shadow = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size+3,self.size+3))
+            self.angle = 70
+            self.rot_surf = pygame.transform.rotate(self.surf,self.angle)
+            self.rot_shadow = pygame.transform.rotate(self.shadow,self.angle)
+            self.shadow.set_alpha(50)
             self.rect = self.surf.get_rect(topleft=(x,y))
             self.surface = pygame.Surface((200,200),pygame.SRCALPHA)
             self.speed = speed
@@ -584,29 +589,30 @@ class Planet():
             self.animation_delay = animation_delay + random.randint(0,10)
       
         def draw(enemy):
-            if len(Planet.enemy1) < 5:
-                Planet.enemy1.append(Planet.Enemy(random.randint(0,300),0,100,enemy["path"],enemy["animations"],random.randint(1,5),100))
 
+            if len(Planet.enemy1) < 30:
+                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),32,enemy["path"],enemy["pngs"],5,0))
+            
             for enemy in Planet.enemy1:
-                #enemy.rect.x += 1
-                screen.blit(enemy.surf,enemy.rect)
+                
+                shadow_surface = pygame.Surface((50,50),pygame.SRCALPHA)
+                screen.blit(enemy.rot_shadow,(enemy.rect.x-2+Planet.Tile.world_x,enemy.rect.y-3+Planet.Tile.world_y))
+                screen.blit(shadow_surface,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
+                
+                screen.blit(enemy.rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
+
+                enemy.rect.x +=.5
+        
+        def point_towards():
+            
+            pass
+                
+
+
+          
 
         def update(curr_time):
-            
-
-            for enemy in Planet.enemy1:
-                enemy.curr_time = curr_time
-                
-                if enemy.animation_num >= len(enemy.animations):
-                    enemy.animation_num = 0
-
-                enemy.surf = pygame.transform.smoothscale(pygame.image.load(os.path.join(enemy.path,enemy.animations[enemy.animation_num])).convert_alpha(),(enemy.size,enemy.size))
-
-                if enemy.curr_time > enemy.time + enemy.animation_delay:
-                    enemy.animation_num +=1 
-                    enemy.time = enemy.curr_time
-
-            
+            pass
 
 
 
@@ -718,6 +724,7 @@ class Planet():
     ecosystem = []
     clouds = []
     enemy1 = []
+    enemy2 = []
     
     #orange_tile = Tile(os.path.normpath("assets\desert_planet_assets\desert_sandtiles\desert_sandtile_0.png"))
 
@@ -1054,11 +1061,9 @@ class Item():
         self.rect = self.surf.get_rect()
         self.surf.set_alpha(0) #0
         
-        
-
     def draw(self):
         self.rect.center = (self.pos[0]+Planet.Tile.world_x),(self.pos[1]+Planet.Tile.world_y)
-        pygame.draw.rect(screen,(255,0,0),self.rect,1)  #self.rect every image that passes throught the draw parameter
+        #pygame.draw.rect(screen,(255,0,0),self.rect,1)  #self.rect every image that passes throught the draw parameter
         screen.blit(self.surf,self.rect)
         for item in range(len(Collectibles.buried_collectables)):
             
@@ -1269,10 +1274,10 @@ while True:
         #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
         Tool_particles.draw_particles()
         Tool_particles.update()
-        
-        Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
-        Planet.Enemy.draw(Desert_planet.desert_worms)
+        Planet.Enemy.draw(Desert_planet.desert_crawler)
         Planet.Enemy.update(pygame.time.get_ticks())
+        Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
+        
         Player.draw_crosshair()
         Toolbar.draw_tool()
         

@@ -73,8 +73,15 @@ class Desert_planet():
         "enemy" : "Desert Worm",
         "description" :  "Toxic parasite found in desert regions",
         "path" : "xzplore/assets/desert_planet_assets/desert_worm",
-        "animations" : sorted(os.listdir("xzplore/assets/desert_planet_assets/desert_worm")) 
+        "pngs" : sorted(os.listdir("xzplore/assets/desert_planet_assets/desert_worm")) 
 
+    }
+
+    desert_crawler = {
+        "enemy" : "Desert Crawler",
+        "description" : "Dangerous near sited parasite found in desert regions",
+        "path" : "xzplore/assets/desert_planet_assets",
+        "pngs" :  "xzplore/assets/desert_planet_assets/desert_crawler.png"
     }
 
 class Colletibles():
