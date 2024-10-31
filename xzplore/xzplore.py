@@ -567,7 +567,7 @@ class Planet():
         time = 0 
         curr_time = pygame.time.get_ticks()
         
-        def __init__(self,x,y,size,path,animations,speed,animation_delay):
+        def __init__(self,x,y,size,path,animations,speed,animation_delay,attack_delay):
             self.x = x
             self.y = y
             self.size = size
@@ -585,23 +585,31 @@ class Planet():
             self.time = 0
             self.curr_time = 0
             self.animation_delay = animation_delay + random.randint(0,10)
+            self.attack_timer = 0
+            self.attack_delay = attack_delay
+            self.offset = random.randint(-20,20)
       
         def draw(enemy):
 
             if len(Planet.enemy1) < 30:
-                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],2,0))
+                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],random.uniform(1,1.2),0,random.randint(10,50)))
            
-        def update(curr_time):
+        def update():
             for enemy in Planet.enemy1:
 
+                curr_time = pygame.time.get_ticks()
+                if curr_time > enemy.attack_timer:
+                    enemy.attack_timer = curr_time + 100
 
-                center_x, center_y = (SCREEN_WIDTH // 2 - Planet.Tile.world_x), (SCREEN_HEIGHT // 2 - Planet.Tile.world_y)
+
+                center_x, center_y = (SCREEN_WIDTH // 2 - Planet.Tile.world_x + enemy.offset), (SCREEN_HEIGHT // 2 - Planet.Tile.world_y+enemy.offset)
                 #ygame.draw.rect(screen,(255,0,0),(center_x/2,center_y/2,50,50))
 
 
                 dx = center_x - enemy.rect.centerx
                 dy = center_y - enemy.rect.centery
                 angle = math.degrees(math.atan2(-dy, dx))
+                angle = angle + random.randint(-2,2)
 
                 rot_surf = pygame.transform.rotate(enemy.surf,angle)
                 rot_shadow = pygame.transform.rotate(enemy.shadow,angle)
@@ -612,32 +620,23 @@ class Planet():
                 
                 screen.blit(rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
 
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_d]:
-                    enemy.rect.x -= 1
-                elif keys[pygame.K_a]:
-                    enemy.rect.x += 1
-                if keys[pygame.K_s]:
-                    enemy.rect.y -= .5
-                elif keys[pygame.K_w]:
-                    enemy.rect.y += 1
-
                 
-                try:
-                    dis = math.hypot(dx,dy)
-                    dx /= dis
-                    dy /= dis
+                try:                  
+        
+                    if enemy.attack_timer > curr_time + enemy.attack_delay:
+                        enemy.speed =random.uniform(1,1.5)
+                            
+                        dis = math.hypot(dx,dy)
 
-                    enemy.rect.x += dx * enemy.speed
-                    enemy.rect.y += dy * enemy.speed
+                        dx /= dis
+                        dy /= dis 
+                        enemy.rect.x += dx * enemy.speed
+                        enemy.rect.y += dy * enemy.speed
 
                 except:
                     pass
 
 
-
-                
-                
 
 
     def draw_planet(self):
@@ -683,7 +682,7 @@ class Planet():
         
         for item in Collectibles.buried_collectables:
             item.draw()
-
+        
         tile1_num = 0
         for index,row in enumerate(Planet.Tile.tile_map):
             for col in range(len(row)):                
@@ -721,9 +720,11 @@ class Planet():
                     pass
                 tile1_num+=1
 
-      
+       
         for item in Collectibles.rock_collectables:    
             item.draw()
+
+
         
         
     def map_move():
@@ -1293,13 +1294,14 @@ while True:
 
     if Game_State == "Desert_planet":
         Sounds.play_sound(Sounds.desert_wind,0.1)
-        Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,Desert_planet.bush_assets,Colletibles.desert_collectibles)
+        Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,
+                        Desert_planet.bush_assets,Colletibles.desert_collectibles,)
         Planet.map_move()
         #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
         Tool_particles.draw_particles()
         Tool_particles.update()
         Planet.Enemy.draw(Desert_planet.desert_crawler)
-        Planet.Enemy.update(pygame.time.get_ticks())
+        Planet.Enemy.update()
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
         
         Player.draw_crosshair()
