@@ -576,9 +576,7 @@ class Planet():
             self.image = self.animations
             self.surf = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size,self.size))
             self.shadow = pygame.transform.smoothscale(pygame.image.load(self.image).convert_alpha(),(self.size+3,self.size+3))
-            self.angle = 70
-            self.rot_surf = pygame.transform.rotate(self.surf,self.angle)
-            self.rot_shadow = pygame.transform.rotate(self.shadow,self.angle)
+            self.angle = 0
             self.shadow.set_alpha(50)
             self.rect = self.surf.get_rect(topleft=(x,y))
             self.surface = pygame.Surface((200,200),pygame.SRCALPHA)
@@ -591,29 +589,55 @@ class Planet():
         def draw(enemy):
 
             if len(Planet.enemy1) < 30:
-                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],5,0))
-            
+                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],2,0))
+           
+        def update(curr_time):
             for enemy in Planet.enemy1:
+
+
+                center_x, center_y = (SCREEN_WIDTH // 2 - Planet.Tile.world_x), (SCREEN_HEIGHT // 2 - Planet.Tile.world_y)
+                #ygame.draw.rect(screen,(255,0,0),(center_x/2,center_y/2,50,50))
+
+
+                dx = center_x - enemy.rect.centerx
+                dy = center_y - enemy.rect.centery
+                angle = math.degrees(math.atan2(-dy, dx))
+
+                rot_surf = pygame.transform.rotate(enemy.surf,angle)
+                rot_shadow = pygame.transform.rotate(enemy.shadow,angle)
                 
                 shadow_surface = pygame.Surface((50,50),pygame.SRCALPHA)
-                screen.blit(enemy.rot_shadow,(enemy.rect.x-2+Planet.Tile.world_x,enemy.rect.y-3+Planet.Tile.world_y))
+                screen.blit(rot_shadow,(enemy.rect.x-2+Planet.Tile.world_x,enemy.rect.y-3+Planet.Tile.world_y))
                 screen.blit(shadow_surface,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
                 
-                screen.blit(enemy.rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
+                screen.blit(rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
 
-                enemy.rect.x +=.5
-        
-        def point_towards():
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_d]:
+                    enemy.rect.x -= 1
+                elif keys[pygame.K_a]:
+                    enemy.rect.x += 1
+                if keys[pygame.K_s]:
+                    enemy.rect.y -= .5
+                elif keys[pygame.K_w]:
+                    enemy.rect.y += 1
 
-            pass
                 
+                try:
+                    dis = math.hypot(dx,dy)
+                    dx /= dis
+                    dy /= dis
+
+                    enemy.rect.x += dx * enemy.speed
+                    enemy.rect.y += dy * enemy.speed
+
+                except:
+                    pass
 
 
-          
 
-        def update(curr_time):
-            pass
-
+                
+                
 
 
     def draw_planet(self):
