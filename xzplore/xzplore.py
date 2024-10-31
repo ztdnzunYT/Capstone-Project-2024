@@ -592,12 +592,12 @@ class Planet():
       
         def draw(enemy):
 
-            if len(Planet.enemy1) < 30:
+            if len(Planet.enemy1) < 3:
                 Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
            
         def update():
             for enemy in Planet.enemy1:
-
+        
                 curr_time = pygame.time.get_ticks()
                 if curr_time > enemy.attack_timer:
                     enemy.attack_timer = curr_time + 100
@@ -621,7 +621,6 @@ class Planet():
                 
                 screen.blit(rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
 
-                
                 try:                  
         
                     if enemy.attack_timer > curr_time + enemy.attack_delay:
@@ -636,6 +635,14 @@ class Planet():
 
                 except:
                     pass
+                    
+                
+
+
+
+
+
+
 
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
@@ -838,6 +845,11 @@ class Player():
 class Toolbar():
     tool_num = 0
     clicked = False
+
+    curr_time = pygame.time.get_ticks()
+    time_delay = 250
+    time = 0
+
     def draw_toolbar():
         
         if Game_State != "Space":
@@ -876,6 +888,7 @@ class Toolbar():
             screen.blit(book,book_rect)
 
     def draw_tool():
+        curr_time = pygame.time.get_ticks()
     
         mouse_pos = pygame.mouse.get_pos()
         
@@ -899,23 +912,32 @@ class Toolbar():
                 if Toolbar.tool_num == 2:
                     screen.blit(shovel,shovel_rect)
         
-        if pygame.key.get_pressed()[pygame.K_LSHIFT] == False:
-            if pygame.mouse.get_pressed()[2] and Toolbar.tool_num == 0:
-                Toolbar.clicked = True
-                if len(Tool_particles.bullets) < 15:
-                    Tool_particles.bullets.append(Tool_particles(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],(255,255,255),5,random.randint(-1,1),5,100))
 
-        if not pygame.mouse.get_pressed()[2]:
+
+        if Toolbar.time < curr_time:
+            if pygame.key.get_pressed()[pygame.K_LSHIFT] == False and Toolbar.tool_num == 0:
+                if pygame.mouse.get_pressed()[2]:
+                    Tool_particles.bullets.append(Tool_particles(SCREEN_WIDTH/2+1,SCREEN_HEIGHT/2+1,(pygame.mouse.get_pos()),(0,0,0),2,random.randint(-1,1),5,100))
+                    Toolbar.clicked = True
+                    Toolbar.time = curr_time + Toolbar.time_delay
+        else:
             Toolbar.clicked = False
+
+        
+
+
+
+
+
 
         #print(screen.get_at(mouse_pos))
 
 class Tool_particles():
 
-    def __init__(self,x,y,color,size,spread,speed,lifespan) -> None:
+    def __init__(self,x,y,mouse_pos,color,size,spread,speed,lifespan) -> None:
         self.x = x
         self.y = y
-        self.pos = self.x,self.y
+        self.mouse_pos = mouse_pos
         self.dir = 0
         self.color = color
         self.size = size
@@ -973,22 +995,16 @@ class Tool_particles():
     def draw_bullets():
         for bullet in Tool_particles.bullets:
             pygame.draw.circle(screen,(bullet.color),(bullet.x,bullet.y),bullet.size)
-            dx = SCREEN_WIDTH/2 - bullet.pos[0]
-            dy = SCREEN_HEIGHT/2 - bullet.pos[1]
+            bullet.pos = bullet.x,bullet.y
+            dx = SCREEN_WIDTH/2 - bullet.mouse_pos[0]
+            dy = SCREEN_HEIGHT/2 - bullet.mouse_pos[1]
             bullet.dir = math.hypot(dx,dy)
             dx /= bullet.dir
             dy /= bullet.dir
 
-            bullet.x -= dx
-            bullet.y -= dy
-            if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
-                pass
-
-            
-    
-
-
-   
+            bullet.x -= dx * bullet.speed
+            bullet.y -= dy * bullet.speed
+       
 
 
     def update():
@@ -1014,9 +1030,26 @@ class Tool_particles():
                 
                 particle.size -= random.uniform(0,0.01)
 
+    
             if particle.lifetime > particle.lifespan:
                 Tool_particles.tool_particles.remove(particle)
-        
+
+        for bullet in Tool_particles.bullets:
+            for enemy in Planet.enemy1:
+                
+                if pygame.Rect.colliderect(pygame.Rect(bullet.x,bullet.y,20,20),enemy.rect):
+                    try:
+                        
+                        Planet.enemy1.remove(enemy)
+                        Tool_particles.bullets.remove(bullet)
+                    except:
+                        pass
+
+            if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
+                Tool_particles.bullets.remove(bullet)
+            elif bullet.y < 0 or bullet.y > SCREEN_HEIGHT:
+                Tool_particles.bullets.remove(bullet)
+
     tool_particles = []
     bullets = []
 
