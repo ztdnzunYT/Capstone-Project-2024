@@ -587,12 +587,13 @@ class Planet():
             self.animation_delay = animation_delay + random.randint(0,10)
             self.attack_timer = 0
             self.attack_delay = attack_delay
-            self.offset = random.randint(-20,20)
+            self.offsetx = random.randint(-20,20)
+            self.offsety = random.randint(-20,20)
       
         def draw(enemy):
 
             if len(Planet.enemy1) < 30:
-                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],random.uniform(1,1.2),0,random.randint(10,50)))
+                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
            
         def update():
             for enemy in Planet.enemy1:
@@ -602,7 +603,7 @@ class Planet():
                     enemy.attack_timer = curr_time + 100
 
 
-                center_x, center_y = (SCREEN_WIDTH // 2 - Planet.Tile.world_x + enemy.offset), (SCREEN_HEIGHT // 2 - Planet.Tile.world_y+enemy.offset)
+                center_x, center_y = (SCREEN_WIDTH // 2 - Planet.Tile.world_x) + enemy.offsetx, (SCREEN_HEIGHT // 2 - Planet.Tile.world_y)+enemy.offsety
                 #ygame.draw.rect(screen,(255,0,0),(center_x/2,center_y/2,50,50))
 
 
@@ -624,20 +625,17 @@ class Planet():
                 try:                  
         
                     if enemy.attack_timer > curr_time + enemy.attack_delay:
-                        enemy.speed =random.uniform(1,1.5)
+                        enemy.speed =random.uniform(.6,1)
                             
                         dis = math.hypot(dx,dy)
 
-                        dx /= dis
-                        dy /= dis 
+                        dx /= dis + random.randint(-2,2)
+                        dy /= dis + random.randint(-2,2)
                         enemy.rect.x += dx * enemy.speed
                         enemy.rect.y += dy * enemy.speed
 
                 except:
                     pass
-
-
-
 
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
@@ -724,9 +722,6 @@ class Planet():
         for item in Collectibles.rock_collectables:    
             item.draw()
 
-
-        
-        
     def map_move():
 
         keys = pygame.key.get_pressed()
@@ -841,7 +836,8 @@ class Player():
             screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
     
 class Toolbar():
-    tool_num = 2
+    tool_num = 0
+    clicked = False
     def draw_toolbar():
         
         if Game_State != "Space":
@@ -882,9 +878,10 @@ class Toolbar():
     def draw_tool():
     
         mouse_pos = pygame.mouse.get_pos()
+        
         Player.tool_distance = math.sqrt(int(mouse_pos[1] - SCREEN_HEIGHT/2)**2 + int(mouse_pos[0] - SCREEN_WIDTH/2)**2)
         
-        if pygame.mouse.get_pressed()[2] == True:
+        if pygame.mouse.get_pressed()[2]:
 
             pickaxe = pygame.transform.smoothscale(pygame.image.load("xzplore/assets/tools/pickaxe.png").convert_alpha(),(33,30))
             pickaxe_rect = pickaxe.get_rect(topleft=(0,0))
@@ -896,16 +893,20 @@ class Toolbar():
             shovel_rect.centerx = mouse_pos[0]
             shovel_rect.centery = mouse_pos[1] - 5 #+ random.randint(-3,3)
 
-            player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
-       
             if Player.tool_distance < Player.tool_range:
-                if Toolbar.tool_num == 0:
-                    screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
                 if Toolbar.tool_num == 1:
                     screen.blit(pickaxe,pickaxe_rect)
                 if Toolbar.tool_num == 2:
                     screen.blit(shovel,shovel_rect)
         
+        if pygame.key.get_pressed()[pygame.K_LSHIFT] == False:
+            if pygame.mouse.get_pressed()[2] and Toolbar.tool_num == 0:
+                Toolbar.clicked = True
+                if len(Tool_particles.bullets) < 15:
+                    Tool_particles.bullets.append(Tool_particles(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],(255,255,255),5,random.randint(-1,1),5,100))
+
+        if not pygame.mouse.get_pressed()[2]:
+            Toolbar.clicked = False
 
         #print(screen.get_at(mouse_pos))
 
@@ -914,6 +915,8 @@ class Tool_particles():
     def __init__(self,x,y,color,size,spread,speed,lifespan) -> None:
         self.x = x
         self.y = y
+        self.pos = self.x,self.y
+        self.dir = 0
         self.color = color
         self.size = size
         self.speed = speed
@@ -967,6 +970,27 @@ class Tool_particles():
         for particle in Tool_particles.tool_particles:
             pygame.draw.rect(screen,(particle.color),(particle.x,particle.y,particle.size,particle.size))
         
+    def draw_bullets():
+        for bullet in Tool_particles.bullets:
+            pygame.draw.circle(screen,(bullet.color),(bullet.x,bullet.y),bullet.size)
+            dx = SCREEN_WIDTH/2 - bullet.pos[0]
+            dy = SCREEN_HEIGHT/2 - bullet.pos[1]
+            bullet.dir = math.hypot(dx,dy)
+            dx /= bullet.dir
+            dy /= bullet.dir
+
+            bullet.x -= dx
+            bullet.y -= dy
+            if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
+                pass
+
+            
+    
+
+
+   
+
+
     def update():
         keys = pygame.key.get_pressed()
         for particle in Tool_particles.tool_particles:
@@ -994,6 +1018,7 @@ class Tool_particles():
                 Tool_particles.tool_particles.remove(particle)
         
     tool_particles = []
+    bullets = []
 
 class Item_display():
     display_x = 170
@@ -1302,6 +1327,7 @@ while True:
         Tool_particles.update()
         Planet.Enemy.draw(Desert_planet.desert_crawler)
         Planet.Enemy.update()
+        Tool_particles.draw_bullets()
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
         
         Player.draw_crosshair()
