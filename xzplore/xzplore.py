@@ -566,6 +566,7 @@ class Planet():
         animation_delay = 200
         time = 0 
         curr_time = pygame.time.get_ticks()
+        spawn_time = pygame.time.get_ticks() + 800
         
         def __init__(self,x,y,size,path,animations,speed,animation_delay,attack_delay):
             self.x = x
@@ -579,6 +580,7 @@ class Planet():
             self.angle = 0
             self.shadow.set_alpha(50)
             self.rect = self.surf.get_rect(topleft=(x,y))
+            self.real_rect = 0
             self.surface = pygame.Surface((200,200),pygame.SRCALPHA)
             self.speed = speed
             self.animation_num  = 0
@@ -591,10 +593,27 @@ class Planet():
             self.offsety = random.randint(-20,20)
       
         def draw(enemy):
-
-            if len(Planet.enemy1) < 3:
-                Planet.enemy1.append(Planet.Enemy(random.randint(100,500),random.randint(100,500),25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
+            print(len(Planet.enemy1))
+            
+            curr_time = pygame.time.get_ticks()
            
+            if curr_time < 5000:
+                if len(Planet.enemy1) < 30:  
+                    Planet.enemy1.append(Planet.Enemy(random.choice([-100,900]),random.randint(0,0)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
+
+            spawn_delay = 12000
+  
+            
+            if curr_time == Planet.Enemy.spawn_time:
+                for i in range(30-len(Planet.enemy1)):
+                    if len(Planet.enemy1) < 30:  
+                        Planet.enemy1.append(Planet.Enemy(random.choice([-100,900]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
+
+            if curr_time > Planet.Enemy.spawn_time:
+                Planet.Enemy.spawn_time = curr_time + spawn_delay
+
+
+
         def update():
             for enemy in Planet.enemy1:
         
@@ -615,13 +634,13 @@ class Planet():
                 rot_surf = pygame.transform.rotate(enemy.surf,angle)
                 rot_shadow = pygame.transform.rotate(enemy.shadow,angle)
                 
-
+                enemy.real_rect = pygame.Rect(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y,enemy.size,enemy.size)
                 shadow_surface = pygame.Surface((50,50),pygame.SRCALPHA)
-                screen.blit(rot_shadow,(enemy.rect.x-2+Planet.Tile.world_x,enemy.rect.y-3+Planet.Tile.world_y))
-                screen.blit(shadow_surface,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
-                pygame.draw.rect(screen,(255,0,0),(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y,50,50))
-                
-                screen.blit(rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
+                screen.blit(rot_shadow,(enemy.real_rect[0]-2,enemy.real_rect[1]-3))
+                screen.blit(shadow_surface,(enemy.real_rect[0],enemy.real_rect[1]))
+               
+
+                screen.blit(rot_surf,(enemy.real_rect[0],enemy.real_rect[1]))
 
                 try:                  
         
@@ -842,14 +861,15 @@ class Player():
         player_crosshair = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","player_crosshair.png")).convert_alpha(),(40,40))
        
         if pygame.mouse.get_pressed()[2] == False or Player.tool_distance > Player.tool_range:
+  
             screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
-    
+
 class Toolbar():
     tool_num = 2
     clicked = False
 
     curr_time = pygame.time.get_ticks()
-    time_delay = 250
+    time_delay = 600
     time = 0
 
     def draw_toolbar():
@@ -918,7 +938,7 @@ class Toolbar():
         if Toolbar.time < curr_time:
             if pygame.key.get_pressed()[pygame.K_LSHIFT] == False and Toolbar.tool_num == 0:
                 if pygame.mouse.get_pressed()[2]:
-                    Tool_particles.bullets.append(Tool_particles(SCREEN_WIDTH/2+1,SCREEN_HEIGHT/2+1,(pygame.mouse.get_pos()),(0,0,0),2,random.randint(-1,1),5,100))
+                    Tool_particles.bullets.append(Tool_particles(SCREEN_WIDTH/2+1,SCREEN_HEIGHT/2+1,(pygame.mouse.get_pos()),(0,0,0),2,random.randint(-1,1),10,100))
                     Toolbar.clicked = True
                     Toolbar.time = curr_time + Toolbar.time_delay
         else:
@@ -926,7 +946,6 @@ class Toolbar():
 
 
         #print(screen.get_at(mouse_pos))
-
 
 class Tool_particles():
 
@@ -1032,10 +1051,14 @@ class Tool_particles():
 
         for bullet in Tool_particles.bullets:
             for enemy in Planet.enemy1:
-                
-                if pygame.Rect.colliderect(pygame.Rect(bullet.x,bullet.y,20,20),enemy.rect):
-                    Planet.enemy1.remove(enemy)
-                    Tool_particles.bullets.remove(bullet)
+                try:
+
+                    if pygame.Rect.colliderect(pygame.Rect(bullet.x,bullet.y,20,20),enemy.real_rect):
+                        Tool_particles.bullets.remove(bullet)
+                        Planet.enemy1.remove(enemy)
+                except:
+                    pass
+                        
 
 
             if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
@@ -1045,7 +1068,6 @@ class Tool_particles():
 
     tool_particles = []
     bullets = []
-
 
 
 class Item_display():
@@ -1239,7 +1261,7 @@ background_stars = []
 parasites = []
 transition_screen = Transition_screen(0,0,(0,0,0))
 grid = pygame.transform.smoothscale(pygame.image.load(os.path.join("xzplore/assets","grid.png")).convert_alpha(),(270,160))
-grid.set_alpha(70)
+grid.set_alpha(0)
 grid_rect = grid.get_rect()
 item_display_window = Item_display()
 
