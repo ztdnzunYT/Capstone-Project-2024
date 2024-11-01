@@ -593,21 +593,24 @@ class Planet():
             self.offsety = random.randint(-20,20)
       
         def draw(enemy):
-            print(len(Planet.enemy1))
+            #print(len(Planet.enemy1))
+
             
             curr_time = pygame.time.get_ticks()
-           
-            if curr_time < 5000:
-                if len(Planet.enemy1) < 30:  
-                    Planet.enemy1.append(Planet.Enemy(random.choice([-100,900]),random.randint(0,0)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
 
-            spawn_delay = 12000
+            #print(curr_time)
+           
+            if curr_time < 2000:
+                if len(Planet.enemy1) < 30:  
+                    Planet.enemy1.append(Planet.Enemy(random.choice([-200,1600]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
+
+            spawn_delay = 8000
   
             
             if curr_time == Planet.Enemy.spawn_time:
                 for i in range(30-len(Planet.enemy1)):
                     if len(Planet.enemy1) < 30:  
-                        Planet.enemy1.append(Planet.Enemy(random.choice([-100,900]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
+                        Planet.enemy1.append(Planet.Enemy(random.choice([-200,1600]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
 
             if curr_time > Planet.Enemy.spawn_time:
                 Planet.Enemy.spawn_time = curr_time + spawn_delay
@@ -1230,7 +1233,7 @@ class Transition_screen():
         
         if Game_State == "Desert_planet":
             self.detection = 0
-            self.transparecy = max(self.transparecy -1,150)
+            self.transparecy = max(self.transparecy -1,125)
 
 
     def update(self,spaceship):
@@ -1389,8 +1392,8 @@ while True:
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    Game_State = "Desert_planet"
-    transition_screen.transparecy = 0
+    #Game_State = "Desert_planet"
+   # transition_screen.transparecy = 0
     
     
     Clock.tick(FPS)
