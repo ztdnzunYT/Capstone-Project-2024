@@ -615,9 +615,11 @@ class Planet():
                 rot_surf = pygame.transform.rotate(enemy.surf,angle)
                 rot_shadow = pygame.transform.rotate(enemy.shadow,angle)
                 
+
                 shadow_surface = pygame.Surface((50,50),pygame.SRCALPHA)
                 screen.blit(rot_shadow,(enemy.rect.x-2+Planet.Tile.world_x,enemy.rect.y-3+Planet.Tile.world_y))
                 screen.blit(shadow_surface,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
+                pygame.draw.rect(screen,(255,0,0),(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y,50,50))
                 
                 screen.blit(rot_surf,(enemy.rect.x+Planet.Tile.world_x,enemy.rect.y+Planet.Tile.world_y))
 
@@ -843,7 +845,7 @@ class Player():
             screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
     
 class Toolbar():
-    tool_num = 0
+    tool_num = 2
     clicked = False
 
     curr_time = pygame.time.get_ticks()
@@ -913,7 +915,6 @@ class Toolbar():
                     screen.blit(shovel,shovel_rect)
         
 
-
         if Toolbar.time < curr_time:
             if pygame.key.get_pressed()[pygame.K_LSHIFT] == False and Toolbar.tool_num == 0:
                 if pygame.mouse.get_pressed()[2]:
@@ -923,14 +924,9 @@ class Toolbar():
         else:
             Toolbar.clicked = False
 
-        
-
-
-
-
-
 
         #print(screen.get_at(mouse_pos))
+
 
 class Tool_particles():
 
@@ -970,7 +966,7 @@ class Tool_particles():
                                 if pygame.Rect.colliderect(item_rect,mouse_rect):
                                     if Toolbar.tool_num == 1:
                                         Tool_particles.tool_particles.append(
-                                            Tool_particles(mouse_pos[0],mouse_pos[1],
+                                            Tool_particles(mouse_pos[0],mouse_pos[1],mouse_pos,
                                                            (color),size=random.randint(3,7),
                                                            spread=(random.uniform(-.5,.5),random.uniform(-.5,.5)),
                                                            speed=random.uniform(-1,1),
@@ -978,7 +974,7 @@ class Tool_particles():
                                 
                                 elif pygame.Rect.colliderect(item_rect,mouse_rect) == False:
                                     if Toolbar.tool_num == 2:
-                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],
+                                        Tool_particles.tool_particles.append(Tool_particles(mouse_pos[0],mouse_pos[1],mouse_pos,
                                                            (color),size=random.randint(3,7),
                                                            spread=(random.uniform(-1.5,1.5),random.uniform(-1,1.5)),
                                                            speed=random.uniform(-1,1),
@@ -1038,12 +1034,9 @@ class Tool_particles():
             for enemy in Planet.enemy1:
                 
                 if pygame.Rect.colliderect(pygame.Rect(bullet.x,bullet.y,20,20),enemy.rect):
-                    try:
-                        
-                        Planet.enemy1.remove(enemy)
-                        Tool_particles.bullets.remove(bullet)
-                    except:
-                        pass
+                    Planet.enemy1.remove(enemy)
+                    Tool_particles.bullets.remove(bullet)
+
 
             if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
                 Tool_particles.bullets.remove(bullet)
@@ -1052,6 +1045,8 @@ class Tool_particles():
 
     tool_particles = []
     bullets = []
+
+
 
 class Item_display():
     display_x = 170
@@ -1358,6 +1353,7 @@ while True:
         #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
         Tool_particles.draw_particles()
         Tool_particles.update()
+  
         Planet.Enemy.draw(Desert_planet.desert_crawler)
         Planet.Enemy.update()
         Tool_particles.draw_bullets()
@@ -1365,7 +1361,6 @@ while True:
         
         Player.draw_crosshair()
         Toolbar.draw_tool()
-        
         
    
     transition_screen.update(spaceship)
