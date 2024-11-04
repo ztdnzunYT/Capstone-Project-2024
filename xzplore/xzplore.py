@@ -25,12 +25,13 @@ Game_State = "Space"
 class Sounds():
     ambience = pygame.mixer.Channel(6)
     rocket_engine = pygame.mixer.Channel(2)
-
     lazer = pygame.mixer.Sound(os.path.join("xzplore/sounds","laser_gun.wav"))
     boom = pygame.mixer.Sound(os.path.join("xzplore/sounds","boom.wav"))
     space_ambience = pygame.mixer.Sound(os.path.join("xzplore/sounds","space_background_noise.mp3"))
     desert_wind = pygame.mixer.Sound(os.path.join("xzplore/sounds","sandstorm.wav"))
     rocket_engine_sound = pygame.mixer.Sound(os.path.join("xzplore/sounds","short_rocket.mp3"))
+    glock19 = pygame.mixer.Sound(os.path.join("xzplore/sounds","glock19.mp3"))
+    shoveling_dirt = pygame.mixer.Sound(os.path.join("xzplore/sounds","shoveling_dirt.mp3"))
 
     def play_sound(sound,volume): 
         while Sounds.ambience.get_busy() == False: 
@@ -662,12 +663,6 @@ class Planet():
                     
                 
 
-
-
-
-
-
-
     def draw_planet(self):
         #pygame.draw.circle(self.surf,(*self.color,self.transparency),(planet.x,planet.y),self.radius)
         #screen.blit(self.surf,(0,0))
@@ -941,6 +936,8 @@ class Toolbar():
         if Toolbar.time < curr_time:
             if pygame.key.get_pressed()[pygame.K_LSHIFT] == False and Toolbar.tool_num == 0:
                 if pygame.mouse.get_pressed()[2]:
+                    Sounds.glock19.set_volume(.2)
+                    Sounds.glock19.play()
                     Tool_particles.bullets.append(Tool_particles(SCREEN_WIDTH/2+1,SCREEN_HEIGHT/2+1,(pygame.mouse.get_pos()),(0,0,0),2,random.randint(-1,1),10,100))
                     Toolbar.clicked = True
                     Toolbar.time = curr_time + Toolbar.time_delay
@@ -967,10 +964,11 @@ class Tool_particles():
     surface = pygame.Surface((50,50),pygame.SRCALPHA)
 
     def draw_particles():
+        
+        #this will be the other part of the game that is going to be in the new part of the game 
         mouse_pos = pygame.mouse.get_pos()
         mouse_rect = pygame.Rect((mouse_pos[0],mouse_pos[1],1,1))
-        
-
+         
         try:
             color = screen.get_at((mouse_pos[0],mouse_pos[1]+10))
 
@@ -1001,8 +999,10 @@ class Tool_particles():
                                                            spread=(random.uniform(-1.5,1.5),random.uniform(-1,1.5)),
                                                            speed=random.uniform(-1,1),
                                                            lifespan=random.uniform(200,250)))
+                                    
                             except:
                                 pass
+    
         except:
             pass
 
@@ -1022,7 +1022,6 @@ class Tool_particles():
 
             bullet.x -= dx * bullet.speed
             bullet.y -= dy * bullet.speed
-       
 
 
     def update():
@@ -1043,12 +1042,11 @@ class Tool_particles():
                 particle.x += particle.spread[0] + random.randint(-1,1)
                 particle.y += particle.spread[1] + random.randint(-1,1)
             
-            particle.lifetime +=1
+            particle.lifetime +=1 
             if particle.size > 1:
                 
                 particle.size -= random.uniform(0,0.01)
 
-    
             if particle.lifetime > particle.lifespan:
                 Tool_particles.tool_particles.remove(particle)
 
@@ -1059,19 +1057,20 @@ class Tool_particles():
                     if pygame.Rect.colliderect(pygame.Rect(bullet.x,bullet.y,20,20),enemy.real_rect):
                         Tool_particles.bullets.remove(bullet)
                         Planet.enemy1.remove(enemy)
+
+                    if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
+                        Tool_particles.bullets.remove(bullet)
+                    elif bullet.y < 0 or bullet.y > SCREEN_HEIGHT:
+                        Tool_particles.bullets.remove(bullet)
+
                 except:
                     pass
                         
 
 
-            if bullet.x < 0 or bullet.x > SCREEN_WIDTH:
-                Tool_particles.bullets.remove(bullet)
-            elif bullet.y < 0 or bullet.y > SCREEN_HEIGHT:
-                Tool_particles.bullets.remove(bullet)
-
+            
     tool_particles = []
     bullets = []
-
 
 class Item_display():
     display_x = 170
@@ -1392,11 +1391,11 @@ while True:
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    #Game_State = "Desert_planet"
-   # transition_screen.transparecy = 0
+    Game_State = "Desert_planet"
+    transition_screen.transparecy = 0
     
     
-    Clock.tick(FPS)
+    Clock.tick(FPS) 
     pygame.display.flip()
     def quit_game():
         for event in pygame.event.get():

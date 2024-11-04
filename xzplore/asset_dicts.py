@@ -4,7 +4,7 @@ import random
 
 
 class Player_animations():
-    path = os.path.normpath("xzplore\\assets\\player_animations")
+    path = os.path.normpath("xzplore/assets/player_animations")
 
     player_assests = {
 
