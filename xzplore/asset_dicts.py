@@ -1,5 +1,6 @@
 import os
 import random
+import numpy as np
 
 
 
@@ -38,6 +39,26 @@ class Clouds():
 
 
 class Desert_planet():
+
+    tile_map = np.array([
+        [0,0,0,0,0,0,1,0,0],
+        [0,1,0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,1,0],
+        [0,1,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0],
+    ])
+        
+    
+    ecosystem_map = np.array([
+        [3,0,2,4,0,1,2,0,0],
+        [2,1,0,0,4,0,2,0,0],
+        [0,3,0,2,0,0,2,0,0],
+        [0,2,4,0,0,3,4,0,0],
+        [3,0,2,0,4,2,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+    ])
+
 
     path = str(os.path.normpath("xzplore/assets/desert_planet_assets"))
 
@@ -82,6 +103,67 @@ class Desert_planet():
         "description" : "Dangerous near sited parasite found in desert regions",
         "path" : "xzplore/assets/desert_planet_assets",
         "pngs" :  "xzplore/assets/desert_planet_assets/desert_crawler.png"
+    }
+
+
+class Moss_planet():
+
+    tile_map = np.array([
+        [0,0,0,0,0,0,1,1,0],
+        [0,1,0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,1],
+        [0,1,0,0,0,0,1,1,0],
+        [0,1,0,1,0,0,0,0,0],
+        [0,0,0,0,1,0,1,0,0],
+    ])
+        
+    
+    ecosystem_map = np.array([
+        [3,0,2,4,0,1,2,0,0],
+        [2,1,0,0,4,0,2,0,0],
+        [0,3,0,2,0,0,2,0,0],
+        [0,2,4,0,0,3,4,0,0],
+        [3,0,2,0,4,2,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+    ])
+
+
+    path = str(os.path.normpath("xzplore/assets/moss_planet_assets"))
+
+    map_tiles = { 
+        "path" : str(os.path.join(path,"moss_tiles")),
+        "normal_tiles" : sorted(list(os.listdir(os.path.join(path,"moss_tiles"))))[0], 
+        "dig_tiles" : sorted(list(os.listdir(os.path.join(path,"moss_tiles"))))[1:],
+        
+    }
+
+    rock_assets = {
+        "path" : os.path.join(path,"moss_rocks"),
+        "rocks" : sorted(list(os.listdir(os.path.join(path,"moss_rocks")))),
+        "item" : "Moss Rock",
+        "description" : ("Naturally occurring solid made up of plant/mineral like substances"),
+    }
+
+    grass_assets = {
+        "path" : os.path.join(path,"moss_grass"),
+        "grass" : sorted(list(os.listdir(os.path.join(path,"moss_grass")))),
+        "item" : "Moss Grass",
+        "description" : "Plant with thin blades",
+    }
+
+    bush_assets = {
+        "path" : os.path.join(path,"moss_bushes"),
+        "bushes" : sorted(list(os.listdir(os.path.join(path,"moss_bushes"))))[2:],
+        "item" : "Moss Bush",
+        "description": "Wooded plants with branches and viens"
+    }
+
+
+    desert_crawler = {
+        "enemy" : "Cockroach",
+        "description" : "Indomitable parasite found in vegatative regions",
+        "path" : "xzplore/assets/moss_planet_assets",
+        "pngs" :  "xzplore/assets/moss_planet_assets/cockroach.png"
     }
 
 class Colletibles():
@@ -162,28 +244,5 @@ class Colletibles():
 
 
     desert_collectibles = [turquoise,quartz,opal,peridot,agate,garnet]
+    moss_collectibles = [malachite,petrified_wood,obsidian,topaz]
 
-
-
-
-
-print(os.path.normpath(Colletibles.malachite["image"]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-print(Colletibles.collectible_items["fossil_path"])
