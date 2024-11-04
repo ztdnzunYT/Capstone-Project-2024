@@ -491,12 +491,12 @@ class Planet():
         move_amount = 0
 
         tile_map = np.array([
-            [0,0,0,0,0,0,1,0,0],
-            [0,1,0,0,0,0,0,0,0],
-            [0,0,0,1,0,0,0,0,0],
-            [0,0,0,0,0,0,0,1,0],
-            [0,1,0,1,0,0,0,0,0],
-            [0,0,0,0,0,0,1,0,0],
+            [0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0],
         ])
         
     
@@ -567,7 +567,7 @@ class Planet():
         animation_delay = 200
         time = 0 
         curr_time = pygame.time.get_ticks()
-        spawn_time = pygame.time.get_ticks() + 800
+        spawn_time = curr_time + 800
         
         def __init__(self,x,y,size,path,animations,speed,animation_delay,attack_delay):
             self.x = x
@@ -600,20 +600,18 @@ class Planet():
             curr_time = pygame.time.get_ticks()
 
             #print(curr_time)
-           
-            if curr_time < 2000:
-                if len(Planet.enemy1) < 30:  
+            if curr_time < 1:
+                for i in range(30):
                     Planet.enemy1.append(Planet.Enemy(random.choice([-200,1600]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
-
-            spawn_delay = 8000
-  
+                
+          
+            spawn_delay = 60000
             
-            if curr_time == Planet.Enemy.spawn_time:
-                for i in range(30-len(Planet.enemy1)):
-                    if len(Planet.enemy1) < 30:  
-                        Planet.enemy1.append(Planet.Enemy(random.choice([-200,1600]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
-
+                    
             if curr_time > Planet.Enemy.spawn_time:
+                for i in range(30):
+                    if len(Planet.enemy1) < 30: 
+                        Planet.enemy1.append(Planet.Enemy(random.choice([-200,1600]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
                 Planet.Enemy.spawn_time = curr_time + spawn_delay
 
 
@@ -734,9 +732,11 @@ class Planet():
                     #print(Planet.ecosystem)
                     x,y = int((col*Planet.Tile.TILE_SIZE)+Planet.Tile.world_x),int((index*Planet.Tile.TILE_SIZE)+Planet.Tile.world_y)
 
+                   
                     shake = random.randint(0,25)
-                    if shake == 0:
-                        Planet.ecosystem[tile1_num].rect.topleft = (Planet.ecosystem[tile1_num].x+x)+random.randint(-1,1),(Planet.ecosystem[tile1_num].y+y)+random.randint(-1,1)
+                    if shake == 0: 
+                        if Game_State == "Desert_planet":
+                            Planet.ecosystem[tile1_num].rect.topleft = (Planet.ecosystem[tile1_num].x+x)+random.randint(-1,1),(Planet.ecosystem[tile1_num].y+y)+random.randint(-1,1)
                     else:
                         Planet.ecosystem[tile1_num].rect.topleft = (Planet.ecosystem[tile1_num].x+x),(Planet.ecosystem[tile1_num].y+y)
 
@@ -1067,8 +1067,6 @@ class Tool_particles():
                     pass
                         
 
-
-            
     tool_particles = []
     bullets = []
 
@@ -1215,6 +1213,7 @@ class Transition_screen():
         transition_screen.color = window_color
         if self.detection > 200:
             self.transparecy = min(self.transparecy +1,255)
+
         if self.detection > 0  and self.transparecy == 255:
             Game_State = gamestate  
             Sounds.ambience.stop()
@@ -1222,18 +1221,24 @@ class Transition_screen():
 
         if Game_State == "Spacestation":
             if space_station.spacestation_inside_rect.y < -91:
-                self.detection +=1
+                self.detection +=2
                 if self.detection > 200:
                     self.transparecy = min(self.transparecy +1,255)
                 if self.detection > 0  and self.transparecy == 255:
                     Game_State = "Space"   
             else:
                 self.transparecy = max(self.transparecy -1,0)
-        
+    
+
         if Game_State == "Desert_planet":
             self.detection = 0
             self.transparecy = max(self.transparecy -1,125)
+        
+        if Game_State == "Moss_planet":
+            self.detection = 0
+            self.transparecy = max(self.transparecy -1,10)
 
+        
 
     def update(self,spaceship):
         screen.blit(self.surface,(0,0))
@@ -1244,14 +1249,18 @@ class Transition_screen():
         if mtos_dis < World_pos.offset_distance +15:
             if pygame.Rect.colliderect(spaceship.rect,space_station.airlock):
                 Transition_screen.change_state(self,"Spacestation",(0,0,0))
-            elif pygame.Rect.colliderect(spaceship.rect,planet.rect):
+            elif pygame.Rect.colliderect(spaceship.rect,desert_planet.rect):
                 Transition_screen.change_state(self,"Desert_planet",(191,123,32))
+            elif pygame.Rect.colliderect(spaceship.rect,moss_planet.rect):
+                Transition_screen.change_state(self,"Moss_planet",(0,0,0))
         else:
             if Game_State == "Space":
                 self.transparecy = max(self.transparecy -1,0)
     
 
-planet = Planet((3000,-1000),os.path.join("xzplore/assets","desert_planet.png"),1500,(0,223,135),720/2,20)
+desert_planet = Planet((3000,-1000),os.path.join("xzplore/assets","desert_planet.png"),1500,(0,223,135),720/2,20)
+moss_planet = Planet((-3000,-1000),os.path.join("xzplore/assets","moss_planet.png"),1000,(0,223,135),720/2,20)
+
 crosshair = Crosshair(0,0,30,os.path.join("xzplore/assets","crosshair.png"))
 spaceship = Spaceship(os.path.join("xzplore/assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
 projectiles = []
@@ -1283,8 +1292,11 @@ while True:
             star.reposition(random.randint(100,200),random.randint(10,95))
 
         #circle.draw()
-        planet.draw_planet()
-        planet.update()
+        desert_planet.draw_planet()
+        desert_planet.update()
+
+        moss_planet.draw_planet()
+        moss_planet.update()
 
         space_station.draw()
         space_station.update(World_pos.dir_offset)
@@ -1370,6 +1382,8 @@ while True:
         space_station.move()
 
     if Game_State == "Desert_planet":
+        Planet.Tile.tile_map = Desert_planet.tile_map
+        Planet.Tile.ecosystem_map = Desert_planet.ecosystem_map
         Sounds.play_sound(Sounds.desert_wind,0.1)
         Planet.draw_map(Desert_planet.map_tiles,Desert_planet.grass_assets,Desert_planet.rock_assets,
                         Desert_planet.bush_assets,Colletibles.desert_collectibles,)
@@ -1385,14 +1399,35 @@ while True:
         
         Player.draw_crosshair()
         Toolbar.draw_tool()
+    
+    if Game_State == "Moss_planet":
+        Planet.Tile.tile_map = Moss_planet.tile_map
+        Planet.Tile.ecosystem_map = Moss_planet.ecosystem_map
+        #Sounds.play_sound(Sounds.desert_wind,0.1)
+        Planet.draw_map(Moss_planet.map_tiles,Moss_planet.grass_assets,Moss_planet.rock_assets,
+                        Moss_planet.bush_assets,Colletibles.moss_collectibles,)
+        Planet.map_move()
+        #Planet.Clouds.draw_clouds(Clouds.clouds_assets)
+        Tool_particles.draw_particles()
+        Tool_particles.update()
+  
+        Planet.Enemy.draw(Moss_planet.desert_crawler)
+        Planet.Enemy.update()
+        Tool_particles.draw_bullets()
+        Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
         
+        Player.draw_crosshair()
+        Toolbar.draw_tool()
+
+    
+    
    
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    Game_State = "Desert_planet"
-    transition_screen.transparecy = 0
+    #Game_State = "Moss_planet"
+    #transition_screen.transparecy = 0
     
     
     Clock.tick(FPS) 
