@@ -780,8 +780,13 @@ class Player():
 
     animation_number = 0 
     animation_delay = 50
+    health_bar_delay = 20
+    health_bar_timer = 0
     curr_time = 0
     timer = 0
+
+    health = 100
+    health_bar_transparency = 30
 
     idle_state = str(Player_animations.player_assests["down_idle"])
 
@@ -863,6 +868,26 @@ class Player():
         if pygame.mouse.get_pressed()[2] == False or Player.tool_distance > Player.tool_range:
   
             screen.blit(player_crosshair,(pygame.mouse.get_pos()[0]-20,pygame.mouse.get_pos()[1]-20))
+
+    def draw_health_bar():
+
+        curr_time = pygame.time.get_ticks()
+        
+    
+        if curr_time > Player.health_bar_timer:
+            
+            Player.health_bar_timer = curr_time + Player.health_bar_delay
+            
+
+    
+
+
+        surface = pygame.Surface((6,26),pygame.SRCALPHA)
+        pygame.draw.rect(surface,(10,255,0,Player.health_bar_transparency),(0,0,5,25))
+        pygame.draw.rect(surface,(0,0,0,Player.health_bar_transparency),(0,0,5,25),1)
+        screen.blit(surface,(SCREEN_WIDTH/2+20,SCREEN_HEIGHT/2-15))
+
+
 
 class Toolbar():
     tool_num = 2
@@ -1195,9 +1220,6 @@ class Collectibles():
         Gem = (gem_parameters["item"],gem_parameters["description"],0,gem_parameters["image"],25,150)
         return Gem
 
-    
-  
-
     buried_collectables = []
     rock_collectables = []
     
@@ -1411,6 +1433,7 @@ while True:
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
         
         Player.draw_crosshair()
+        Player.draw_health_bar()
         Toolbar.draw_tool()
     
     if Game_State == "Moss_planet":
@@ -1424,12 +1447,13 @@ while True:
         Tool_particles.draw_particles()
         Tool_particles.update()
   
-        Planet.Enemy.draw(Moss_planet.desert_crawler)
+        Planet.Enemy.draw(Moss_planet.cockroach)
         Planet.Enemy.update()
         Tool_particles.draw_bullets()
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
-        
+
         Player.draw_crosshair()
+        Player.draw_health_bar()
         Toolbar.draw_tool()
 
     
@@ -1439,8 +1463,8 @@ while True:
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    #Game_State = "Moss_planet"
-    #transition_screen.transparecy = 0
+    Game_State = "Desert_planet"
+    transition_screen.transparecy = 0
     
     
     Clock.tick(FPS) 
