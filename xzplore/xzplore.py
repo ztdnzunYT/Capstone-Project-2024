@@ -780,7 +780,7 @@ class Player():
 
     animation_number = 0 
     animation_delay = 50
-    health_bar_delay = 20
+    health_bar_delay = 10000
     health_bar_timer = 0
     curr_time = 0
     timer = 0
@@ -873,17 +873,19 @@ class Player():
 
         curr_time = pygame.time.get_ticks()
         
-    
-        if curr_time > Player.health_bar_timer:
-            
+       
+        player_rect = pygame.Rect(SCREEN_WIDTH/2-13,SCREEN_HEIGHT/2+10,25,15)
+        if curr_time > Player.health_bar_timer:  
+           for enemy in Planet.enemy1:
+                if pygame.Rect.colliderect(enemy.real_rect,player_rect):
+                    Player.health_bar_transparency = 255
+                    Player.health -=1
+        else:
+            Player.health_bar_transparency = 30
             Player.health_bar_timer = curr_time + Player.health_bar_delay
-            
-
-    
-
 
         surface = pygame.Surface((6,26),pygame.SRCALPHA)
-        pygame.draw.rect(surface,(10,255,0,Player.health_bar_transparency),(0,0,5,25))
+        pygame.draw.rect(surface,(10,255,0,Player.health_bar_transparency),(0,0,5,Player.health))
         pygame.draw.rect(surface,(0,0,0,Player.health_bar_transparency),(0,0,5,25),1)
         screen.blit(surface,(SCREEN_WIDTH/2+20,SCREEN_HEIGHT/2-15))
 
