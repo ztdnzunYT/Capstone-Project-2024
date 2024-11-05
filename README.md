@@ -1,19 +1,4 @@
-GHLauncher
--------------------------
-App Name - GHLauncher (Game Host Launcher)
-App Description - GHLauncher is a cross platform game hosting application that allows users to upload and play games locally on their desktop computer 
-App Platforms - Mac | Windows 
-Languages - Python (dearpygui, pygame) Java, Html, Css, Sqlite
-
-Website Name - GHLauncher.io (Domain Name)
-Website Description - *Website should go deeper into aspects of the application*
-
-- Extra -
-Contributors...
-About us / Ghl team...
-What ghlauncher offers...
-How did ghlauncher come to be...
-Collections... (Short page on a few of the games all together)
-Contact Us page...
-
-Website inspo (epic games, wildtangent, google play store, discord )
+Game Name: FightrZ
+Description: FightrZ is a Mortal Kombat/Street Fighter arcade style game.
+Objective: Simple, Beat your opponent as many times as possible!
+Creator: Nicholas Gordon 
