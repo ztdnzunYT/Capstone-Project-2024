@@ -605,7 +605,7 @@ class Planet():
                     Planet.enemy1.append(Planet.Enemy(random.choice([-200,1600]),random.randint(-100,900)+Planet.Tile.world_y,25,enemy["path"],enemy["pngs"],random.uniform(1,1),0,random.randint(10,50)))
                 
           
-            spawn_delay = 60000
+            spawn_delay = 80000
             
                     
             if curr_time > Planet.Enemy.spawn_time:
@@ -672,6 +672,7 @@ class Planet():
         self.y += World_pos.direction(spaceship,World_pos.dir_offset)[1]
 
     def draw_map(map_tile,grass,rocks,bush,gems):
+  
 
         #image = os.path.normpath(("xzplore/assets/desert_planet_assets/desert_sandtiles/desert_sandtile_0.png"))
         tile_num = 0
@@ -771,6 +772,7 @@ class Planet():
     clouds = []
     enemy1 = []
     enemy2 = []
+
     
     #orange_tile = Tile(os.path.normpath("assets\desert_planet_assets\desert_sandtiles\desert_sandtile_0.png"))
 
@@ -1187,15 +1189,19 @@ class Collectibles():
                   os.path.join(Colletibles.collectible_items["fossil_path"],random.choice(Colletibles.collectible_items["fossils"])),random.randint(5,8)*10,random.randint(250,300))
         return Fossil
 
-
     def random_gem(gem):
         #print(random.choice(gem))
         gem_parameters = random.choice(gem)
         Gem = (gem_parameters["item"],gem_parameters["description"],0,gem_parameters["image"],25,150)
         return Gem
 
+    
+  
+
     buried_collectables = []
     rock_collectables = []
+    
+    
 
 class Transition_screen():
 
@@ -1203,12 +1209,13 @@ class Transition_screen():
         self.x = x
         self.y = y 
         self.color = color
-        self.transparecy = 150
+        self.transparecy = 250
         self.surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
         self.rect = self.surface.get_rect(center=(0,0))
         self.detection = 0
 
     def change_state(self,gamestate,window_color):
+        
         global Game_State
         transition_screen.color = window_color
         if self.detection > 200:
@@ -1220,16 +1227,17 @@ class Transition_screen():
             self.detection = 0
 
         if Game_State == "Spacestation":
+
             if space_station.spacestation_inside_rect.y < -91:
                 self.detection +=2
-                if self.detection > 200:
-                    self.transparecy = min(self.transparecy +1,255)
+                self.transparecy = min(self.transparecy +1,255)
+
                 if self.detection > 0  and self.transparecy == 255:
                     Game_State = "Space"   
+
             else:
                 self.transparecy = max(self.transparecy -1,0)
     
-
         if Game_State == "Desert_planet":
             self.detection = 0
             self.transparecy = max(self.transparecy -1,125)
@@ -1243,8 +1251,12 @@ class Transition_screen():
     def update(self,spaceship):
         screen.blit(self.surface,(0,0))
         pygame.draw.rect(self.surface,(*self.color,self.transparecy),(0,0,SCREEN_WIDTH,SCREEN_HEIGHT))
-        mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
         global Game_State
+        if Game_State == "Space":
+            mtos_dis = round(math.sqrt((mouse_pos[1]-spaceship.position[1])**2+(mouse_pos[0]-spaceship.position[0])**2))
+        else:
+            mtos_dis = 0
+        
         self.detection +=1 
         if mtos_dis < World_pos.offset_distance +15:
             if pygame.Rect.colliderect(spaceship.rect,space_station.airlock):
@@ -1255,11 +1267,12 @@ class Transition_screen():
                 Transition_screen.change_state(self,"Moss_planet",(0,0,0))
         else:
             if Game_State == "Space":
+                space_station.spacestation_inside_rect.y = -50
                 self.transparecy = max(self.transparecy -1,0)
     
 
 desert_planet = Planet((3000,-1000),os.path.join("xzplore/assets","desert_planet.png"),1500,(0,223,135),720/2,20)
-moss_planet = Planet((-3000,-1000),os.path.join("xzplore/assets","moss_planet.png"),1000,(0,223,135),720/2,20)
+moss_planet = Planet((-2000,-1000),os.path.join("xzplore/assets","moss_planet.png"),1000,(0,223,135),720/2,20)
 
 crosshair = Crosshair(0,0,30,os.path.join("xzplore/assets","crosshair.png"))
 spaceship = Spaceship(os.path.join("xzplore/assets","spaceship.png"),SCREEN_WIDTH/2,SCREEN_HEIGHT/2,55)
@@ -1378,9 +1391,9 @@ while True:
     if Game_State == "Spacestation":
         
         screen.blit(space_station.spacestation_inside,space_station.spacestation_inside_rect)
-        pygame.draw.rect(screen,(255,214,164),(SCREEN_WIDTH/2,SCREEN_HEIGHT/2,15,15))
         space_station.move()
-
+        Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
+        
     if Game_State == "Desert_planet":
         Planet.Tile.tile_map = Desert_planet.tile_map
         Planet.Tile.ecosystem_map = Desert_planet.ecosystem_map
