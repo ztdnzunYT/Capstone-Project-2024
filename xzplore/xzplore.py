@@ -780,8 +780,10 @@ class Player():
 
     animation_number = 0 
     animation_delay = 50
-    health_bar_delay = 10000
+    health_bar_hide_timer = 10000
     health_bar_timer = 0
+    health_decline_delay = 20
+    health_bar_decline_timer = 0
     curr_time = 0
     timer = 0
 
@@ -872,21 +874,27 @@ class Player():
     def draw_health_bar():
 
         curr_time = pygame.time.get_ticks()
+  
+
+        player_rect = pygame.Rect(SCREEN_WIDTH/2-20,SCREEN_HEIGHT/2,40,30)
+        pygame.draw.rect(screen,(0,0,0),player_rect,1)
         
-       
-        player_rect = pygame.Rect(SCREEN_WIDTH/2-13,SCREEN_HEIGHT/2+10,25,15)
-        if curr_time > Player.health_bar_timer:  
-           for enemy in Planet.enemy1:
-                if pygame.Rect.colliderect(enemy.real_rect,player_rect):
-                    Player.health_bar_transparency = 255
-                    Player.health -=1
-        else:
-            Player.health_bar_transparency = 30
-            Player.health_bar_timer = curr_time + Player.health_bar_delay
+
+
+        for enemy in Planet.enemy1:
+            if pygame.Rect.colliderect(enemy.real_rect,player_rect):
+                print("COLLISION")
+                Player.health_bar_transparency = 255
+                if curr_time > Player.health_bar_decline_timer:
+                    Player.health -=.1
+                    Player.health_bar_decline_timer = curr_time + Player.health_decline_delay
+            elif curr_time > Player.health_bar_timer:
+                Player.health_bar_transparency = 30
+                Player.health_bar_timer = curr_time + Player.health_bar_hide_timer
 
         surface = pygame.Surface((6,26),pygame.SRCALPHA)
-        pygame.draw.rect(surface,(10,255,0,Player.health_bar_transparency),(0,0,5,Player.health))
-        pygame.draw.rect(surface,(0,0,0,Player.health_bar_transparency),(0,0,5,25),1)
+        pygame.draw.rect(surface,(10,255,0,Player.health_bar_transparency),(0,100-Player.health,5,Player.health))
+        pygame.draw.rect(surface,(0,0,0,Player.health_bar_transparency),(0,0,5,26),1)
         screen.blit(surface,(SCREEN_WIDTH/2+20,SCREEN_HEIGHT/2-15))
 
 
