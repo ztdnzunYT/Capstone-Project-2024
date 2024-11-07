@@ -749,6 +749,16 @@ class Planet():
         for item in Collectibles.rock_collectables:    
             item.draw()
 
+
+    def draw_spaceship():
+        spaceship = pygame.image.load("xzplore/assets/spaceship.png")
+        detection_rect = (int(SCREEN_WIDTH/2+Planet.Tile.world_x-170),int(SCREEN_HEIGHT/2+Planet.Tile.world_y-60),140,150)
+        
+        screen.blit(spaceship,detection_rect)
+
+
+
+
     def map_move():
 
         keys = pygame.key.get_pressed()
@@ -767,6 +777,9 @@ class Planet():
         elif keys[pygame.K_s]:
             Planet.Tile.world_y -=Planet.Tile.move_amount
     
+
+
+
     tiles = []
     ecosystem = []
     clouds = []
@@ -876,14 +889,13 @@ class Player():
         curr_time = pygame.time.get_ticks()
   
 
-        player_rect = pygame.Rect(SCREEN_WIDTH/2-20,SCREEN_HEIGHT/2,40,30)
-        pygame.draw.rect(screen,(0,0,0),player_rect,1)
+        player_rect = pygame.Rect(SCREEN_WIDTH/2-15,SCREEN_HEIGHT/2,30,20)
+        #pygame.draw.rect(screen,(0,0,0),player_rect,1)
         
 
 
         for enemy in Planet.enemy1:
             if pygame.Rect.colliderect(enemy.real_rect,player_rect):
-                print("COLLISION")
                 Player.health_bar_transparency = 255
                 if curr_time > Player.health_bar_decline_timer:
                     Player.health -=.1
@@ -896,8 +908,6 @@ class Player():
         pygame.draw.rect(surface,(10,255,0,Player.health_bar_transparency),(0,100-Player.health,5,Player.health))
         pygame.draw.rect(surface,(0,0,0,Player.health_bar_transparency),(0,0,5,26),1)
         screen.blit(surface,(SCREEN_WIDTH/2+20,SCREEN_HEIGHT/2-15))
-
-
 
 class Toolbar():
     tool_num = 2
@@ -1233,15 +1243,13 @@ class Collectibles():
     buried_collectables = []
     rock_collectables = []
     
-    
-
 class Transition_screen():
 
     def __init__(self,x,y,color):
         self.x = x
         self.y = y 
         self.color = color
-        self.transparecy = 250
+        self.transparecy = 30
         self.surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
         self.rect = self.surface.get_rect(center=(0,0))
         self.detection = 0
@@ -1269,10 +1277,25 @@ class Transition_screen():
 
             else:
                 self.transparecy = max(self.transparecy -1,0)
-    
+
+            
         if Game_State == "Desert_planet":
-            self.detection = 0
-            self.transparecy = max(self.transparecy -1,125)
+
+
+            if (screen.get_at((600,420))[:3]) == (0,0,0):
+                print(screen.get_at((600,420))[:3])
+                self.detection +=2
+                self.transparecy = min(self.transparecy +1,255)
+
+                if self.detection > 0  and self.transparecy == 255:
+                    Game_State = "Space"   
+
+            else:
+                self.detection = 0
+                self.transparecy = max(self.transparecy -1,0)
+
+        print(Game_State)
+            
         
         if Game_State == "Moss_planet":
             self.detection = 0
@@ -1445,7 +1468,8 @@ while True:
         Player.draw_crosshair()
         Player.draw_health_bar()
         Toolbar.draw_tool()
-    
+        
+
     if Game_State == "Moss_planet":
         Planet.Tile.tile_map = Moss_planet.tile_map
         Planet.Tile.ecosystem_map = Moss_planet.ecosystem_map
@@ -1457,24 +1481,23 @@ while True:
         Tool_particles.draw_particles()
         Tool_particles.update()
   
-        Planet.Enemy.draw(Moss_planet.cockroach)
+        Planet.Enemy.draw(Moss_planet.roach)
         Planet.Enemy.update()
         Tool_particles.draw_bullets()
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
-
+        
         Player.draw_crosshair()
         Player.draw_health_bar()
         Toolbar.draw_tool()
+        Planet.draw_spaceship()
 
-    
-    
    
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    Game_State = "Desert_planet"
-    transition_screen.transparecy = 0
+    
+    #transition_screen.transparecy = 0
     
     
     Clock.tick(FPS) 
