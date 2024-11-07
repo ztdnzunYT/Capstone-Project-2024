@@ -32,6 +32,7 @@ class Sounds():
     rocket_engine_sound = pygame.mixer.Sound(os.path.join("xzplore/sounds","short_rocket.mp3"))
     glock19 = pygame.mixer.Sound(os.path.join("xzplore/sounds","glock19.mp3"))
     shoveling_dirt = pygame.mixer.Sound(os.path.join("xzplore/sounds","shoveling_dirt.mp3"))
+    bug_enviornment = pygame.mixer.Sound(os.path.join("xzplore/sounds/","bug_enviornment.mp3"))
 
     def play_sound(sound,volume): 
         while Sounds.ambience.get_busy() == False: 
@@ -81,6 +82,7 @@ class World_pos():
         return (dx,dy)
 
 class Crosshair():
+    transparency = 255
     def __init__(self,x,y,size,image):
         self.x = x
         self.y = y 
@@ -100,22 +102,29 @@ class Crosshair():
         self.y = mouse[1]
         self.rect.center = (mouse[0],mouse[1])
         self.image = pygame.transform.smoothscale(pygame.image.load(self.original_image).convert_alpha(),(self.size,self.size))
-    
+        self.image.set_alpha(Crosshair.transparency)
     def rotate(self):
+
         if (pygame.mouse.get_pressed()[2]):
             self.angle = (self.angle - self.rotation_amount) % 360
             self.rotation_amount +=0.3
             self.rotation_amount = min(self.rotation_amount,15)
             self.size = min(self.size + self.rotation_amount,35)
+            Crosshair.transparency = max(Crosshair.transparency +1,255)
+            self.image.set_alpha(Crosshair.transparency)
         else:
             self.angle = (self.angle - self.rotation_amount) % 360
             self.rotation_amount -=0.1
             self.rotation_amount = max(self.rotation_amount,0)
             self.size = max(self.size - self.rotation_amount,30)
+            Crosshair.transparency = min(Crosshair.transparency -.01,80)
+            self.image.set_alpha(Crosshair.transparency)
 
+        
         self.rotated_image = pygame.transform.rotate(self.image,self.angle)
         self.rotated_rect = self.rotated_image.get_rect(center=(self.size,self.size))
         self.rotated_rect.center = (self.x,self.y)
+        
         
        
     def draw(self): 
@@ -1257,13 +1266,15 @@ class Transition_screen():
     def change_state(self,gamestate,window_color):
         
         global Game_State
+ 
         transition_screen.color = window_color
         if self.detection > 200:
             self.transparecy = min(self.transparecy +1,255)
 
         if self.detection > 0  and self.transparecy == 255:
-            Game_State = gamestate  
             Sounds.ambience.stop()
+            Sounds.bug_enviornment.stop()
+            Game_State = gamestate  
             self.detection = 0
 
         if Game_State == "Spacestation":
@@ -1272,34 +1283,52 @@ class Transition_screen():
                 self.detection +=2
                 self.transparecy = min(self.transparecy +1,255)
 
-                if self.detection > 0  and self.transparecy == 255:
+                if self.detection > 0  and self.transparecy > 250:
+                    self.transparecy = 255
                     Game_State = "Space"   
 
             else:
                 self.transparecy = max(self.transparecy -1,0)
 
-            
+        
         if Game_State == "Desert_planet":
-
-
-            if (screen.get_at((600,420))[:3]) == (0,0,0):
-                print(screen.get_at((600,420))[:3])
+            
+            if Planet.Tile.world_y > 400 or Planet.Tile.world_y <-800 or Planet.Tile.world_x > 600 or Planet.Tile.world_x < -1200:
                 self.detection +=2
                 self.transparecy = min(self.transparecy +1,255)
 
-                if self.detection > 0  and self.transparecy == 255:
+                if self.detection > 0  and self.transparecy > 250:
+                    self.transparecy = 255
                     Game_State = "Space"   
+                    Planet.Tile.world_x = 0
+                    Planet.Tile.world_y = 0
+
+            else:
+                self.detection = 0
+                self.transparecy = max(self.transparecy -1,130)
+
+
+        if Game_State == "Moss_planet":
+            
+            if Planet.Tile.world_y > 400 or Planet.Tile.world_y <-800 or Planet.Tile.world_x > 600 or Planet.Tile.world_x < -1200:
+                self.detection +=2
+                self.transparecy = min(self.transparecy +1,255)
+
+                if self.detection > 0  and self.transparecy > 250:
+                    self.transparecy = 255
+                    Game_State = "Space"   
+                    Planet.Tile.world_x = 0
+                    Planet.Tile.world_y = 0
 
             else:
                 self.detection = 0
                 self.transparecy = max(self.transparecy -1,0)
 
-        print(Game_State)
+ 
+
+ 
             
         
-        if Game_State == "Moss_planet":
-            self.detection = 0
-            self.transparecy = max(self.transparecy -1,10)
 
         
 
@@ -1473,7 +1502,7 @@ while True:
     if Game_State == "Moss_planet":
         Planet.Tile.tile_map = Moss_planet.tile_map
         Planet.Tile.ecosystem_map = Moss_planet.ecosystem_map
-        #Sounds.play_sound(Sounds.desert_wind,0.1)
+        #Sounds.play_sound(Sounds.bug_enviornment,0.2)
         Planet.draw_map(Moss_planet.map_tiles,Moss_planet.grass_assets,Moss_planet.rock_assets,
                         Moss_planet.bush_assets,Colletibles.moss_collectibles,)
         Planet.map_move()
@@ -1481,7 +1510,7 @@ while True:
         Tool_particles.draw_particles()
         Tool_particles.update()
   
-        Planet.Enemy.draw(Moss_planet.roach)
+        Planet.Enemy.draw(Moss_planet.cockroach)
         Planet.Enemy.update()
         Tool_particles.draw_bullets()
         Player.draw_player(Player.get_animation(Player_animations.path,Player_animations.player_assests))
@@ -1489,14 +1518,14 @@ while True:
         Player.draw_crosshair()
         Player.draw_health_bar()
         Toolbar.draw_tool()
-        Planet.draw_spaceship()
+      
 
    
     transition_screen.update(spaceship)
     item_display_window.draw_item_display_window()
     Toolbar.draw_toolbar()
 
-    
+    #Game_State = "Desert_planet" 
     #transition_screen.transparecy = 0
     
     
