@@ -29,10 +29,10 @@ class Thumbnail_props:
 
         
 thumbnails = []
-kart_shifters_thumbnail = Thumbnail_props("Kart-Shifters-Poster-1.png","pic1","Kart Shifters")
-basketball_thumbnail = Thumbnail_props("Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
-bbal_thumbnail = Thumbnail_props("bball-thumbnail.png","pic3","B-Ball")
-pickle_jump_thumbnail = Thumbnail_props("Pickle-jump.png","pic4","Pickle Jump")
+kart_shifters_thumbnail = Thumbnail_props("Assets/Kart-Shifters-Poster-1.png","pic1","Kart Shifters")
+basketball_thumbnail = Thumbnail_props("Assets/Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
+bbal_thumbnail = Thumbnail_props("Assets/bball-thumbnail.png","pic3","B-Ball")
+pickle_jump_thumbnail = Thumbnail_props("Assets/Pickle-jump.png","pic4","Pickle Jump")
 
 thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail,pickle_jump_thumbnail])
 
