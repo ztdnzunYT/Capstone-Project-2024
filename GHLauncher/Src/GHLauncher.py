@@ -17,10 +17,11 @@ dpg.create_context()
 dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT)
 
 class Thumbnail_props:
-    def __init__(self,path,tag,game_name):
+    def __init__(self,path,tag,game_name,game_path):
         self.path = path 
         self.tag = tag
         self.game_name = game_name
+        self.game_path = game_path
         self.load_image = dpg.load_image(self.path)
         self.width = self.load_image[0]
         self.height = self.load_image[1]
@@ -29,12 +30,13 @@ class Thumbnail_props:
 
         
 thumbnails = []
-kart_shifters_thumbnail = Thumbnail_props("Assets/Kart-Shifters-Poster-1.png","pic1","Kart Shifters")
-basketball_thumbnail = Thumbnail_props("Assets/Screen-Shot-2024-03-05-at-10.50.37-AM.png","pic2","Stick Basketball")
-bbal_thumbnail = Thumbnail_props("Assets/bball-thumbnail.png","pic3","B-Ball")
-pickle_jump_thumbnail = Thumbnail_props("Assets/Pickle-jump.png","pic4","Pickle Jump")
+kart_shifters_thumbnail = Thumbnail_props("Assets/Thumbnails/Kart-Shifters-Poster-1.png","pic1","Kart Shifters","Kart_shifters.exe")
+basketball_thumbnail = Thumbnail_props("Assets/Thumbnails/Dungeon_surviver.png","pic2","Dungeoun Survival","Necromancer.exe")
+bbal_thumbnail = Thumbnail_props("Assets/Thumbnails/bball-thumbnail.png","pic3","B-Ball","B-Ball.exe")
+pickle_jump_thumbnail = Thumbnail_props("Assets/Thumbnails/Pickle-jump.png","pic4","Pickle Jump",None)
+fighterz_thumbnail = Thumbnail_props("Assets/Thumbnails/FIGHTERZ.png","pic5","FighterZ",None)
 
-thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail,pickle_jump_thumbnail])
+thumbnails.extend([kart_shifters_thumbnail,basketball_thumbnail,bbal_thumbnail,pickle_jump_thumbnail,fighterz_thumbnail])
 
 dpg.set_global_font_scale(1.2)
 with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_HEIGHT,no_move=True,no_title_bar=True,no_resize=True,no_bring_to_front_on_focus=True) as background_window:
@@ -44,7 +46,7 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         dpg.add_separator()
         dpg.add_spacer(height=30)
         dpg.add_button(label="WHAT'S NEW")
-        dpg.add_button(label="CATELOG")
+        dpg.add_button(label="CATALOG")
         dpg.add_button(label="ACHIVEMENTS")
         dpg.add_button(label="SETTINGS")
         dpg.add_button(label="VISIT OUR WEBSITE")
@@ -55,8 +57,7 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
 
     def openApp(sender, app_data, user_data):
         #subprocess.call(["C:/Users/348580/Download/Kart_shifters/Kart_shifters.exe"])
-        os.startfile(os.path.abspath("Kart_shifters.exe"))
-
+        os.startfile(os.path.abspath(user_data))
 
     with dpg.child_window(label="WHAT'S NEW",pos=(220,0),tag="whats_new_window") as whats_new_window:
         dpg.add_spacer(height=20)
@@ -66,7 +67,7 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
                 with dpg.group():
                     dpg.add_image(thumbnail.tag,width=150,height=200)
                     dpg.add_spacer(height=10)                    
-                    dpg.add_button(label=thumbnail.game_name,callback=openApp,user_data=thumbnail.path)
+                    dpg.add_button(label=thumbnail.game_name,callback=openApp,user_data=thumbnail.game_path)
                    
         dpg.add_spacer(height=20)
         dpg.add_separator()
