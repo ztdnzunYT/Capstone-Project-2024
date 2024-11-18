@@ -23,12 +23,13 @@ class Main_menu():
             self.rect = (self.x,self.y,self.width,self.length)
             self.font = pygame.font.Font(None,30)
             self.text = text 
-            self.font_render = self.font.render(self.text,True,(255,255,255))
+            self.font_render = self.font.render(self.text,True,(255,255,255,self.transparency))
             self.font_rect = self.font_render.get_rect()
+            self.game_state = text
 
     practice_button = Buttons(40,40,170,40,"Practice")
     versus_button = Buttons(40,110,170,40,"Versus")
-    buttons = []
+    buttons = [practice_button,versus_button]
 
 
     def display_main_menu():
@@ -41,6 +42,19 @@ class Main_menu():
         screen.blit(Main_menu.versus_button.font_render,(50,120))
         
         screen.blit(surface,(0,0))
+
+        for button in Main_menu.buttons:
+            if pygame.Rect.colliderect(pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1),button.rect):
+                button.transparency = max(200,button.transparency-1)
+                if pygame.mouse.get_pressed()[0]:
+
+                    Game_state = button.game_state 
+            else:
+                button.transparency = min(255,button.transparency+1)
+            
+            
+                
+
 
 
 
