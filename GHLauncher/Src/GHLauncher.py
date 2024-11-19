@@ -29,14 +29,15 @@ class Thumbnail_props:
 
         
 thumbnails = []
-xzplore_thumbnail = Thumbnail_props("Assets/Thumbnails/xzplore.png","pic1","Xzplore",None)
+xzplore_thumbnail = Thumbnail_props("Assets/Thumbnails/xzplore.png","pic1","Xzplore","Xzplore.exe")
 dungeon_survival_thumbnail = Thumbnail_props("Assets/Thumbnails/Dungeon_surviver.png","pic2","Dungeoun Survival","Necromancer.exe")
 bbal_thumbnail = Thumbnail_props("Assets/Thumbnails/bball-thumbnail.png","pic3","B-Ball","B-Ball.exe")
-pickle_jump_thumbnail = Thumbnail_props("Assets/Thumbnails/Pickle-jump.png","pic4","Pickle Jump",None)
+pickle_jump_thumbnail = Thumbnail_props("Assets/Thumbnails/Pickle-jump.png","pic4","Pickle Jump","EPIC_PICKLE_JUMP!.exe")
 fighterz_thumbnail = Thumbnail_props("Assets/Thumbnails/FIGHTERZ.png","pic5","FighterZ",None)
 kart_shifters_thumbnail = Thumbnail_props("Assets/Thumbnails/Kart-Shifters-Poster-1.png","pic6","Kart Shifters","Kart_shifters.exe")
+basketball_thumbnail = Thumbnail_props("Assets/Thumbnails/streetball_thumbnail.png","pic7","Street Ball","Basketball/Basketball_folder/Basketball.exe")
 
-thumbnails.extend([xzplore_thumbnail,dungeon_survival_thumbnail,bbal_thumbnail,pickle_jump_thumbnail,fighterz_thumbnail,kart_shifters_thumbnail])
+thumbnails.extend([xzplore_thumbnail,dungeon_survival_thumbnail,bbal_thumbnail,pickle_jump_thumbnail,fighterz_thumbnail,kart_shifters_thumbnail,basketball_thumbnail])
 
 dpg.set_global_font_scale(1.2)
 with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_HEIGHT,no_move=True,no_title_bar=True,no_resize=True,no_bring_to_front_on_focus=True) as background_window:
