@@ -1,148 +1,121 @@
 import pygame
 import random
+import time
 
 # Initialize Pygame
 pygame.init()
 
-# Set screen dimensions
-width = 600
+# Set up the game window
+width = 800
 height = 600
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Tic Tac Toe")
+window = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Hungry Snake")
 
 # Colors
-black = (0, 0, 0)
-white = (255, 255, 255)
-red = (255, 0, 0)
-green = (0, 255, 0)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 
-# Board size
-board_size = 3
+# Snake and food properties
+snake_block = 20
+snake_speed = 15
 
-# Cell size
-cell_size = width // board_size
+# Initialize clock
+clock = pygame.time.Clock()
 
-# Font for displaying text
-font = pygame.font.Font(None, 60)
+# Font for score display
+font = pygame.font.SysFont(None, 50)
 
-# Create board
-board = [['' for _ in range(board_size)] for _ in range(board_size)]
+def our_snake(snake_block, snake_list):
+    for x in snake_list:
+        pygame.draw.rect(window, GREEN, [x[0], x[1], snake_block, snake_block])
 
-# Player symbols
-player_symbol = 'X'
-cpu_symbol = 'O'
+def message(msg, color):
+    mesg = font.render(msg, True, color)
+    window.blit(mesg, [width/6, height/3])
 
-# Game state
-game_over = False
-player_turn = True
+def gameLoop():
+    game_over = False
+    game_close = False
 
-# Function to draw the board
-def draw_board():
-    screen.fill(white)
-    for i in range(1, board_size):
-        pygame.draw.line(screen, black, (i * cell_size, 0), (i * cell_size, height), 2)
-        pygame.draw.line(screen, black, (0, i * cell_size), (width, i * cell_size), 2)
+    x1 = width / 2
+    y1 = height / 2
 
-# Function to draw the symbols
-def draw_symbols():
-    for row in range(board_size):
-        for col in range(board_size):
-            if board[row][col] != '':
-                text = font.render(board[row][col], True, black)
-                text_rect = text.get_rect(center=((col + 0.5) * cell_size, (row + 0.5) * cell_size))
-                screen.blit(text, text_rect)
+    x1_change = 0
+    y1_change = 0
 
-# Function to check for a winner
-def check_win():
-    # Check rows
-    for row in range(board_size):
-        if board[row][0] != '' and board[row][0] == board[row][1] == board[row][2]:
-            return board[row][0]
+    snake_List = []
+    Length_of_snake = 1
 
-    # Check columns
-    for col in range(board_size):
-        if board[0][col] != '' and board[0][col] == board[1][col] == board[2][col]:
-            return board[0][col]
+    foodx = round(random.randrange(0, width - snake_block) / snake_block) * snake_block
+    foody = round(random.randrange(0, height - snake_block) / snake_block) * snake_block
 
-    # Check diagonals
-    if board[0][0] != '' and board[0][0] == board[1][1] == board[2][2]:
-        return board[0][0]
-    if board[0][2] != '' and board[0][2] == board[1][1] == board[2][0]:
-        return board[0][2]
+    while not game_over:
 
-    # No winner
-    return None
+        while game_close == True:
+            window.fill(BLACK)
+            message("You Lost! Press Q-Quit or C-Play Again", RED)
+            pygame.display.update()
 
-# Function to check for a draw
-def check_draw():
-    for row in range(board_size):
-        for col in range(board_size):
-            if board[row][col] == '':
-                return False
-    return True
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_c:
+                        gameLoop()
 
-# Function for the CPU's move
-def cpu_move():
-    global player_turn
-    available_moves = []
-    for row in range(board_size):
-        for col in range(board_size):
-            if board[row][col] == '':
-                available_moves.append((row, col))
-    if available_moves:
-        move = random.choice(available_moves)
-        board[move[0]][move[1]] = cpu_symbol
-        player_turn = True
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x1_change = -snake_block
+                    y1_change = 0
+                elif event.key == pygame.K_RIGHT:
+                    x1_change = snake_block
+                    y1_change = 0
+                elif event.key == pygame.K_UP:
+                    y1_change = -snake_block
+                    x1_change = 0
+                elif event.key == pygame.K_DOWN:
+                    y1_change = snake_block
+                    x1_change = 0
 
-# Game loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN and player_turn and not game_over:
-            # Get mouse position
-            pos = pygame.mouse.get_pos()
-            # Calculate row and column
-            row = pos[1] // cell_size
-            col = pos[0] // cell_size
-            # Check if cell is empty
-            if board[row][col] == '':
-                board[row][col] = player_symbol
-                player_turn = False
-                # Check for win or draw after player's move
-                winner = check_win()
-                if winner:
-                    game_over = True
-                    if winner == player_symbol:
-                        print("Player wins!")
-                    else:
-                        print("CPU wins!")
-                elif check_draw():
-                    game_over = True
-                    print("It's a draw!")
+        if x1 >= width or x1 < 0 or y1 >= height or y1 < 0:
+            game_close = True
+        x1 += x1_change
+        y1 += y1_change
+        window.fill(BLACK)
+        pygame.draw.rect(window, RED, [foodx, foody, snake_block, snake_block])
+        snake_Head = []
+        snake_Head.append(x1)
+        snake_Head.append(y1)
+        snake_List.append(snake_Head)
+        if len(snake_List) > Length_of_snake:
+            del snake_List[0]
 
-    # CPU's turn
-    if not player_turn and not game_over:
-        cpu_move()
-        # Check for win or draw after CPU's move
-        winner = check_win()
-        if winner:
-            game_over = True
-            if winner == player_symbol:
-                print("Player wins!")
-            else:
-                print("CPU wins!")
-        elif check_draw():
-            game_over = True
-            print("It's a draw!")
+        for x in snake_List[:-1]:
+            if x == snake_Head:
+                game_close = True
 
-    # Draw the board and symbols
-    draw_board()
-    draw_symbols()
+        our_snake(snake_block, snake_List)
+        
+        # Display score
+        score = font.render("Score: " + str(Length_of_snake - 1), True, WHITE)
+        window.blit(score, [0, 0])
 
-    # Update display
-    pygame.display.flip()
+        pygame.display.update()
 
-# Quit Pygame
-pygame.quit()
+        if x1 == foodx and y1 == foody:
+            foodx = round(random.randrange(0, width - snake_block) / snake_block) * snake_block
+            foody = round(random.randrange(0, height - snake_block) / snake_block) * snake_block
+            Length_of_snake += 1
+
+        clock.tick(snake_speed)
+
+    pygame.quit()
+    quit()
+
+gameLoop()
