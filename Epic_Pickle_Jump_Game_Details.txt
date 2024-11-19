@@ -1,0 +1,57 @@
+Game Title:
+EPIC PICKLE JUMP!
+
+Game Description:
+Embark on an epic adventure as a heroic pickle in EPIC PICKLE JUMP, a quirky side-scrolling platformer! Armed with agility, lasers, and determination, your pickle must survive waves of mischievous enemies, including bouncy burgers, leaping hotdogs, and formidable Burger Bosses, all while navigating tricky platforms and collecting points. This action-packed game tests your reflexes, timing, and precision as you jump, shoot, and strategize your way to victory.
+
+Gameplay Features:
+	Heroic Pickle Character
+        Control a pickle with movement abilities, including jumping and firing lasers.
+        Navigate through platforms, dodge enemy attacks, and aim for high scores.
+
+    Dynamic Enemies
+        Burgers: These enemies roll across the screen. Jump on them to defeat them or shoot them with lasers.
+        Hotdogs: Leaping hotdogs bounce around unpredictably, adding an extra challenge.
+        Burger Boss: A giant, powerful enemy with health bars and laser attacks. Defeating three Burger Bosses grants ultimate victory.
+
+    Weapons and Combat
+        Use lasers to shoot enemies.
+        Aim strategically to defeat enemies while avoiding their attacks.
+
+    Physics-Based Gameplay
+        Realistic gravity affects the pickle's jumps and enemy movements.
+        Platform collisions and precision jumps create engaging challenges.
+
+    Background Elements
+        Backgrounds with moving trees and clouds enhance the atmosphere.
+        Smooth parallax scrolling adds depth to the game world.
+
+    Score and Lives System
+        Earn points for defeating enemies and surviving longer.
+        Keep track of your remaining lives; lose all three, and the game ends.
+
+    Platform Mechanics
+        Platforms are scattered throughout the level, offering both opportunities and obstacles.
+        Use platforms to gain strategic positions or avoid enemies.
+
+    Game States
+        Start Screen: Welcomes players with an intuitive "Play" button to begin their journey.
+        Game Over Screen: Encourages retry with a "Restart" option after losing.
+        You Win Screen: Celebrates your victory after defeating all the bosses.
+
+Controls:
+    A Key: Move Left
+    D Key: Move Right
+    Space Bar: Jump
+    Left Mouse Button: Shoot lasers in the facing direction
+    ESC/Close Button: Quit the game
+
+Game Objective:
+Survive the waves of enemies and defeat three powerful Burger Bosses to achieve victory. Use precise jumps, smart laser firing, and quick reflexes to rack up points, stay alive, and conquer the quirky culinary foes. Balance movement and combat to maximize your score while avoiding damage.
+
+Winning and Losing Conditions:
+    Winning Condition:
+    Defeat three Burger Bosses to trigger the You Win screen.
+
+    Losing Condition:
+    Lose all three lives, and the Game Over screen appears.
