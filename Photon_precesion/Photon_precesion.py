@@ -10,7 +10,7 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.mouse.set_visible(False)
 pygame.display.set_caption("Photon Precesion")
-
+clock = pygame.time.Clock()
 Game_state = "Main_menu"
 
 class Main_menu():
@@ -66,7 +66,7 @@ class Battle_field():
             self.width = width 
             self.length = length
             self.border_width = random.randint(1,1)
-            self.transparency = 255
+            self.transparency = 0
             self.color = (255,255,255)
 
     battle_field = []
@@ -77,7 +77,7 @@ class Battle_field():
 
     def draw_battle_field():
         surface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
-
+        
         if pygame.mouse.get_pressed()[0]:
             Battle_field.Tile.tile_size = 100
         else:
@@ -85,23 +85,37 @@ class Battle_field():
 
         for tile in Battle_field.battle_field:
             if pygame.Rect.colliderect(pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1),pygame.Rect(tile.x,tile.y,tile.width,tile.length)):
+                
                 tile.transparency = max(0,tile.transparency-10)
                 tile.color = (tile.color[0],tile.color[1],tile.color[2],tile.transparency)
                 tile.border_width = 5
             else:
-                tile.transparency = min(255,tile.transparency+1)
+                tile.transparency = min(40,tile.transparency+1)
                 tile.color = (tile.color[0],tile.color[1],tile.color[2],tile.transparency)
                 tile.border_width = 1
             
-            
-
-
-    
-
             pygame.draw.rect(surface,tile.color,(tile.x,tile.y,tile.width,tile.length),tile.border_width)
+        pygame.draw.rect(surface,(255,255,255,150),(100,50,600,500),1)
         screen.blit(surface,(0,0))
     
+    class Player():
+        def __init__(self,x,y,width,length,colors):
+            self.x = x
+            self.y = y
+            self.width = width
+            self.length = length
+            self.border_width = 1
+            self.colors = colors
 
+        def draw_player():
+            pygame.draw.rect(screen,Battle_field.player1.colors,
+            (Battle_field.player1.x,Battle_field.player1.y,Battle_field.player1.width,Battle_field.player1.length),Battle_field.player1.border_width)
+
+            pygame.draw.rect(screen,(255,0,0),(326,303,150,30),1,5)
+
+
+
+    player1 = Player(420,400,15,15,(255,255,255))
 
 
 
@@ -118,6 +132,8 @@ class Battle_field():
 # Set up the main loop
 running = True
 while running:
+    fps = 240
+    clock.tick(fps)
     screen.fill((0,0,0))
 
     if Game_state == "Main_menu":
@@ -125,6 +141,9 @@ while running:
     
     if Game_state == "Practice":
         Battle_field.draw_battle_field()
+        Battle_field.Player.draw_player()
+    
+
         pass
 
     
