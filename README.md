@@ -30,4 +30,4 @@ Description : Streetball is a fast-paced, retro-style basketball game where you 
 
 Author : ztdnzun 
 
-#Extra Date published, Game size, SinglePlayer/Multiplayer, Game Genre
+#Extra Date published, Game size, SinglePlayer, Sports
