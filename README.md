@@ -26,7 +26,7 @@ Author : ztdnzun
 
 **Game Name** : Street Ball
 
-Description : -
+Description : Streetball is a fast-paced, retro-style basketball game where you play against the ai in timing your shots, using dribbles moves to combo to get around your defender and enjoy the beautiful scenery of the pixel downtown basketball courts
 
 Author : ztdnzun 
 
