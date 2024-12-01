@@ -2,6 +2,8 @@ import pygame
 import math
 import random
 import sys
+import os 
+from pathlib import Path
 
 # Initialize Pygame
 pygame.init()
@@ -79,8 +81,13 @@ class Particle():
 
 particles = []
 
-surf = pygame.transform.smoothscale(pygame.image.load("assets/desert_planet.png").convert_alpha(),(300,300))
+for path in (Path('C:/').rglob("assets/desert_planet.png")):
+    fp = path
+
+
+surf = pygame.transform.smoothscale(pygame.image.load(fp).convert_alpha(),(300,300))
 rect = surf.get_rect(center=(width/2,height/2))
+
 
 # Main loop
 running = True
