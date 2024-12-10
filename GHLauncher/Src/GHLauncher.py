@@ -6,14 +6,14 @@ import subprocess
 
 class globals:
     if platform.system() == "Darwin":
-        VIEWPORT_WIDTH = 1000
+        VIEWPORT_WIDTH = 800
         VIEWPORT_HEIGHT = 600
     if platform.system() == "Windows":
-        VIEWPORT_WIDTH = 1400
-        VIEWPORT_HEIGHT = 800
+        VIEWPORT_WIDTH = 1200
+        VIEWPORT_HEIGHT = 700
     
 dpg.create_context()
-dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT,resizable=False)
+dpg.create_viewport(title='GHLauncher', width=globals.VIEWPORT_WIDTH, height=globals.VIEWPORT_HEIGHT,resizable=False,small_icon="Ghlauncher_icon.ico",large_icon="Ghlauncher_icon.ico")
 
 class Thumbnail_props:
     def __init__(self,path,tag,game_name,game_path):
@@ -33,7 +33,7 @@ xzplore_thumbnail = Thumbnail_props("Assets/Thumbnails/xzplore.png","pic1","Xzpl
 dungeon_survival_thumbnail = Thumbnail_props("Assets/Thumbnails/Dungeon_surviver.png","pic2","Dungeoun Survival","Necromancer.exe")
 bbal_thumbnail = Thumbnail_props("Assets/Thumbnails/bball-thumbnail.png","pic3","B-Ball","B-Ball.exe")
 pickle_jump_thumbnail = Thumbnail_props("Assets/Thumbnails/Pickle-jump.png","pic4","Pickle Jump","EPIC_PICKLE_JUMP!.exe")
-fighterz_thumbnail = Thumbnail_props("Assets/Thumbnails/FIGHTERZ.png","pic5","FighterZ",None)
+fighterz_thumbnail = Thumbnail_props("Assets/Thumbnails/FIGHTERZ.png","pic5","FighterZ","FightrZ.exe")
 kart_shifters_thumbnail = Thumbnail_props("Assets/Thumbnails/Kart-Shifters-Poster-1.png","pic6","Kart Shifters","Kart_shifters.exe")
 basketball_thumbnail = Thumbnail_props("Assets/Thumbnails/streetball_thumbnail.png","pic7","Street Ball","Basketball/Basketball_folder/Basketball.exe")
 
@@ -47,10 +47,8 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         dpg.add_separator()
         dpg.add_spacer(height=30)
         dpg.add_button(label="WHAT'S NEW")
-        dpg.add_button(label="CATALOG")
-        dpg.add_button(label="ACHIVEMENTS")
         dpg.add_button(label="SETTINGS")
-        dpg.add_button(label="VISIT OUR WEBSITE")
+        dpg.add_button(label="VISIT OUR WEBSITE",callback=lambda:os.system("start https://ghlauncher.42web.io/?i=1"))
 
     with dpg.texture_registry(show=False):
         for thumbnail in thumbnails:
@@ -63,7 +61,7 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
     with dpg.child_window(label="WHAT'S NEW",pos=(220,0),tag="whats_new_window") as whats_new_window:
         dpg.add_spacer(height=20)
         with dpg.group(horizontal=True):
-            for thumbnail in thumbnails[:5]:
+            for thumbnail in thumbnails[:4]:
                 dpg.add_spacer(width=60)
                 with dpg.group():
                     dpg.add_image(thumbnail.tag,width=150,height=200)
@@ -72,7 +70,7 @@ with dpg.window(pos=(0,0),width=globals.VIEWPORT_WIDTH,height=globals.VIEWPORT_H
         dpg.add_spacer(height=20)
 
         with dpg.group(horizontal=True):
-            for thumbnail in thumbnails[5:]:
+            for thumbnail in thumbnails[4:]:
                 dpg.add_spacer(width=60)
                 with dpg.group():
                     dpg.add_image(thumbnail.tag,width=150,height=200)
