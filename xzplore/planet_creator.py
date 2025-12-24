@@ -80,21 +80,24 @@ class Particle():
         
 
 particles = []
-
+'''
 for path in (Path('C:/').rglob("assets/desert_planet.png")):
     fp = path
 
 
 surf = pygame.transform.smoothscale(pygame.image.load(fp).convert_alpha(),(300,300))
 rect = surf.get_rect(center=(width/2,height/2))
-
+'''
 
 # Main loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False 
+            running = False # Quit Pygame
+            pygame.quit()
+            sys.exit()
+
     
     window.fill((0,0,0))
 
@@ -131,6 +134,3 @@ while running:
     pygame.display.flip()
     clock.tick(120)
 
-# Quit Pygame
-pygame.quit()
-sys.exit()

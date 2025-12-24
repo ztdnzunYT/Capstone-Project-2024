@@ -38,7 +38,7 @@ class Circle():
         pygame.draw.circle(self.surface,(*self.color,Circle.twinkle(self)),self.center,self.glow_radius)
         pygame.draw.circle(self.surface,self.color,self.center,self.circle_radius)
         screen.blit(self.surface,(self.x,Circle.float(self)))
-        self.x +=0.01
+        #self.x +=0.01
 
         
 
