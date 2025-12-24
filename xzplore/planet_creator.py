@@ -23,7 +23,7 @@ val3 = 0
 x = 0 
 y = 0
 radius = 150 + math.pi **2
-size  = 15
+size  = 30
 
 
 
@@ -62,7 +62,7 @@ class Particle():
             self.color = (160, 130, 170)
             self.x += self.speed
         elif self.direction == -1:
-            self.color = (255, 95, 109)
+            self.color = (160, 130, 170)
             self.x -= self.bg_speed
             if self.x < self.x_min:
                 self.direction = 0
@@ -119,7 +119,7 @@ while running:
     
     
 
-    if len(particles) < 5000:
+    if len(particles) < 1000:
         if x < 0:
             particles.append(Particle(x ,y,random.uniform(0,.3),random.uniform(1,2)))
 

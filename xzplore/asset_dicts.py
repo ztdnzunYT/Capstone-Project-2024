@@ -130,6 +130,8 @@ class Moss_planet():
 
     path = str(os.path.normpath("xzplore/assets/moss_planet_assets"))
 
+
+
     map_tiles = { 
         "path" : str(os.path.join(path,"moss_tiles")),
         "normal_tiles" : sorted(list(os.listdir(os.path.join(path,"moss_tiles"))))[0], 
@@ -159,7 +161,7 @@ class Moss_planet():
     }
 
 
-    desert_crawler = {
+    cockroach = {
         "enemy" : "Cockroach",
         "description" : "Indomitable parasite found in vegatative regions",
         "path" : "xzplore/assets/moss_planet_assets",

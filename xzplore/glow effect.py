@@ -27,7 +27,7 @@ class Circle():
         
     def float(self):
         self.time +=.01
-        float_amount = 2* math.sin(2*math.pi + 1 *self.time) + 300
+        float_amount = 20 * math.sin(2*math.pi + 0.1 * self.time) + 300
         return float_amount
 
     def twinkle(self):
@@ -60,7 +60,6 @@ def create_glowing_circle():
 
 particles = []
 # Create glowing circle surface
-glowing_circle = create_glowing_circle()
 x= 0
 # Main loop
 running = True
@@ -80,7 +79,7 @@ while running:
     for particle in particles:
         particle.draw()
         
-    screen.blit(glowing_circle,(x,300))
+    screen.blit(create_glowing_circle(),(x,300))
 
 
     
