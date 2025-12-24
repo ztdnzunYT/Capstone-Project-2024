@@ -29,6 +29,7 @@ class Thumbnail_props:
 
         
 thumbnails = []
+#may need to open thorugh workspace GHLauncher\Worspace\GHLauncher.code-workspace
 xzplore_thumbnail = Thumbnail_props("Assets/Thumbnails/xzplore.png","pic1","Xzplore","Xzplore.exe")
 dungeon_survival_thumbnail = Thumbnail_props("Assets/Thumbnails/Dungeon_surviver.png","pic2","Dungeoun Survival","Necromancer.exe")
 bbal_thumbnail = Thumbnail_props("Assets/Thumbnails/bball-thumbnail.png","pic3","B-Ball","B-Ball.exe")
